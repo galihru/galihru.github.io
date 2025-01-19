@@ -1,20 +1,32 @@
 const CACHE_NAME = 'g4lihru-v1';
 const urlsToCache = [
-    './', // Menggunakan relatif untuk GitHub Pages
-    './index.htm',
-    './987654567.png',
-    './manifest.json',
-    './sw.js',
-    './logo/192x192.png',
-    './logo/512x512.png',
+    './', // Root URL untuk GitHub Pages
+    './index.htm', // Pastikan file ini ada di root
+    './987654567.png', // Periksa apakah file ini benar-benar ada
+    './manifest.json', // Manifest file
+    './sw.js', // Service Worker sendiri
+    './logo/192x192.png', // Logo kecil
+    './logo/512x512.png', // Logo besar
 ];
 
+// Event `install`
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
                 console.log('Caching files:', urlsToCache);
-                return cache.addAll(urlsToCache);
+                // Validasi setiap URL sebelum menambah ke cache
+                return Promise.all(
+                    urlsToCache.map(url =>
+                        fetch(url)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`Request failed for ${url} with status ${response.status}`);
+                                }
+                                return cache.put(url, response);
+                            })
+                    )
+                );
             })
             .catch(err => {
                 console.error('Error caching files during install:', err);
@@ -22,6 +34,7 @@ self.addEventListener('install', event => {
     );
 });
 
+// Event `activate`
 self.addEventListener('activate', event => {
     const cacheWhitelist = [CACHE_NAME];
     event.waitUntil(
@@ -38,11 +51,12 @@ self.addEventListener('activate', event => {
     );
 });
 
+// Event `fetch`
 self.addEventListener('fetch', event => {
     event.respondWith(
         fetch(event.request)
             .then(response => {
-                // Simpan salinan respons di cache untuk akses mendatang
+                // Simpan salinan respons ke cache
                 const responseClone = response.clone();
                 caches.open(CACHE_NAME).then(cache => {
                     cache.put(event.request, responseClone);
@@ -50,7 +64,7 @@ self.addEventListener('fetch', event => {
                 return response;
             })
             .catch(() => {
-                // Kembalikan dari cache jika fetch gagal
+                // Jika fetch gagal, coba dari cache
                 return caches.match(event.request).then(cachedResponse => {
                     return cachedResponse || caches.match('./index.htm');
                 });
