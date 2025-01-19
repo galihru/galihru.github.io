@@ -56,30 +56,7 @@
             <div class="tooltip">Book</div>
         </div>
     </div>
-    <script>
-        // Function to activate the sidebar item
-        function activateSidebarItem(link) {
-            const items = document.querySelectorAll('.sidebar-item');
-            items.forEach(item => {
-                if (item.getAttribute('data-link') === link) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
-        }
-
-        // Activate the home item by default
-        activateSidebarItem('home');
-
-        // Add click event listeners to sidebar items
-        document.querySelectorAll('.sidebar-item').forEach(item => {
-            item.addEventListener('click', () => {
-                activateSidebarItem(item.getAttribute('data-link'));
-                window.location.href = `#${item.getAttribute('data-link')}`; // Update URL
-            });
-        });
-    </script>
+    <script src="sdb.js"></script>
     <div class="content">
         <div class="carousel">
             <div class="carousel-track">
