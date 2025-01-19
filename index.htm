@@ -498,6 +498,19 @@
 </head>
 
 <body>
+    <div id="splash-screen"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #13151a; display: flex; align-items: center; justify-content: center; z-index: 1000;">
+        <img src="https://4211421036.github.io/g4lihru/987654567.png" alt="Logo"
+            style="width: 150px; height: 150px; background: white; border-radius: 25px;">
+    </div>
+    <script>
+        // Hide splash screen after 3 seconds
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('splash-screen').style.display = 'none';
+            }, 3000);
+        });
+    </script>
     <div class="sidebar">
         <div class="sidebar-item" data-link="home" title="Home">
             <i class="fas fa-home"></i>
