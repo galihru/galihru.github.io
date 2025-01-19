@@ -5,6 +5,11 @@ const urlsToCache = [
     './345677.png', // Periksa apakah file ini benar-benar ada
     './manifest.json', // Manifest file
     './sw.js', // Service Worker sendiri
+    './gnt.js',
+    './theme.js',
+    './swt.js',
+    './sdb.js',
+    './style.css',
     './logo/192x192.png', // Logo kecil
     './logo/512x512.png', // Logo besar
 ];
