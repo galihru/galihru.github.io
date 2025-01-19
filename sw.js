@@ -2,7 +2,7 @@ const CACHE_NAME = 'g4lihru-v1';
 const urlsToCache = [
     './', // Root URL untuk GitHub Pages
     './index.htm', // Pastikan file ini ada di root
-    './987654567.png', // Periksa apakah file ini benar-benar ada
+    './345677.png', // Periksa apakah file ini benar-benar ada
     './manifest.json', // Manifest file
     './sw.js', // Service Worker sendiri
     './logo/192x192.png', // Logo kecil
