@@ -75,20 +75,23 @@ async function fetchRepoImage(repo) {
 
 async function updateCarouselContent() {
     try {
-        const repos = await fetchGitHubRepos("4211421036");
-        const items = Array.from(document.querySelector(".carousel-track").children);
+        let repos = await fetchGitHubRepos("4211421036");
+        
+        // Pastikan repos adalah array yang valid
+        if (!Array.isArray(repos) || repos.length === 0) {
+            console.error("No repositories found or invalid data format.");
+            return; // Keluar jika repos tidak valid atau kosong
+        }
 
         for (let i = 0; i < items.length && i < repos.length; i++) {
-            const repo = repos[i];
-            const imageUrl = await fetchRepoImage(repo);
-
+            let repo = repos[i];
+            let image = await fetchRepoImage(repo);
             items[i].setAttribute("data-name", repo.name);
             items[i].setAttribute("data-description", repo.description || "No description available");
             items[i].setAttribute("data-url", repo.html_url);
-            items[i].setAttribute("data-image", imageUrl);
-
+            items[i].setAttribute("data-image", image);
             items[i].innerHTML = `
-                <img src="${imageUrl}" alt="${repo.name}">
+                <img src="${image}" alt="${repo.name}">
                 <div class="overlay">
                     <h2>${repo.name}</h2>
                     <p>${repo.description || "No description available"}</p>
@@ -102,6 +105,7 @@ async function updateCarouselContent() {
         console.error("Error updating carousel content:", error);
     }
 }
+
 
 function swapContent(direction) {
     const items = Array.from(document.querySelector(".carousel-track").children);
