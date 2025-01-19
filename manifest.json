@@ -1,0 +1,43 @@
+{
+    "name": "Web Application",
+    "short_name": "WebApp",
+    "description": "Collection Application created by GALIH RIDHO UTOMO for Reseaarch Develoment",
+    "start_url": "/",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#fff",
+    "theme_color": "#1A1A3D",
+    "icons": [
+        {
+            "src": "345677.png",
+            "sizes": "637x436",
+            "type": "image/png"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "345677.png",
+            "sizes": "637x436",
+            "form_factor": "wide",
+            "label": "Splash Screen view displaying App"
+        },
+        {
+            "src": "345677.png",
+            "sizes": "637x436",
+            "platform": "android",
+            "label": "Splash Screen view displaying App"
+        }
+    ],
+    "manifest_version": 3,
+    "version": "1.0.0",
+    "author": "GALIH RIDHO UTOMO",
+    "editor": "GALIH RIDHO UTOMO",
+    "scope": "/",
+    "display_override": [
+        "window-control-overlay",
+        "minimal-ui"
+    ],
+    "edgesidepanel": {
+        "preferredwidth": 748
+    }
+}
