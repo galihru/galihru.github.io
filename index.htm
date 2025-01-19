@@ -4,6 +4,7 @@
 <head>
     <title>Web Page Application Store Github</title>
     <meta charset="UTF-8">
+    <link rel="manifest" href="/manifest.json">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="This is collation application created by GALIH RIDHO UTOMO ">
     <meta name="keywords" content="HTML, CSS, JavaScript, Web Development, SEO">
@@ -83,7 +84,6 @@
 
         .sidebar-item.active::before {
             height: -webkit-fill-available;
-            background: var(--nav-button-color);
         }
 
         .tooltip {
@@ -503,6 +503,17 @@
         <img src="https://4211421036.github.io/g4lihru/987654567.png" alt="Logo"
             style="width: 150px; height: 150px; background: white; border-radius: 25px;">
     </div>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(registration => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, error => {
+                    console.log('ServiceWorker registration failed: ', error);
+                });
+            });
+        }
+    </script>
     <script>
         // Hide splash screen after 3 seconds
         window.addEventListener('load', () => {
