@@ -1,18 +1,24 @@
 const CACHE_NAME = 'g4lihru-v1';
 const urlsToCache = [
-    '/',
-    '/index.htm',
-    '/987654567.png',
-    '/manifest.json',
-    '/sw.js',
-    '/logo/192x192.png',
-    '/logo/512x512.png',
+    './', // Menggunakan relatif untuk GitHub Pages
+    './index.htm',
+    './987654567.png',
+    './manifest.json',
+    './sw.js',
+    './logo/192x192.png',
+    './logo/512x512.png',
 ];
 
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then(cache => cache.addAll(urlsToCache))
+            .then(cache => {
+                console.log('Caching files:', urlsToCache);
+                return cache.addAll(urlsToCache);
+            })
+            .catch(err => {
+                console.error('Error caching files during install:', err);
+            })
     );
 });
 
@@ -23,6 +29,7 @@ self.addEventListener('activate', event => {
             return Promise.all(
                 cacheNames.map(cacheName => {
                     if (!cacheWhitelist.includes(cacheName)) {
+                        console.log(`Deleting old cache: ${cacheName}`);
                         return caches.delete(cacheName);
                     }
                 })
@@ -33,8 +40,20 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
     event.respondWith(
-        caches.match(event.request)
-            .then(response => response || fetch(event.request))
-            .catch(() => caches.match('/index.htm'))
+        fetch(event.request)
+            .then(response => {
+                // Simpan salinan respons di cache untuk akses mendatang
+                const responseClone = response.clone();
+                caches.open(CACHE_NAME).then(cache => {
+                    cache.put(event.request, responseClone);
+                });
+                return response;
+            })
+            .catch(() => {
+                // Kembalikan dari cache jika fetch gagal
+                return caches.match(event.request).then(cachedResponse => {
+                    return cachedResponse || caches.match('./index.htm');
+                });
+            })
     );
 });
