@@ -33,17 +33,7 @@
         <img src="https://4211421036.github.io/g4lihru/987654567.png" alt="Logo"
             style="width: 150px; height: 150px; background: white; border-radius: 25px;">
     </div>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then(registration => {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                }, error => {
-                    console.log('ServiceWorker registration failed: ', error);
-                });
-            });
-        }
-    </script>
+    <script src="swt.js"></script>
     <script>
         // Hide splash screen after 3 seconds
         window.addEventListener('load', () => {
