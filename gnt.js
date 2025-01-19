@@ -43,12 +43,20 @@ function handleCardNavigation(direction) {
         return;
     }
 
+    let cardToMove;
     if (direction === "next") {
-        container.appendChild(cards[0]); // Move the first card to the end
+        cardToMove = cards[0]; // Move the first card to the end
+        if (cardToMove) {
+            container.appendChild(cardToMove);
+        }
     } else if (direction === "prev") {
-        container.insertBefore(cards[cards.length - 1], cards[0]); // Move the last card to the start
+        cardToMove = cards[cards.length - 1]; // Move the last card to the start
+        if (cardToMove) {
+            container.insertBefore(cardToMove, cards[0]);
+        }
     }
 }
+
 
 async function fetchRepoImage(repo) {
     try {
