@@ -104,7 +104,189 @@
             </div>
         </div>
     </div>
-    <script src="gnt.js"></script>
+    <script>
+        // Function to fetch GitHub repos
+        async function fetchGitHubRepos() {
+            try {
+                const response = await fetch('https://api.github.com/users/4211421036/repos');
+                const repos = await response.json();
+                const container = document.getElementById('github-repos');
+
+                repos.forEach(repo => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+
+                    card.innerHTML = `
+            <img alt="GitHub" height="200" 
+                src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" 
+                width="150"/>
+            <p>${repo.name}</p>
+            <p class="free">${repo.language || 'No language'}</p>
+            <p style="font-size: 12px">${repo.description || ''}</p>
+            <a class="linkc" href="${repo.html_url}" target="_blank" 
+            style="color: #2d6cdf; text-decoration: none;">View Repository</a>
+            `;
+
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error fetching GitHub repos:', error);
+            }
+        }
+
+        // Function to handle card navigation
+        function handleCardNavigation(direction) {
+            const container = document.getElementById('github-repos');
+            const cards = Array.from(container.children);
+            if (direction === 'next') {
+                container.appendChild(cards[0]);
+            } else {
+                container.insertBefore(cards[cards.length - 1], cards[0]);
+            }
+        }
+
+        // Event listeners for navigation buttons
+        document.querySelector('.repo-next').addEventListener('click', () => handleCardNavigation('next'));
+        document.querySelector('.repo-prev').addEventListener('click', () => handleCardNavigation('prev'));
+
+        // Call the function when page loads
+        fetchGitHubRepos();
+    </script>
+    <script>
+        const track = document.querySelector('.carousel-track');
+        const items = Array.from(track.children);
+        const nextButton = document.querySelector('.carousel-next');
+        const prevButton = document.querySelector('.carousel-prev');
+        let currentIndex = 0;
+
+        // Function to update carousel position
+        function updateCarousel() {
+            const itemWidth = items[currentIndex].getBoundingClientRect().width;
+            track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+        }
+
+        // Function to fetch GitHub repositories
+        async function fetchGitHubRepos(username) {
+            const response = await fetch(`https://api.github.com/users/4211421036/repos`);
+            if (!response.ok) throw new Error('Failed to fetch GitHub repositories');
+            return response.json();
+        }
+
+        // Function to fetch repository image
+        async function fetchRepoImage(repo) {
+            const response = await fetch(`https://api.github.com/repos/${repo.full_name}/contents`);
+            if (!response.ok) throw new Error('Failed to fetch repository contents');
+            const contents = await response.json();
+            const imageFile = contents.find(file => file.type === 'file' && /\.(jpg|jpeg|png|gif)$/i.test(file.name));
+            return imageFile ? imageFile.download_url : 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png';
+        }
+
+        // Function to update carousel content with GitHub data
+        async function updateCarouselContent() {
+            try {
+                const repos = await fetchGitHubRepos('4211421036'); // Replace with your GitHub username
+                for (let i = 0; i < items.length; i++) {
+                    if (i >= repos.length) break;
+                    const repo = repos[i];
+                    const imageUrl = await fetchRepoImage(repo);
+
+                    items[i].setAttribute('data-name', repo.name);
+                    items[i].setAttribute('data-description', repo.description || 'No description available');
+                    items[i].setAttribute('data-url', repo.html_url);
+                    items[i].setAttribute('data-image', imageUrl);
+
+                    items[i].innerHTML = `
+                        <img src="${imageUrl}" alt="${repo.name}">
+                        <div class="overlay">
+                            <h2>${repo.name}</h2>
+                            <p>${repo.description || 'No description available'}</p>
+                            <button>
+                                <a class="linkp" href="${repo.html_url}" target="_blank">View Repository</a>
+                            </button>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error fetching GitHub data:', error);
+            }
+        }
+
+        // Function to swap content (circular shift)
+        function swapContent(direction) {
+            if (direction === 'next') {
+                const firstItem = {
+                    name: items[0].getAttribute('data-name'),
+                    description: items[0].getAttribute('data-description'),
+                    url: items[0].getAttribute('data-url'),
+                    image: items[0].getAttribute('data-image')
+                };
+                for (let i = 0; i < items.length - 1; i++) {
+                    items[i].setAttribute('data-name', items[i + 1].getAttribute('data-name'));
+                    items[i].setAttribute('data-description', items[i + 1].getAttribute('data-description'));
+                    items[i].setAttribute('data-url', items[i + 1].getAttribute('data-url'));
+                    items[i].setAttribute('data-image', items[i + 1].getAttribute('data-image'));
+                    items[i].innerHTML = items[i + 1].innerHTML;
+                }
+                items[items.length - 1].setAttribute('data-name', firstItem.name);
+                items[items.length - 1].setAttribute('data-description', firstItem.description);
+                items[items.length - 1].setAttribute('data-url', firstItem.url);
+                items[items.length - 1].setAttribute('data-image', firstItem.image);
+                items[items.length - 1].innerHTML = `
+                    <img src="${firstItem.image}" alt="${firstItem.name}">
+                    <div class="overlay">
+                        <h2>${firstItem.name}</h2>
+                        <p>${firstItem.description}</p>
+                        <button>
+                            <a class="linkp" href="${firstItem.url}" target="_blank">View Repository</a>
+                        </button>
+                    </div>
+                `;
+            } else {
+                const lastItem = {
+                    name: items[items.length - 1].getAttribute('data-name'),
+                    description: items[items.length - 1].getAttribute('data-description'),
+                    url: items[items.length - 1].getAttribute('data-url'),
+                    image: items[items.length - 1].getAttribute('data-image')
+                };
+                for (let i = items.length - 1; i > 0; i--) {
+                    items[i].setAttribute('data-name', items[i - 1].getAttribute('data-name'));
+                    items[i].setAttribute('data-description', items[i - 1].getAttribute('data-description'));
+                    items[i].setAttribute('data-url', items[i - 1].getAttribute('data-url'));
+                    items[i].setAttribute('data-image', items[i - 1].getAttribute('data-image'));
+                    items[i].innerHTML = items[i - 1].innerHTML;
+                }
+                items[0].setAttribute('data-name', lastItem.name);
+                items[0].setAttribute('data-description', lastItem.description);
+                items[0].setAttribute('data-url', lastItem.url);
+                items[0].setAttribute('data-image', lastItem.image);
+                items[0].innerHTML = `
+                    <img src="${lastItem.image}" alt="${lastItem.name}">
+                    <div class="overlay">
+                        <h2>${lastItem.name}</h2>
+                        <p>${lastItem.description}</p>
+                        <button>
+                            <a class="linkp" href="${lastItem.url}" target="_blank">View Repository</a>
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Event listeners for navigation buttons
+        nextButton.addEventListener('click', () => {
+            swapContent('next');
+        });
+
+        prevButton.addEventListener('click', () => {
+            swapContent('prev');
+        });
+
+        // Load carousel content when the page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            await updateCarouselContent();
+            updateCarousel();
+        });
+    </script>
 </body>
 
 </html>
