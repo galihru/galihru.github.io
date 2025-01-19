@@ -25,7 +25,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="icon" href="https://4211421036.github.io/g4lihru/987654567.png" type="image/x-icon">
     <script type src="/theme.js"></script>
-    <script src="/swt.js"></script>
 </head>
 
 <body>
@@ -286,6 +285,19 @@
             await updateCarouselContent();
             updateCarousel();
         });
+    </script>
+     <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('Service Worker registered with scope: ', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
     </script>
 </body>
 
