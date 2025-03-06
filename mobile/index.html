@@ -1158,7 +1158,7 @@ function initTabSystem(repo) {
             if (clickedTabId === "contributors") {
                 displayContributors([]);  // Clear existing list
                 const contributorsContent = document.getElementById('contributors-content');
-                contributorsList.innerHTML = '<p>Loading contributors...</p>';
+                contributorsContent.innerHTML = '<p>Loading contributors...</p>';
                 
                 try {
                     // Use the stored repository object to get the name
@@ -1170,7 +1170,7 @@ function initTabSystem(repo) {
                     }
                 } catch (error) {
                     console.error('Error loading contributors:', error);
-                    contributorsList.innerHTML = '<p>Unable to load contributors. GitHub API rate limits may apply.</p>';
+                    contributorsContent.innerHTML = '<p>Unable to load contributors. GitHub API rate limits may apply.</p>';
                 }
             }
 
