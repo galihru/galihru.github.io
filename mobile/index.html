@@ -944,6 +944,7 @@
                     if (repos.indexOf(repo) < 6) {
                         const tourCard = document.createElement('div');
                         tourCard.className = 'tour-card';
+                        tourCard.dataset.repo = JSON.stringify(repo);
                         tourCard.innerHTML = `
                             <img src="${imageUrl}" alt="${repo.name}" class="tour-image">
                             <div class="tour-info">
@@ -954,6 +955,9 @@
                                 </div>
                             </div>
                         `;
+                        tourCard.addEventListener('click', () => {
+                            showDetailView(repo, randomRating, randomReviews, languages, imageUrl);
+                        });
                         relatedContainer.appendChild(tourCard);
                     }
                 }
