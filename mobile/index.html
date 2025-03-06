@@ -1380,6 +1380,7 @@ document.getElementById('back-to-detail').addEventListener('click', function() {
 
 // Fetch GitHub repos when the page loads
 document.addEventListener('DOMContentLoaded', function() {
+    initTabSystem();
     fetchGitHubRepos();
 });
         if ('serviceWorker' in navigator) {
