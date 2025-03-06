@@ -867,9 +867,8 @@
             <div id="contributors" class="tab-content">
                 <div class="contributors-container">
                     <h3>Repository Contributors</h3>
-                    <div class="tab-content contributors-content" id="contributors-content">
-                        <div class="contributors-loading">Loading contributors...</div>
-                        <div id="contributors-list" class="contributors-list"></div>
+                    <div id="contributors-content">
+                        <div id="contributors-list"></div>
                     </div>
                 </div>
             </div>
@@ -1089,7 +1088,6 @@ async function showDetailView(repo, rating, reviews, languages, imageUrl) {
 }
 
 // Function to initialize tab system
-// Function to initialize tab system
 function initTabSystem(repo) {
     const tabs = document.querySelectorAll('.tab-bar .tab');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -1108,7 +1106,7 @@ function initTabSystem(repo) {
                 tab.classList.remove('active');
             }
         });
-        
+
         // Update tab contents visibility
         tabContents.forEach(content => {
             if (content.id === tabId) {
@@ -1119,35 +1117,35 @@ function initTabSystem(repo) {
                 content.style.display = 'none';
             }
         });
-        
+
         // Toggle days container visibility based on tab
         if (tabId === "project-details") {
-            daysContainer.style.display = 'block';
+            if (daysContainer) daysContainer.style.display = 'block';
         } else {
-            daysContainer.style.display = 'none';
+            if (daysContainer) daysContainer.style.display = 'none';
         }
     }
 
     // Initially activate the first tab
     const initialTabId = tabs[0].getAttribute('data-tab');
     activateTab(initialTabId);
-    
+
     // Track current active tab
     let currentActiveTab = initialTabId;
-    
+
     tabs.forEach(tab => {
         tab.addEventListener('click', async function () {
             const clickedTabId = this.getAttribute('data-tab');
-            
+
             // Always update tab appearance
             tabs.forEach(t => t.classList.remove('active'));
             this.classList.add('active');
-            
+
             // If clicking the same tab that's already active, do nothing else
             if (clickedTabId === currentActiveTab) {
                 return;
             }
-            
+
             // Hide all tab contents
             tabContents.forEach(content => {
                 content.classList.remove('active');
@@ -1156,28 +1154,30 @@ function initTabSystem(repo) {
 
             // Get corresponding tab content
             const activeContent = document.getElementById(clickedTabId);
-            
+
             // Show active tab content
-            activeContent.classList.add('active');
-            activeContent.style.display = 'block';
-            
+            if (activeContent) {
+                activeContent.classList.add('active');
+                activeContent.style.display = 'block';
+            }
+
             // Toggle days container visibility based on tab
             if (clickedTabId === "project-details") {
-                // Show days container for details tab
-                daysContainer.style.display = 'block';
+                if (daysContainer) daysContainer.style.display = 'block';
             } else {
-                // Hide days container for other tabs (contributors, readme)
-                daysContainer.style.display = 'none';
+                if (daysContainer) daysContainer.style.display = 'none';
             }
-            
+
             // Update current active tab
             currentActiveTab = clickedTabId;
 
             // Handle different tab contents
             if (clickedTabId === "contributors") {
                 const contributorsContent = document.getElementById('contributors-content');
-                contributorsContent.innerHTML = '<p>Loading contributors...</p>';
-                
+                if (contributorsContent) {
+                    contributorsContent.innerHTML = '<p>Loading contributors...</p>';
+                }
+
                 try {
                     // Use the stored repository object to get the name
                     if (window.currentRepo && window.currentRepo.name) {
@@ -1188,25 +1188,33 @@ function initTabSystem(repo) {
                     }
                 } catch (error) {
                     console.error('Error loading contributors:', error);
-                    contributorsContent.innerHTML = '<p>Unable to load contributors. GitHub API rate limits may apply.</p>';
+                    if (contributorsContent) {
+                        contributorsContent.innerHTML = '<p>Unable to load contributors. GitHub API rate limits may apply.</p>';
+                    }
                 }
             }
 
             if (clickedTabId === "readme") {
                 const readmeContainer = document.querySelector('#readme .readme-container');
-                readmeContainer.innerHTML = '<p>Loading README...</p>';
-                
+                if (readmeContainer) {
+                    readmeContainer.innerHTML = '<p>Loading README...</p>';
+                }
+
                 try {
                     // Use the stored repository object to get the name
                     if (window.currentRepo && window.currentRepo.name) {
                         const readmeContent = await fetchRepoReadme(window.currentRepo.name);
-                        readmeContainer.innerHTML = renderMarkdown(readmeContent);
+                        if (readmeContainer) {
+                            readmeContainer.innerHTML = renderMarkdown(readmeContent);
+                        }
                     } else {
                         throw new Error('Repository information not available');
                     }
                 } catch (error) {
                     console.error('Error loading README:', error);
-                    readmeContainer.innerHTML = '<p>No README found for this repository or GitHub API rate limits may apply.</p>';
+                    if (readmeContainer) {
+                        readmeContainer.innerHTML = '<p>No README found for this repository or GitHub API rate limits may apply.</p>';
+                    }
                 }
             }
         });
@@ -1216,19 +1224,25 @@ function initTabSystem(repo) {
 function displayContributors(contributors) {
     const contributorsList = document.getElementById('contributors-list');
     const contributorsContent = document.getElementById('contributors-content');
-    
-    contributorsList.innerHTML = '';
-    
+
+    // Cek jika elemen tidak ditemukan
+    if (!contributorsList || !contributorsContent) {
+        console.error('Elemen contributors-list atau contributors-content tidak ditemukan.');
+        return;
+    }
+
+    contributorsList.innerHTML = ''; // Kosongkan daftar kontributor
+
     if (contributors.length === 0) {
         contributorsContent.innerHTML = '<p>No contributors found for this repository.</p>';
         return;
     }
-    
+
     contributors.forEach(contributor => {
         const randomCommits = Math.floor(Math.random() * 100) + 1;
         const randomAdditions = Math.floor(Math.random() * 10000) + 100;
         const randomDeletions = Math.floor(Math.random() * 5000) + 50;
-        
+
         const contributorCard = document.createElement('div');
         contributorCard.className = 'contributor-card';
         contributorCard.innerHTML = `
