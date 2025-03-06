@@ -1157,25 +1157,20 @@ function initTabSystem(repo) {
             // Handle different tab contents
             if (clickedTabId === "contributors") {
                 displayContributors([]);  // Clear existing list
-                // Perbaikan: Gunakan id contributors-content untuk menampilkan pesan loading
                 const contributorsContent = document.getElementById('contributors-content');
-                if (contributorsContent) {
-                    contributorsContent.innerHTML = '<p>Loading contributors...</p>';
+                contributorsList.innerHTML = '<p>Loading contributors...</p>';
                 
-                    try {
-                        // Use the stored repository object to get the name
-                        if (window.currentRepo && window.currentRepo.name) {
-                            const contributors = await fetchRepoContributors(window.currentRepo.name);
-                            displayContributors(contributors);
-                        } else {
-                            throw new Error('Repository information not available');
-                        }
-                    } catch (error) {
-                        console.error('Error loading contributors:', error);
-                        contributorsContent.innerHTML = '<p>Unable to load contributors. GitHub API rate limits may apply.</p>';
+                try {
+                    // Use the stored repository object to get the name
+                    if (window.currentRepo && window.currentRepo.name) {
+                        const contributors = await fetchRepoContributors(window.currentRepo.name);
+                        displayContributors(contributors);
+                    } else {
+                        throw new Error('Repository information not available');
                     }
-                } else {
-                    console.error('Element with ID "contributors-content" not found');
+                } catch (error) {
+                    console.error('Error loading contributors:', error);
+                    contributorsList.innerHTML = '<p>Unable to load contributors. GitHub API rate limits may apply.</p>';
                 }
             }
 
