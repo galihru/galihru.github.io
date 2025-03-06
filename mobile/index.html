@@ -1093,18 +1093,41 @@ function initTabSystem(repo) {
     // Store current repository for later use
     window.currentRepo = repo;
 
+    // Hide all tab contents initially except the first one
+    tabContents.forEach((content, index) => {
+        if (index === 0) {
+            content.style.display = 'block';
+            content.classList.add('active');
+        } else {
+            content.style.display = 'none';
+            content.classList.remove('active');
+        }
+    });
+
+    // Set first tab as active initially
+    tabs[0].classList.add('active');
+    
     tabs.forEach(tab => {
         tab.addEventListener('click', async function () {
-            // Remove 'active' class from all tabs and content
+            // Remove 'active' class from all tabs
             tabs.forEach(t => t.classList.remove('active'));
-            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Hide all tab contents
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+                content.style.display = 'none';
+            });
 
             // Add 'active' class to clicked tab
             this.classList.add('active');
 
             // Get corresponding tab ID
             const tabId = this.getAttribute('data-tab');
-            document.getElementById(tabId).classList.add('active');
+            const activeContent = document.getElementById(tabId);
+            
+            // Show active tab content
+            activeContent.classList.add('active');
+            activeContent.style.display = 'block';
 
             // Handle different tab contents
             if (tabId === "contributors") {
@@ -1146,7 +1169,6 @@ function initTabSystem(repo) {
         });
     });
 }
-
 // Function to display contributors
 function displayContributors(contributors) {
     const contributorsList = document.querySelector('#contributors .contributors-list');
