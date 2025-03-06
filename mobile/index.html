@@ -1202,9 +1202,9 @@ function displayContributors(contributors) {
         return;
     }
     
+    let contributorsHTML = '<div class="contributors-container">';
     contributors.forEach(contributor => {
-        const contributorEl = document.createElement('div');
-        contributorEl.innerHTML = `
+        contributorsHTML += `
             <div class="contributor-card">
                 <div class="contributor-avatar">
                     <img src="${contributor.avatar_url}" alt="${contributor.login}">
@@ -1222,8 +1222,10 @@ function displayContributors(contributors) {
                 </div>
             </div>
         `;
-        contributorsList.appendChild(contributorEl);
     });
+    
+    contributorsHTML += '</div>';
+    contributorsContent.innerHTML = contributorsHTML;
 }
 
 // Function to load contributors (updated with error handling)
