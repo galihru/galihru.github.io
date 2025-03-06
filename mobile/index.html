@@ -857,8 +857,8 @@
 
         <div class="tab-bar">
             <div class="tab active">Project Details</div>
-            <div class="tab">Accommodation</div>
-            <div class="tab">Booking details</div>
+            <div class="tab">Contributor</div>
+            <div class="tab">README.md</div>
         </div>
 
         <div id="days-container">
@@ -873,6 +873,24 @@
                 document.getElementById('splash-screen').style.display = 'none';
             }, 1000);
         });
+
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and corresponding content
+                    tab.classList.add('active');
+                    const target = tab.getAttribute('data-target');
+                    document.getElementById(target).classList.add('active');
+                });
+            });
+        }
 
         // Function to fetch GitHub repos
 async function fetchGitHubRepos() {
@@ -988,48 +1006,6 @@ async function fetchRepoReadme(repoName) {
     }
 }
 
-// Function to render markdown to HTML
-function renderMarkdown(markdown) {
-    // This is a very basic markdown renderer
-    // For a real app, consider using a library like marked.js
-    
-    // Convert headers
-    let html = markdown
-        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-        .replace(/^#### (.*$)/gm, '<h4>$1</h4>');
-    
-    // Convert lists
-    html = html
-        .replace(/^\* (.*$)/gm, '<li>$1</li>')
-        .replace(/^- (.*$)/gm, '<li>$1</li>');
-    
-    // Wrap lists
-    html = html
-        .replace(/<\/li>\n<li>/g, '</li><li>')
-        .replace(/<li>(.*?)<\/li>/g, '<ul><li>$1</li></ul>');
-    
-    // Fix multiple consecutive lists
-    html = html.replace(/<\/ul>\n<ul>/g, '');
-    
-    // Convert code blocks
-    html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-    
-    // Convert links
-    html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
-    
-    // Convert bold and italic
-    html = html
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>');
-    
-    // Convert paragraphs (must be after other conversions)
-    html = html.replace(/^(?!<[a-z])(.*$)/gm, '<p>$1</p>');
-    
-    return html;
-}
-
 // Function to show detail view with tabs
 async function showDetailView(repo, rating, reviews, languages, imageUrl) {
     document.getElementById('detail-name').textContent = repo.name;
@@ -1071,6 +1047,34 @@ async function showDetailView(repo, rating, reviews, languages, imageUrl) {
     // Create project details for itinerary view
     const daysContainer = document.getElementById('days-container');
     daysContainer.innerHTML = '';
+
+    const tabBar = document.querySelector('.tab-bar');
+    tabBar.innerHTML = `
+        <div class="tab active" data-target="project-details">Project Details</div>
+        <div class="tab" data-target="contributors">Contributor</div>
+        <div class="tab" data-target="readme">README.md</div>
+    `;
+
+    // Update content sections
+    const tabContent = document.getElementById('tab-content');
+    tabContent.innerHTML = `
+        <div id="project-details" class="tab-content active">
+            <!-- Project details content -->
+        </div>
+        <div id="contributors" class="tab-content">
+            <!-- Contributors content -->
+        </div>
+        <div id="readme" class="tab-content">
+            <!-- README content -->
+        </div>
+    `;
+
+    setupTabs();
+    
+    // Load initial content
+    loadProjectDetails(repo);
+    loadContributors(repo.name);
+    loadReadme(repo.name);
 
     // Set repo name and date in itinerary view
     document.getElementById('itinerary-name').textContent = repo.name;
@@ -1128,35 +1132,6 @@ async function showDetailView(repo, rating, reviews, languages, imageUrl) {
         </div>
     `;
     daysContainer.appendChild(dayItem2);
-
-    // Add tabs HTML if it doesn't exist already
-    if (!document.getElementById('detail-tabs')) {
-        const tabsContainer = document.createElement('div');
-        tabsContainer.className = 'detail-tabs-container';
-        tabsContainer.innerHTML = `
-            <div id="detail-tabs" class="detail-tabs">
-                <div class="tab active" data-tab="overview">Overview</div>
-                <div class="tab" data-tab="contributors">Contributors</div>
-                <div class="tab" data-tab="readme">README.md</div>
-            </div>
-            <div id="tab-content" class="tab-content">
-                <div id="overview-content" class="tab-pane active">
-                    <!-- Overview content will be here -->
-                    <div id="overview-description"></div>
-                </div>
-                <div id="contributors-content" class="tab-pane">
-                    <!-- Contributors content will be here -->
-                    <div class="contributors-container">
-                        <h3>Repository Contributors</h3>
-                        <div id="contributors-list" class="contributors-list"></div>
-                    </div>
-                </div>
-                <div id="readme-content" class="tab-pane">
-                    <!-- README content will be here -->
-                    <div id="readme-container" class="readme-container"></div>
-                </div>
-            </div>
-        `;
         
         // Add tabs after detail description
         const detailDescription = document.getElementById('detail-description');
@@ -1257,6 +1232,81 @@ document.getElementById('back-to-detail').addEventListener('click', function() {
 document.addEventListener('DOMContentLoaded', function() {
     fetchGitHubRepos();
 });
+        async function loadContributors(repoName) {
+            const contributors = await fetchRepoContributors(repoName);
+            const container = document.getElementById('contributors');
+            
+            let html = '<div class="contributors-list">';
+            contributors.forEach(contributor => {
+                html += `
+                    <div class="contributor-card">
+                        <div class="contributor-header">
+                            <img src="${contributor.avatar_url}" 
+                                 alt="${contributor.login}" 
+                                 class="contributor-avatar">
+                            <h3 class="contributor-name">${contributor.login}</h3>
+                        </div>
+                        <div class="contributor-stats">
+                            <div class="stat">
+                                <div class="stat-value">${contributor.contributions}</div>
+                                <div class="stat-label">Commits</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value">${Math.floor(Math.random() * 1000)}</div>
+                                <div class="stat-label">Lines</div>
+                            </div>
+                        </div>
+                        <a href="${contributor.html_url}" 
+                           target="_blank" 
+                           class="contributor-link">
+                           View Profile
+                        </a>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        async function loadReadme(repoName) {
+            const readmes = await fetchRepoContributors(repoName);
+            const container = document.getElementById('readme');
+            
+            let html = markdown
+        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+        .replace(/^#### (.*$)/gm, '<h4>$1</h4>');
+    
+    // Convert lists
+    html = html
+        .replace(/^\* (.*$)/gm, '<li>$1</li>')
+        .replace(/^- (.*$)/gm, '<li>$1</li>');
+    
+    // Wrap lists
+    html = html
+        .replace(/<\/li>\n<li>/g, '</li><li>')
+        .replace(/<li>(.*?)<\/li>/g, '<ul><li>$1</li></ul>');
+    
+    // Fix multiple consecutive lists
+    html = html.replace(/<\/ul>\n<ul>/g, '');
+    
+    // Convert code blocks
+    html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+    
+    // Convert links
+    html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+    
+    // Convert bold and italic
+    html = html
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>');
+    
+    // Convert paragraphs (must be after other conversions)
+    html = html.replace(/^(?!<[a-z])(.*$)/gm, '<p>$1</p>');
+    
+    return html;
+        }
         // Service worker registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
