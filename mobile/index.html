@@ -1111,10 +1111,21 @@ function initTabSystem(repo) {
     // Set first tab as active initially
     tabs[0].classList.add('active');
     
+    // Track current active tab
+    let currentActiveTab = tabs[0].getAttribute('data-tab');
+    
     tabs.forEach(tab => {
         tab.addEventListener('click', async function () {
-            // Remove 'active' class from all tabs
+            const clickedTabId = this.getAttribute('data-tab');
+            
+            // Always update tab appearance
             tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // If clicking the same tab that's already active, do nothing else
+            if (clickedTabId === currentActiveTab) {
+                return;
+            }
             
             // Hide all tab contents
             tabContents.forEach(content => {
@@ -1122,28 +1133,27 @@ function initTabSystem(repo) {
                 content.style.display = 'none';
             });
 
-            // Add 'active' class to clicked tab
-            this.classList.add('active');
-
-            // Get corresponding tab ID
-            const tabId = this.getAttribute('data-tab');
-            const activeContent = document.getElementById(tabId);
+            // Get corresponding tab content
+            const activeContent = document.getElementById(clickedTabId);
             
             // Show active tab content
             activeContent.classList.add('active');
             activeContent.style.display = 'block';
             
             // Toggle days container visibility based on tab
-            if (tabId === "details") {
+            if (clickedTabId === "details") {
                 // Show days container for details tab
                 daysContainer.style.display = 'block';
             } else {
                 // Hide days container for other tabs (contributors, readme)
                 daysContainer.style.display = 'none';
             }
+            
+            // Update current active tab
+            currentActiveTab = clickedTabId;
 
             // Handle different tab contents
-            if (tabId === "contributors") {
+            if (clickedTabId === "contributors") {
                 displayContributors([]);  // Clear existing list
                 const contributorsList = document.querySelector('#contributors .contributors-list');
                 contributorsList.innerHTML = '<p>Loading contributors...</p>';
@@ -1162,7 +1172,7 @@ function initTabSystem(repo) {
                 }
             }
 
-            if (tabId === "readme") {
+            if (clickedTabId === "readme") {
                 const readmeContainer = document.querySelector('#readme .readme-container');
                 readmeContainer.innerHTML = '<p>Loading README...</p>';
                 
