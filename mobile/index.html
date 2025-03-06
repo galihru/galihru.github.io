@@ -1223,26 +1223,18 @@ function initTabSystem(repo) {
 // Function to display contributors
 function displayContributors(contributors) {
     const contributorsList = document.getElementById('contributors-list');
-    const contributorsContent = document.getElementById('contributors-content');
-
-    // Cek jika elemen tidak ditemukan
-    if (!contributorsList || !contributorsContent) {
-        console.error('Elemen contributors-list atau contributors-content tidak ditemukan.');
-        return;
-    }
-
-    contributorsList.innerHTML = ''; // Kosongkan daftar kontributor
-
+    contributorsList.innerHTML = '';
+    
     if (contributors.length === 0) {
-        contributorsContent.innerHTML = '<p>No contributors found for this repository.</p>';
+        contributorsList.innerHTML = '<p>No contributors found for this repository.</p>';
         return;
     }
-
+    
     contributors.forEach(contributor => {
         const randomCommits = Math.floor(Math.random() * 100) + 1;
         const randomAdditions = Math.floor(Math.random() * 10000) + 100;
         const randomDeletions = Math.floor(Math.random() * 5000) + 50;
-
+        
         const contributorCard = document.createElement('div');
         contributorCard.className = 'contributor-card';
         contributorCard.innerHTML = `
