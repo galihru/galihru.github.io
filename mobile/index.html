@@ -1089,6 +1089,7 @@ async function showDetailView(repo, rating, reviews, languages, imageUrl) {
 }
 
 // Function to initialize tab system
+// Function to initialize tab system
 function initTabSystem(repo) {
     const tabs = document.querySelectorAll('.tab-bar .tab');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -1174,7 +1175,6 @@ function initTabSystem(repo) {
 
             // Handle different tab contents
             if (clickedTabId === "contributors") {
-                displayContributors([]);  // Clear existing list
                 const contributorsContent = document.getElementById('contributors-content');
                 contributorsContent.innerHTML = '<p>Loading contributors...</p>';
                 
@@ -1215,10 +1215,12 @@ function initTabSystem(repo) {
 // Function to display contributors
 function displayContributors(contributors) {
     const contributorsList = document.getElementById('contributors-list');
+    const contributorsContent = document.getElementById('contributors-content');
+    
     contributorsList.innerHTML = '';
     
     if (contributors.length === 0) {
-        contributorsList.innerHTML = '<p>No contributors found for this repository.</p>';
+        contributorsContent.innerHTML = '<p>No contributors found for this repository.</p>';
         return;
     }
     
@@ -1257,7 +1259,6 @@ function displayContributors(contributors) {
         contributorsList.appendChild(contributorCard);
     });
 }
-
 // Function to load contributors (updated with error handling)
 async function fetchRepoContributors(repoName) {
     if (!repoName) {
