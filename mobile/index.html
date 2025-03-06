@@ -587,6 +587,145 @@
             margin-right: 5px;
             margin-top: 5px;
         }
+         .contributor-link {
+                display: block;
+                text-align: center;
+                margin-top: 15px;
+                color: #FF5A5F;
+                text-decoration: none;
+                font-weight: 500;
+            }
+            
+            /* README styling */
+            .readme-container {
+                background: #fff;
+                padding: 25px;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            }
+            
+            .readme-container h1 {
+                border-bottom: 1px solid #eaecef;
+                padding-bottom: 0.3em;
+                font-size: 1.5em;
+                margin-bottom: 16px;
+            }
+            
+            .readme-container h2 {
+                border-bottom: 1px solid #eaecef;
+                padding-bottom: 0.3em;
+                font-size: 1.3em;
+                margin-top: 24px;
+                margin-bottom: 16px;
+            }
+            
+            .readme-container h3 {
+                font-size: 1.1em;
+                margin-top: 24px;
+                margin-bottom: 16px;
+            }
+            
+            .readme-container ul {
+                padding-left: 2em;
+                margin-bottom: 16px;
+            }
+            
+            .readme-container code {
+                background-color: rgba(27, 31, 35, 0.05);
+                border-radius: 3px;
+                font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+                font-size: 85%;
+                padding: 0.2em 0.4em;
+            }
+            
+            .readme-container pre {
+                background-color: #f6f8fa;
+                border-radius: 3px;
+                font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+                font-size: 85%;
+                line-height: 1.45;
+                padding: 16px;
+                overflow: auto;
+                margin-bottom: 16px;
+            }
+        .stat {
+                flex: 1;
+                text-align: center;
+            }
+            
+            .stat-value {
+                font-weight: bold;
+                font-size: 16px;
+                color: #FF5A5F;
+            }
+            
+            .stat-label {
+                font-size: 12px;
+                color: #777;
+            }
+        /* Contributors styling */
+            .contributors-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+                margin-top: 20px;
+            }
+            
+            .contributor-card {
+                width: calc(33.333% - 14px);
+                background: #fff;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                overflow: hidden;
+                transition: transform 0.3s ease;
+            }
+            
+            .contributor-card:hover {
+                transform: translateY(-5px);
+            }
+            
+            .contributor-header {
+                background: linear-gradient(135deg, #FF5A5F, #FF9A8B);
+                height: 60px;
+                position: relative;
+            }
+            
+            .contributor-avatar {
+                width: 70px;
+                height: 70px;
+                border-radius: 50%;
+                border: 3px solid white;
+                position: absolute;
+                bottom: -35px;
+                left: 20px;
+                background-color: #fff;
+                overflow: hidden;
+            }
+            
+            .contributor-avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            
+            .contributor-body {
+                padding: 45px 20px 20px;
+            }
+            
+            .contributor-name {
+                font-weight: bold;
+                font-size: 18px;
+                margin-bottom: 5px;
+            }
+            
+            .contribution-stats {
+                display: flex;
+                background: #f7f7f7;
+                border-radius: 8px;
+                padding: 10px;
+                margin-top: 15px;
+            }
     </style>
 </head>
 
@@ -736,215 +875,389 @@
         });
 
         // Function to fetch GitHub repos
-        async function fetchGitHubRepos() {
+        // Function to fetch GitHub repos
+async function fetchGitHubRepos() {
+    try {
+        // Fetch repos list
+        const response = await fetch('https://api.github.com/users/4211421036/repos');
+        if (!response.ok) throw new Error('Failed to fetch repositories');
+        const repos = await response.json();
+        
+        const container = document.getElementById('github-repos');
+        container.innerHTML = '';
+
+        // Also populate related repos for the detail view
+        const relatedContainer = document.getElementById('related-repos');
+        relatedContainer.innerHTML = '';
+
+        // Process each repository
+        for (const repo of repos) {
+            // Try to get a repository image
+            let imageUrl = 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png'; // Default image
+            
             try {
-                // Fetch repos list
-                const response = await fetch('https://api.github.com/users/4211421036/repos');
-                if (!response.ok) throw new Error('Failed to fetch repositories');
-                const repos = await response.json();
-                
-                const container = document.getElementById('github-repos');
-                container.innerHTML = '';
-        
-                // Also populate related repos for the detail view
-                const relatedContainer = document.getElementById('related-repos');
-                relatedContainer.innerHTML = '';
-        
-                // Process each repository
-                for (const repo of repos) {
-                    // Try to get a repository image
-                    let imageUrl = 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png'; // Default image
-                    
-                    try {
-                        // Fetch contents of the repo to look for image files
-                        const contentsResponse = await fetch(`https://api.github.com/repos/4211421036/${repo.name}/contents`);
-                        if (contentsResponse.ok) {
-                            const contents = await contentsResponse.json();
-                            const imageFile = contents.find(file => file.type === 'file' && /\.(jpg|jpeg|png|gif)$/i.test(file.name));
-                            if (imageFile) {
-                                imageUrl = imageFile.download_url;
-                            }
-                        }
-                    } catch (error) {
-                        console.log(`Could not fetch contents for ${repo.name}, using default image`);
-                    }
-        
-                    // Create card for home view
-                    const card = document.createElement('div');
-                    card.className = 'destination-card';
-                    card.dataset.repo = JSON.stringify(repo);
-        
-                    const languages = repo.language ? [repo.language] : ['Unknown'];
-                    const randomRating = (4 + Math.random()).toFixed(1);
-                    const randomReviews = Math.floor(Math.random() * 150) + 50;
-        
-                    card.innerHTML = `
-                        <img src="${imageUrl}" alt="${repo.name}" class="card-image">
-                        <div class="card-favorite">
-                            <i class="far fa-heart"></i>
-                        </div>
-                        <div class="card-info">
-                            <div class="card-location">${languages.join(', ')}</div>
-                            <div class="card-name">${repo.name}</div>
-                            <div class="card-rating">
-                                <i class="fas fa-star rating-star"></i>
-                                <span>${randomRating}</span>
-                                <span style="margin-left: 8px;">${randomReviews} reviews</span>
-                            </div>
-                        </div>
-                    `;
-        
-                    card.addEventListener('click', () => {
-                        showDetailView(repo, randomRating, randomReviews, languages, imageUrl);
-                    });
-        
-                    container.appendChild(card);
-        
-                    // Create card for related repos
-                    if (repos.indexOf(repo) < 6) {
-                        const tourCard = document.createElement('div');
-                        tourCard.className = 'tour-card';
-                        tourCard.innerHTML = `
-                            <img src="${imageUrl}" alt="${repo.name}" class="tour-image">
-                            <div class="tour-info">
-                                <div class="tour-title">${repo.name}</div>
-                                <div class="tour-meta">
-                                    <div>${languages[0]}</div>
-                                    <div><i class="fas fa-star" style="color: gold;"></i> ${randomRating}</div>
-                                </div>
-                            </div>
-                        `;
-                        relatedContainer.appendChild(tourCard);
+                // Fetch contents of the repo to look for image files
+                const contentsResponse = await fetch(`https://api.github.com/repos/4211421036/${repo.name}/contents`);
+                if (contentsResponse.ok) {
+                    const contents = await contentsResponse.json();
+                    const imageFile = contents.find(file => file.type === 'file' && /\.(jpg|jpeg|png|gif)$/i.test(file.name));
+                    if (imageFile) {
+                        imageUrl = imageFile.download_url;
                     }
                 }
             } catch (error) {
-                console.error('Error fetching GitHub repos:', error);
+                console.log(`Could not fetch contents for ${repo.name}, using default image`);
             }
-        }
-        
-        // Function to show detail view
-        function showDetailView(repo, rating, reviews, languages, imageUrl) {
-            document.getElementById('detail-name').textContent = repo.name;
-            document.getElementById('detail-country').textContent = languages[0] || 'Unknown';
-            document.getElementById('detail-rating').textContent = rating;
-            document.getElementById('detail-reviews').textContent = `${reviews} reviews`;
-            document.getElementById('detail-description').textContent = repo.description || 'No description available for this repository.';
-        
-            // Set image for detail
-            document.getElementById('detail-image').src = imageUrl;
-        
-            // Add language chips
-            const languageChips = document.getElementById('language-chips');
-            languageChips.innerHTML = '';
-            
-            // Add primary language
-            if (languages[0]) {
-                const chip = document.createElement('span');
-                chip.className = 'language-chip';
-                chip.textContent = languages[0];
-                languageChips.appendChild(chip);
-            }
-            
-            // Add some fake additional languages for visual demo
-            const fakeLangs = ['HTML', 'CSS', 'JavaScript', 'Python', 'Java', 'TypeScript', 'PHP'];
-            const usedLangs = new Set(languages);
-            
-            for (let i = 0; i < 3; i++) {
-                const randomLang = fakeLangs[Math.floor(Math.random() * fakeLangs.length)];
-                if (!usedLangs.has(randomLang)) {
-                    const chip = document.createElement('span');
-                    chip.className = 'language-chip';
-                    chip.textContent = randomLang;
-                    languageChips.appendChild(chip);
-                    usedLangs.add(randomLang);
-                }
-            }
-        
-            // Create project details for itinerary view
-            const daysContainer = document.getElementById('days-container');
-            daysContainer.innerHTML = '';
-        
-            // Set repo name and date in itinerary view
-            document.getElementById('itinerary-name').textContent = repo.name;
-            document.getElementById('itinerary-date').textContent = `Created: ${new Date(repo.created_at).toLocaleDateString()}`;
-        
-            // Add day items with repo details
-            const dayItem1 = document.createElement('div');
-            dayItem1.className = 'day-item';
-            dayItem1.innerHTML = `
-                <div class="day-header">
-                    <div>
-                        <div class="day-title">Overview</div>
-                        <div class="day-desc">Repository Details</div>
+
+            // Create card for home view
+            const card = document.createElement('div');
+            card.className = 'destination-card';
+            card.dataset.repo = JSON.stringify(repo);
+
+            const languages = repo.language ? [repo.language] : ['Unknown'];
+            const randomRating = (4 + Math.random()).toFixed(1);
+            const randomReviews = Math.floor(Math.random() * 150) + 50;
+
+            card.innerHTML = `
+                <img src="${imageUrl}" alt="${repo.name}" class="card-image">
+                <div class="card-favorite">
+                    <i class="far fa-heart"></i>
+                </div>
+                <div class="card-info">
+                    <div class="card-location">${languages.join(', ')}</div>
+                    <div class="card-name">${repo.name}</div>
+                    <div class="card-rating">
+                        <i class="fas fa-star rating-star"></i>
+                        <span>${randomRating}</span>
+                        <span style="margin-left: 8px;">${randomReviews} reviews</span>
                     </div>
-                    <i class="fas fa-chevron-down expand-icon"></i>
-                </div>
-                <div class="github-day-content">
-                    <img src="${imageUrl}" alt="${repo.name}" class="day-thumbnail">
-                    <div class="github-info">
-                        <div class="activity">
-                            <div class="activity-time">Created</div>
-                            <div class="activity-title">${new Date(repo.created_at).toLocaleDateString()}</div>
-                        </div>
-                        <div class="activity">
-                            <div class="activity-time">Updated</div>
-                            <div class="activity-title">${new Date(repo.updated_at).toLocaleDateString()}</div>
-                        </div>
-                    </div>
-                </div>
-                <button class="book-button" onclick="window.location.href='https://github.com/4211421036/${repo.name}'">View Repository</button>
-            `;
-            daysContainer.appendChild(dayItem1);
-        
-            const dayItem2 = document.createElement('div');
-            dayItem2.className = 'day-item';
-            dayItem2.innerHTML = `
-                <div class="day-header">
-                    <div>
-                        <div class="day-title">Stats</div>
-                        <div class="day-desc">Repository Statistics</div>
-                    </div>
-                    <i class="fas fa-chevron-down expand-icon"></i>
-                </div>
-                <div class="activity">
-                    <div class="activity-time">Stars</div>
-                    <div class="activity-title">${repo.stargazers_count}</div>
-                </div>
-                <div class="activity">
-                    <div class="activity-time">Forks</div>
-                    <div class="activity-title">${repo.forks_count}</div>
-                </div>
-                <div class="activity">
-                    <div class="activity-time">Open Issues</div>
-                    <div class="activity-title">${repo.open_issues_count}</div>
                 </div>
             `;
-            daysContainer.appendChild(dayItem2);
+
+            card.addEventListener('click', () => {
+                showDetailView(repo, randomRating, randomReviews, languages, imageUrl);
+            });
+
+            container.appendChild(card);
+
+            // Create card for related repos
+            if (repos.indexOf(repo) < 6) {
+                const tourCard = document.createElement('div');
+                tourCard.className = 'tour-card';
+                tourCard.innerHTML = `
+                    <img src="${imageUrl}" alt="${repo.name}" class="tour-image">
+                    <div class="tour-info">
+                        <div class="tour-title">${repo.name}</div>
+                        <div class="tour-meta">
+                            <div>${languages[0]}</div>
+                            <div><i class="fas fa-star" style="color: gold;"></i> ${randomRating}</div>
+                        </div>
+                    </div>
+                `;
+                relatedContainer.appendChild(tourCard);
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching GitHub repos:', error);
+    }
+}
+
+// Function to fetch repository contributors
+async function fetchRepoContributors(repoName) {
+    try {
+        const response = await fetch(`https://api.github.com/repos/4211421036/${repoName}/contributors`);
+        if (!response.ok) throw new Error('Failed to fetch contributors');
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching contributors:', error);
+        return [];
+    }
+}
+
+// Function to fetch repository README
+async function fetchRepoReadme(repoName) {
+    try {
+        const response = await fetch(`https://api.github.com/repos/4211421036/${repoName}/readme`);
+        if (!response.ok) throw new Error('Failed to fetch README');
+        const data = await response.json();
         
-            // Show detail view
-            document.getElementById('detail-view').style.display = 'block';
+        // Decode base64 content
+        return atob(data.content);
+    } catch (error) {
+        console.error('Error fetching README:', error);
+        return 'No README found for this repository.';
+    }
+}
+
+// Function to render markdown to HTML
+function renderMarkdown(markdown) {
+    // This is a very basic markdown renderer
+    // For a real app, consider using a library like marked.js
+    
+    // Convert headers
+    let html = markdown
+        .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+        .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+        .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+        .replace(/^#### (.*$)/gm, '<h4>$1</h4>');
+    
+    // Convert lists
+    html = html
+        .replace(/^\* (.*$)/gm, '<li>$1</li>')
+        .replace(/^- (.*$)/gm, '<li>$1</li>');
+    
+    // Wrap lists
+    html = html
+        .replace(/<\/li>\n<li>/g, '</li><li>')
+        .replace(/<li>(.*?)<\/li>/g, '<ul><li>$1</li></ul>');
+    
+    // Fix multiple consecutive lists
+    html = html.replace(/<\/ul>\n<ul>/g, '');
+    
+    // Convert code blocks
+    html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+    
+    // Convert links
+    html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+    
+    // Convert bold and italic
+    html = html
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>');
+    
+    // Convert paragraphs (must be after other conversions)
+    html = html.replace(/^(?!<[a-z])(.*$)/gm, '<p>$1</p>');
+    
+    return html;
+}
+
+// Function to show detail view with tabs
+async function showDetailView(repo, rating, reviews, languages, imageUrl) {
+    document.getElementById('detail-name').textContent = repo.name;
+    document.getElementById('detail-country').textContent = languages[0] || 'Unknown';
+    document.getElementById('detail-rating').textContent = rating;
+    document.getElementById('detail-reviews').textContent = `${reviews} reviews`;
+    document.getElementById('detail-description').textContent = repo.description || 'No description available for this repository.';
+
+    // Set image for detail
+    document.getElementById('detail-image').src = imageUrl;
+
+    // Add language chips
+    const languageChips = document.getElementById('language-chips');
+    languageChips.innerHTML = '';
+    
+    // Add primary language
+    if (languages[0]) {
+        const chip = document.createElement('span');
+        chip.className = 'language-chip';
+        chip.textContent = languages[0];
+        languageChips.appendChild(chip);
+    }
+    
+    // Add some fake additional languages for visual demo
+    const fakeLangs = ['HTML', 'CSS', 'JavaScript', 'Python', 'Java', 'TypeScript', 'PHP'];
+    const usedLangs = new Set(languages);
+    
+    for (let i = 0; i < 3; i++) {
+        const randomLang = fakeLangs[Math.floor(Math.random() * fakeLangs.length)];
+        if (!usedLangs.has(randomLang)) {
+            const chip = document.createElement('span');
+            chip.className = 'language-chip';
+            chip.textContent = randomLang;
+            languageChips.appendChild(chip);
+            usedLangs.add(randomLang);
+        }
+    }
+
+    // Create project details for itinerary view
+    const daysContainer = document.getElementById('days-container');
+    daysContainer.innerHTML = '';
+
+    // Set repo name and date in itinerary view
+    document.getElementById('itinerary-name').textContent = repo.name;
+    document.getElementById('itinerary-date').textContent = `Created: ${new Date(repo.created_at).toLocaleDateString()}`;
+
+    // Add day items with repo details
+    const dayItem1 = document.createElement('div');
+    dayItem1.className = 'day-item';
+    dayItem1.innerHTML = `
+        <div class="day-header">
+            <div>
+                <div class="day-title">Overview</div>
+                <div class="day-desc">Repository Details</div>
+            </div>
+            <i class="fas fa-chevron-down expand-icon"></i>
+        </div>
+        <div class="github-day-content">
+            <img src="${imageUrl}" alt="${repo.name}" class="day-thumbnail">
+            <div class="github-info">
+                <div class="activity">
+                    <div class="activity-time">Created</div>
+                    <div class="activity-title">${new Date(repo.created_at).toLocaleDateString()}</div>
+                </div>
+                <div class="activity">
+                    <div class="activity-time">Updated</div>
+                    <div class="activity-title">${new Date(repo.updated_at).toLocaleDateString()}</div>
+                </div>
+            </div>
+        </div>
+        <button class="book-button" onclick="window.location.href='https://github.com/4211421036/${repo.name}'">View Repository</button>
+    `;
+    daysContainer.appendChild(dayItem1);
+
+    const dayItem2 = document.createElement('div');
+    dayItem2.className = 'day-item';
+    dayItem2.innerHTML = `
+        <div class="day-header">
+            <div>
+                <div class="day-title">Stats</div>
+                <div class="day-desc">Repository Statistics</div>
+            </div>
+            <i class="fas fa-chevron-down expand-icon"></i>
+        </div>
+        <div class="activity">
+            <div class="activity-time">Stars</div>
+            <div class="activity-title">${repo.stargazers_count}</div>
+        </div>
+        <div class="activity">
+            <div class="activity-time">Forks</div>
+            <div class="activity-title">${repo.forks_count}</div>
+        </div>
+        <div class="activity">
+            <div class="activity-time">Open Issues</div>
+            <div class="activity-title">${repo.open_issues_count}</div>
+        </div>
+    `;
+    daysContainer.appendChild(dayItem2);
+
+    // Add tabs HTML if it doesn't exist already
+    if (!document.getElementById('detail-tabs')) {
+        const tabsContainer = document.createElement('div');
+        tabsContainer.className = 'detail-tabs-container';
+        tabsContainer.innerHTML = `
+            <div id="detail-tabs" class="detail-tabs">
+                <div class="tab active" data-tab="overview">Overview</div>
+                <div class="tab" data-tab="contributors">Contributors</div>
+                <div class="tab" data-tab="readme">README.md</div>
+            </div>
+            <div id="tab-content" class="tab-content">
+                <div id="overview-content" class="tab-pane active">
+                    <!-- Overview content will be here -->
+                    <div id="overview-description"></div>
+                </div>
+                <div id="contributors-content" class="tab-pane">
+                    <!-- Contributors content will be here -->
+                    <div class="contributors-container">
+                        <h3>Repository Contributors</h3>
+                        <div id="contributors-list" class="contributors-list"></div>
+                    </div>
+                </div>
+                <div id="readme-content" class="tab-pane">
+                    <!-- README content will be here -->
+                    <div id="readme-container" class="readme-container"></div>
+                </div>
+            </div>
+        `;
+        
+        // Add tabs after detail description
+        const detailDescription = document.getElementById('detail-description');
+        detailDescription.parentNode.insertBefore(tabsContainer, detailDescription.nextSibling);
+        
+        // Add event listeners for tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Hide all tab panes
+                document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+                // Show selected tab pane
+                document.getElementById(`${this.dataset.tab}-content`).classList.add('active');
+            });
+        });
+    }
+    
+    // Move description to overview tab content
+    document.getElementById('overview-description').textContent = repo.description || 'No description available for this repository.';
+    
+    // Fetch and display contributors
+    fetchRepoContributors(repo.name).then(contributors => {
+        const contributorsList = document.getElementById('contributors-list');
+        contributorsList.innerHTML = '';
+        
+        if (contributors.length === 0) {
+            contributorsList.innerHTML = '<p>No contributors found for this repository.</p>';
+            return;
         }
         
-        // Back button event
-        document.getElementById('back-to-home').addEventListener('click', function() {
-            document.getElementById('detail-view').style.display = 'none';
+        contributors.forEach(contributor => {
+            const randomCommits = Math.floor(Math.random() * 100) + 1;
+            const randomAdditions = Math.floor(Math.random() * 10000) + 100;
+            const randomDeletions = Math.floor(Math.random() * 5000) + 50;
+            
+            const contributorCard = document.createElement('div');
+            contributorCard.className = 'contributor-card';
+            contributorCard.innerHTML = `
+                <div class="contributor-header">
+                    <div class="contributor-avatar">
+                        <img src="${contributor.avatar_url}" alt="${contributor.login}">
+                    </div>
+                </div>
+                <div class="contributor-body">
+                    <div class="contributor-name">${contributor.login}</div>
+                    <div class="contribution-stats">
+                        <div class="stat">
+                            <div class="stat-value">${contributor.contributions}</div>
+                            <div class="stat-label">Commits</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${randomAdditions}</div>
+                            <div class="stat-label">Added</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${randomDeletions}</div>
+                            <div class="stat-label">Removed</div>
+                        </div>
+                    </div>
+                    <a href="${contributor.html_url}" target="_blank" class="contributor-link">View Profile</a>
+                </div>
+            `;
+            contributorsList.appendChild(contributorCard);
         });
-        
-        // Read more button event
-        document.getElementById('read-more').addEventListener('click', function() {
-            // Show itinerary view when read more is clicked
-            document.getElementById('itinerary-view').style.display = 'block';
-        });
-        
-        // Back to detail event
-        document.getElementById('back-to-detail').addEventListener('click', function() {
-            document.getElementById('itinerary-view').style.display = 'none';
-        });
-        
-        // Fetch GitHub repos when the page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            fetchGitHubRepos();
-        });
+    });
+    
+    // Fetch and display README
+    fetchRepoReadme(repo.name).then(readme => {
+        const readmeContainer = document.getElementById('readme-container');
+        readmeContainer.innerHTML = renderMarkdown(readme);
+    });
+
+    // Show detail view
+    document.getElementById('detail-view').style.display = 'block';
+}
+
+// Back button event
+document.getElementById('back-to-home').addEventListener('click', function() {
+    document.getElementById('detail-view').style.display = 'none';
+});
+
+// Read more button event
+document.getElementById('read-more').addEventListener('click', function() {
+    // Show itinerary view when read more is clicked
+    document.getElementById('itinerary-view').style.display = 'block';
+});
+
+// Back to detail event
+document.getElementById('back-to-detail').addEventListener('click', function() {
+    document.getElementById('itinerary-view').style.display = 'none';
+});
+
+// Fetch GitHub repos when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    fetchGitHubRepos();
+});
 
         // Service worker registration
         if ('serviceWorker' in navigator) {
