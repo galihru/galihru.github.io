@@ -1182,7 +1182,9 @@ function initTabSystem(repo) {
                     // Use the stored repository object to get the name
                     if (window.currentRepo && window.currentRepo.name) {
                         const contributors = await fetchRepoContributors(window.currentRepo.name);
-                        displayContributors(contributors);
+                        if (contributorsContent) {
+                            contributorsContent.innerHTML = displayContributors(contributors);
+                        }
                     } else {
                         throw new Error('Repository information not available');
                     }
