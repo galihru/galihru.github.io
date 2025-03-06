@@ -1194,8 +1194,11 @@ function initTabSystem(repo) {
 // Function to display contributors
 function displayContributors(contributors) {
     const contributorsContent = document.getElementById('contributors-content');
-    if (contributors.length === 0) {
-        contributorsContent.innerHTML = '<p>No contributors found for this repository.</p>';
+    
+    contributorsContent.innerHTML = '';
+    
+    if (!contributors || contributors.length === 0) {
+        contributorsList.innerHTML = '<p>No contributors found for this repository.</p>';
         return;
     }
     
