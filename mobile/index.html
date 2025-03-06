@@ -1195,7 +1195,7 @@ function initTabSystem(repo) {
 }
 // Function to display contributors
 function displayContributors(contributors) {
-    const contributorsContent = document.getElementById('contributors-content');
+    const contributorsList = document.querySelector('#contributors .contributors-list');
     
     contributorsContent.innerHTML = '';
     
@@ -1228,7 +1228,7 @@ function displayContributors(contributors) {
     });
     
     contributorsHTML += '</div>';
-    contributorsContent.innerHTML = contributorsHTML;
+    contributorsList.innerHTML = contributorsHTML;
 }
 
 // Function to load contributors (updated with error handling)
