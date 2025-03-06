@@ -1193,15 +1193,14 @@ function initTabSystem(repo) {
 }
 // Function to display contributors
 function displayContributors(contributors) {
-    const contributorsList = document.querySelector('#contributors .contributors-list');
     const contributorsContent = document.getElementById('contributors-content');
     if (contributors.length === 0) {
         contributorsContent.innerHTML = '<p>No contributors found for this repository.</p>';
         return;
     }
-    contributorsList.innerHTML = '';
     
     let contributorsHTML = '<div class="contributors-container">';
+    
     contributors.forEach(contributor => {
         contributorsHTML += `
             <div class="contributor-card">
