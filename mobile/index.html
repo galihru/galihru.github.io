@@ -1090,6 +1090,9 @@ function initTabSystem(repo) {
     const tabs = document.querySelectorAll('.tab-bar .tab');
     const tabContents = document.querySelectorAll('.tab-content');
 
+    // Store current repository for later use
+    window.currentRepo = repo;
+
     tabs.forEach(tab => {
         tab.addEventListener('click', async function () {
             // Remove 'active' class from all tabs and content
@@ -1103,30 +1106,41 @@ function initTabSystem(repo) {
             const tabId = this.getAttribute('data-tab');
             document.getElementById(tabId).classList.add('active');
 
-            // Fetch Contributors if Contributors tab is selected
+            // Handle different tab contents
             if (tabId === "contributors") {
-                // Call fetchRepoContributors with the repo name
+                displayContributors([]);  // Clear existing list
+                const contributorsList = document.querySelector('#contributors .contributors-list');
+                contributorsList.innerHTML = '<p>Loading contributors...</p>';
+                
                 try {
-                    const contributors = await fetchRepoContributors(repo.name);
-                    displayContributors(contributors);
+                    // Use the stored repository object to get the name
+                    if (window.currentRepo && window.currentRepo.name) {
+                        const contributors = await fetchRepoContributors(window.currentRepo.name);
+                        displayContributors(contributors);
+                    } else {
+                        throw new Error('Repository information not available');
+                    }
                 } catch (error) {
-                    console.error('Error displaying contributors:', error);
-                    document.querySelector('#contributors .contributors-list').innerHTML = 
-                        '<p>Unable to load contributors at this time.</p>';
+                    console.error('Error loading contributors:', error);
+                    contributorsList.innerHTML = '<p>Unable to load contributors. GitHub API rate limits may apply.</p>';
                 }
             }
 
-            // Fetch README.md if README.md tab is selected
             if (tabId === "readme") {
-                // Call fetchRepoReadme with the repo name
+                const readmeContainer = document.querySelector('#readme .readme-container');
+                readmeContainer.innerHTML = '<p>Loading README...</p>';
+                
                 try {
-                    const readmeContent = await fetchRepoReadme(repo.name);
-                    document.querySelector('#readme .readme-container').innerHTML = 
-                        renderMarkdown(readmeContent);
+                    // Use the stored repository object to get the name
+                    if (window.currentRepo && window.currentRepo.name) {
+                        const readmeContent = await fetchRepoReadme(window.currentRepo.name);
+                        readmeContainer.innerHTML = renderMarkdown(readmeContent);
+                    } else {
+                        throw new Error('Repository information not available');
+                    }
                 } catch (error) {
-                    console.error('Error displaying README:', error);
-                    document.querySelector('#readme .readme-container').innerHTML = 
-                        '<p>No README found for this repository.</p>';
+                    console.error('Error loading README:', error);
+                    readmeContainer.innerHTML = '<p>No README found for this repository or GitHub API rate limits may apply.</p>';
                 }
             }
         });
@@ -1138,7 +1152,7 @@ function displayContributors(contributors) {
     const contributorsList = document.querySelector('#contributors .contributors-list');
     contributorsList.innerHTML = '';
     
-    if (contributors.length === 0) {
+    if (!contributors || contributors.length === 0) {
         contributorsList.innerHTML = '<p>No contributors found for this repository.</p>';
         return;
     }
@@ -1157,11 +1171,23 @@ function displayContributors(contributors) {
     });
 }
 
-// Function to load contributors (fixed)
+// Function to load contributors (updated with error handling)
 async function fetchRepoContributors(repoName) {
+    if (!repoName) {
+        console.error('Repository name is required');
+        return [];
+    }
+    
     try {
+        console.log(`Fetching contributors for: ${repoName}`);
         const response = await fetch(`https://api.github.com/repos/4211421036/${repoName}/contributors`);
-        if (!response.ok) throw new Error('Failed to fetch contributors');
+        
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            console.error('GitHub API error:', response.status, errorData);
+            throw new Error(`Failed to fetch contributors: ${response.status} ${response.statusText}`);
+        }
+        
         return await response.json();
     } catch (error) {
         console.error('Error fetching contributors:', error);
@@ -1169,23 +1195,47 @@ async function fetchRepoContributors(repoName) {
     }
 }
 
-// Function to fetch README (fixed)
+// Function to fetch README (updated with error handling)
 async function fetchRepoReadme(repoName) {
+    if (!repoName) {
+        console.error('Repository name is required');
+        return 'No repository name provided';
+    }
+    
     try {
+        console.log(`Fetching README for: ${repoName}`);
         const response = await fetch(`https://api.github.com/repos/4211421036/${repoName}/readme`);
-        if (!response.ok) throw new Error('Failed to fetch README');
+        
+        if (!response.ok) {
+            if (response.status === 404) {
+                return 'No README found for this repository.';
+            }
+            
+            const errorData = await response.json().catch(() => ({}));
+            console.error('GitHub API error:', response.status, errorData);
+            throw new Error(`Failed to fetch README: ${response.status} ${response.statusText}`);
+        }
+        
         const data = await response.json();
         
         // Decode base64 content
-        return atob(data.content);
+        if (data && data.content) {
+            return atob(data.content);
+        } else {
+            return 'README content not available';
+        }
     } catch (error) {
         console.error('Error fetching README:', error);
-        return 'No README found for this repository.';
+        return 'Error loading README. GitHub API rate limits may apply.';
     }
 }
 
 // Function to render markdown
 function renderMarkdown(markdown) {
+    if (!markdown || typeof markdown !== 'string') {
+        return '<p>No content to display</p>';
+    }
+    
     // Simple markdown conversion
     let html = markdown
         .replace(/^# (.*$)/gm, '<h1>$1</h1>')
