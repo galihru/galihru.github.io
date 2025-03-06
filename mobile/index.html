@@ -865,9 +865,8 @@
         <div class="tab-content-container">
             <div id="project-details" class="tab-content active"></div>
             <div id="contributors" class="tab-content">
-                <div class="contributors-container">
-                    <h3>Repository Contributors</h3>
-                    <div class="contributors-list"></div>
+                <div class="tab-content contributors-content" id="contributors-content">
+                    <div class="contributors-loading">Loading contributors...</div>
                 </div>
             </div>
             <div id="readme" class="tab-content">
@@ -1195,12 +1194,12 @@ function initTabSystem(repo) {
 // Function to display contributors
 function displayContributors(contributors) {
     const contributorsList = document.querySelector('#contributors .contributors-list');
-    contributorsList.innerHTML = '';
-    
-    if (!contributors || contributors.length === 0) {
-        contributorsList.innerHTML = '<p>No contributors found for this repository.</p>';
+    const contributorsContent = document.getElementById('contributors-content');
+    if (contributors.length === 0) {
+        contributorsContent.innerHTML = '<p>No contributors found for this repository.</p>';
         return;
     }
+    contributorsList.innerHTML = '';
     
     let contributorsHTML = '<div class="contributors-container">';
     contributors.forEach(contributor => {
@@ -1225,7 +1224,7 @@ function displayContributors(contributors) {
     });
     
     contributorsHTML += '</div>';
-    contributorsList.innerHTML = contributorsHTML;
+    contributorsContent.innerHTML = contributorsHTML;
 }
 
 // Function to load contributors (updated with error handling)
