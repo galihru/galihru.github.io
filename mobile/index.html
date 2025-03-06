@@ -1156,6 +1156,7 @@ function initTabSystem(repo) {
 
             // Handle different tab contents
             if (clickedTabId === "contributors") {
+                displayContributors([]);  // Clear existing list
                 // Perbaikan: Gunakan id contributors-content untuk menampilkan pesan loading
                 const contributorsContent = document.getElementById('contributors-content');
                 if (contributorsContent) {
