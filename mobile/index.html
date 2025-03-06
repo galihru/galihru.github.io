@@ -867,6 +867,7 @@
             <div id="contributors" class="tab-content">
                 <div class="tab-content contributors-content" id="contributors-content">
                     <div class="contributors-loading">Loading contributors...</div>
+                    <div class="contributors-list"></div>
                 </div>
             </div>
             <div id="readme" class="tab-content">
@@ -1154,6 +1155,8 @@ function initTabSystem(repo) {
             // Handle different tab contents
             if (clickedTabId === "contributors") {
                 displayContributors([]);  // Clear existing list
+                const contributorsList = document.querySelector('#contributors .contributors-list');
+                
                 const contributorsList = document.querySelector('#contributors .contributors-list');
                 contributorsList.innerHTML = '<p>Loading contributors...</p>';
                 
