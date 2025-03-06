@@ -1086,18 +1086,22 @@ async function showDetailView(repo, rating, reviews, languages, imageUrl) {
 }
 
 // Function to initialize tab system
+// Function to initialize tab system
 function initTabSystem(repo) {
     const tabs = document.querySelectorAll('.tab-bar .tab');
     const tabContents = document.querySelectorAll('.tab-content');
+    const daysContainer = document.getElementById('days-container');
 
     // Store current repository for later use
     window.currentRepo = repo;
 
-    // Hide all tab contents initially except the first one
+    // Hide all tab contents initially except the first one (details tab)
     tabContents.forEach((content, index) => {
         if (index === 0) {
             content.style.display = 'block';
             content.classList.add('active');
+            // Show days container for details tab
+            daysContainer.style.display = 'block';
         } else {
             content.style.display = 'none';
             content.classList.remove('active');
@@ -1128,6 +1132,15 @@ function initTabSystem(repo) {
             // Show active tab content
             activeContent.classList.add('active');
             activeContent.style.display = 'block';
+            
+            // Toggle days container visibility based on tab
+            if (tabId === "details") {
+                // Show days container for details tab
+                daysContainer.style.display = 'block';
+            } else {
+                // Hide days container for other tabs (contributors, readme)
+                daysContainer.style.display = 'none';
+            }
 
             // Handle different tab contents
             if (tabId === "contributors") {
