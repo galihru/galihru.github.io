@@ -919,79 +919,6 @@
 
         let currentRepo = null;
 
-        
-        // Fungsi untuk memuat contributor
-        async function loadContributors(repo) {
-            try {
-                const response = await fetch(`https://api.github.com/repos/4211421036/${repo.name}/contributors`);
-                const contributors = await response.json();
-                
-                const container = document.getElementById('contributor-content');
-                container.innerHTML = `
-                    <div class="contributor-grid">
-                        ${contributors.map(contributor => `
-                            <div class="contributor-card">
-                                <img src="${contributor.avatar_url}" 
-                                     alt="${contributor.login}" 
-                                     class="contributor-avatar">
-                                <div class="contributor-info">
-                                    <div class="contributor-name">
-                                        <a href="${contributor.html_url}" target="_blank">
-                                            ${contributor.login}
-                                        </a>
-                                    </div>
-                                    <div class="contributor-contributions">
-                                        ${contributor.contributions} contributions
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            } catch (error) {
-                console.error('Error loading contributors:', error);
-            }
-        }
-
-        // Fungsi untuk memuat README
-        async function loadReadme(repo) {
-            let html = markdown
-                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-                .replace(/^#### (.*$)/gm, '<h4>$1</h4>');
-            
-            // Convert lists
-            html = html
-                .replace(/^\* (.*$)/gm, '<li>$1</li>')
-                .replace(/^- (.*$)/gm, '<li>$1</li>');
-            
-            // Wrap lists
-            html = html
-                .replace(/<\/li>\n<li>/g, '</li><li>')
-                .replace(/<li>(.*?)<\/li>/g, '<ul><li>$1</li></ul>');
-            
-            // Fix multiple consecutive lists
-            html = html.replace(/<\/ul>\n<ul>/g, '');
-            
-            // Convert code blocks
-            html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-            
-            // Convert links
-            html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
-            
-            // Convert bold and italic
-            html = html
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*?)\*/g, '<em>$1</em>');
-            
-            // Convert paragraphs (must be after other conversions)
-            html = html.replace(/^(?!<[a-z])(.*$)/gm, '<p>$1</p>');
-            
-            return html;
-        }
-        
-
         // Function to fetch GitHub repos
         async function fetchGitHubRepos() {
             try {
@@ -1204,8 +1131,77 @@
         document.addEventListener('DOMContentLoaded', function() {
             fetchGitHubRepos();
         });
-        
-        
+
+        // Fungsi untuk memuat contributor
+        async function loadContributors(repo) {
+            try {
+                const response = await fetch(`https://api.github.com/repos/4211421036/${repo.name}/contributors`);
+                const contributors = await response.json();
+                
+                const container = document.getElementById('contributor-content');
+                container.innerHTML = `
+                    <div class="contributor-grid">
+                        ${contributors.map(contributor => `
+                            <div class="contributor-card">
+                                <img src="${contributor.avatar_url}" 
+                                     alt="${contributor.login}" 
+                                     class="contributor-avatar">
+                                <div class="contributor-info">
+                                    <div class="contributor-name">
+                                        <a href="${contributor.html_url}" target="_blank">
+                                            ${contributor.login}
+                                        </a>
+                                    </div>
+                                    <div class="contributor-contributions">
+                                        ${contributor.contributions} contributions
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading contributors:', error);
+            }
+        }
+
+        // Fungsi untuk memuat README
+        async function loadReadme(repo) {
+            let html = markdown
+                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/^#### (.*$)/gm, '<h4>$1</h4>');
+            
+            // Convert lists
+            html = html
+                .replace(/^\* (.*$)/gm, '<li>$1</li>')
+                .replace(/^- (.*$)/gm, '<li>$1</li>');
+            
+            // Wrap lists
+            html = html
+                .replace(/<\/li>\n<li>/g, '</li><li>')
+                .replace(/<li>(.*?)<\/li>/g, '<ul><li>$1</li></ul>');
+            
+            // Fix multiple consecutive lists
+            html = html.replace(/<\/ul>\n<ul>/g, '');
+            
+            // Convert code blocks
+            html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+            
+            // Convert links
+            html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+            
+            // Convert bold and italic
+            html = html
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            // Convert paragraphs (must be after other conversions)
+            html = html.replace(/^(?!<[a-z])(.*$)/gm, '<p>$1</p>');
+            
+            return html;
+        }
         // Service worker registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
