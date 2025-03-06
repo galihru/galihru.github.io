@@ -857,9 +857,22 @@
         </div>
 
         <div class="tab-bar">
-            <div class="tab active">Project Details</div>
-            <div class="tab">Contributor</div>
-            <div class="tab">README.md</div>
+            <div class="tab active" data-tab="project-details">Project Details</div>
+            <div class="tab" data-tab="contributors">Contributor</div>
+            <div class="tab" data-tab="readme">README.md</div>
+        </div>
+        
+        <div class="tab-content-container">
+            <div id="project-details" class="tab-content active">...</div>
+            <div id="contributors" class="tab-content">
+                <div class="contributors-container">
+                    <h3>Repository Contributors</h3>
+                    <div class="contributors-list"></div>
+                </div>
+            </div>
+            <div id="readme" class="tab-content">
+                <div class="readme-container"></div>
+            </div>
         </div>
 
         <div id="days-container">
@@ -1073,75 +1086,34 @@
         }
         
         // Function to initialize tab system
-        async function initTabSystem(repo) {
-            // Add tab bar if it doesn't exist yet
-            if (!document.querySelector('.tab-bar')) {
-                const tabBarContainer = document.createElement('div');
-                tabBarContainer.className = 'tab-container';
-                tabBarContainer.innerHTML = `
-                    <div class="tab-bar">
-                        <div class="tab active" data-tab="project-details">Project Details</div>
-                        <div class="tab" data-tab="contributors">Contributors</div>
-                        <div class="tab" data-tab="readme">README.md</div>
-                    </div>
-                    <div class="tab-content-container">
-                        <div id="project-details" class="tab-content active">
-                            <!-- Project details content will be here automatically -->
-                        </div>
-                        <div id="contributors" class="tab-content">
-                            <div class="contributors-container">
-                                <h3>Repository Contributors</h3>
-                                <div class="contributors-list">
-                                    <div class="loading-spinner">Loading contributors...</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="readme" class="tab-content">
-                            <div class="readme-container">
-                                <div class="loading-spinner">Loading README.md...</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                // Insert tab bar before the itinerary section
-                const detailContent = document.querySelector('.detail-content');
-                const tourInfo = document.querySelector('.tour-info');
-                if (detailContent && tourInfo) {
-                    detailContent.insertBefore(tabBarContainer, tourInfo);
-                }
-                
-                // Event listeners for tabs
-                const tabs = document.querySelectorAll('.tab');
-                tabs.forEach(tab => {
-                    tab.addEventListener('click', () => {
-                        // Remove active class from all tabs and content
-                        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                        
-                        // Add active class to clicked tab and corresponding content
-                        tab.classList.add('active');
-                        const tabContentId = tab.getAttribute('data-tab');
-                        document.getElementById(tabContentId).classList.add('active');
-                        
-                        // Load content if needed
-                        if (tabContentId === 'contributors' && !document.querySelector('.contributors-list .contributor-card')) {
-                            loadContributors(repo);
-                        } else if (tabContentId === 'readme' && document.querySelector('.readme-container .loading-spinner')) {
-                            loadReadme(repo);
-                        }
-                    });
+        function initTabSystem(repo) {
+            const tabs = document.querySelectorAll('.tab-bar .tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+        
+            tabs.forEach(tab => {
+                tab.addEventListener('click', async function () {
+                    // Hapus kelas 'active' dari semua tab dan konten
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+        
+                    // Tambah kelas 'active' ke tab yang diklik
+                    this.classList.add('active');
+        
+                    // Dapatkan ID tab yang sesuai
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+        
+                    // Fetch Contributors jika tab Contributors dipilih
+                    if (tabId === "contributors") {
+                        fetchContributors(repo);
+                    }
+        
+                    // Fetch README.md jika tab README.md dipilih
+                    if (tabId === "readme") {
+                        fetchReadme(repo);
+                    }
                 });
-                
-                // Move existing content to the project details tab
-                const projectDetailsTab = document.getElementById('project-details');
-                const existingContent = document.querySelector('.tour-info');
-                if (projectDetailsTab && existingContent) {
-                    // Clone the content instead of moving it to avoid breaking existing functionality
-                    const clonedContent = existingContent.cloneNode(true);
-                    projectDetailsTab.appendChild(clonedContent);
-                }
-            }
+            });
         }
         
         // Function to load contributors
