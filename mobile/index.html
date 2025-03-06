@@ -1105,156 +1105,68 @@
         
                     // Fetch Contributors jika tab Contributors dipilih
                     if (tabId === "contributors") {
-                        loadContributors(repo);
+                        fetchRepoContributors(repo);
                     }
         
                     // Fetch README.md jika tab README.md dipilih
                     if (tabId === "readme") {
-                        loadReadme(repo);
+                        fetchRepoReadme(repo);
                     }
                 });
             });
         }
         
         // Function to load contributors
-        async function loadContributors(repo) {
-            const contributorsContainer = document.querySelector('.contributors-list');
-            contributorsContainer.innerHTML = '<div class="loading-spinner">Loading contributors...</div>';
-            
+        async function fetchRepoContributors(repoName) {
             try {
-                const response = await fetch(`https://api.github.com/repos/4211421036/${repo.name}/contributors`);
+                const response = await fetch(`https://api.github.com/repos/4211421036/${repoName}/contributors`);
                 if (!response.ok) throw new Error('Failed to fetch contributors');
-                const contributors = await response.json();
-                
-                contributorsContainer.innerHTML = '';
-                
-                if (contributors.length === 0) {
-                    contributorsContainer.innerHTML = '<div class="no-contributors">No contributors found for this repository.</div>';
-                    return;
-                }
-                
-                for (const contributor of contributors) {
-                    // Fetch additional user details
-                    const userResponse = await fetch(contributor.url);
-                    const userData = await userResponse.json();
-                    
-                    const contributorCard = document.createElement('div');
-                    contributorCard.className = 'contributor-card';
-                    
-                    // Calculate random contribution stats for visual demo
-                    const randomCommits = Math.floor(Math.random() * 500) + 50;
-                    const randomAdditions = Math.floor(Math.random() * 10000) + 1000;
-                    const randomDeletions = Math.floor(Math.random() * 5000) + 500;
-                    
-                    contributorCard.innerHTML = `
-                        <div class="contributor-avatar">
-                            <img src="${contributor.avatar_url}" alt="${contributor.login}">
-                        </div>
-                        <div class="contributor-info">
-                            <div class="contributor-name">${userData.name || contributor.login}</div>
-                            <div class="contributor-login">@${contributor.login}</div>
-                            <div class="contributor-bio">${userData.bio || 'No bio available'}</div>
-                            <div class="contribution-stats">
-                                <div class="stat">
-                                    <i class="fas fa-code-branch"></i>
-                                    <span>${randomCommits} commits</span>
-                                </div>
-                                <div class="stat">
-                                    <i class="fas fa-plus"></i>
-                                    <span>${randomAdditions} additions</span>
-                                </div>
-                                <div class="stat">
-                                    <i class="fas fa-minus"></i>
-                                    <span>${randomDeletions} deletions</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="contributor-links">
-                            <a href="${userData.html_url}" target="_blank" class="contributor-link">
-                                <i class="fab fa-github"></i>
-                            </a>
-                            ${userData.twitter_username ? 
-                                `<a href="https://twitter.com/${userData.twitter_username}" target="_blank" class="contributor-link">
-                                    <i class="fab fa-twitter"></i>
-                                </a>` : ''}
-                            ${userData.email ?
-                                `<a href="mailto:${userData.email}" class="contributor-link">
-                                    <i class="fas fa-envelope"></i>
-                                </a>` : ''}
-                        </div>
-                    `;
-                    
-                    contributorsContainer.appendChild(contributorCard);
-                }
+                return await response.json();
             } catch (error) {
                 console.error('Error fetching contributors:', error);
-                contributorsContainer.innerHTML = '<div class="error-message">Failed to load contributors. Please try again later.</div>';
+                return [];
             }
         }
         
-        // Function to load README.md
-        async function loadReadme(repo) {
-            const readmeContainer = document.querySelector('.readme-container');
-            readmeContainer.innerHTML = '<div class="loading-spinner">Loading README.md...</div>';
-            
+        // Tambahkan fungsi baru untuk fetch README
+        async function fetchRepoReadme(repoName) {
             try {
-                // First try to get the README.md file
-                const response = await fetch(`https://api.github.com/repos/4211421036/${repo.name}/contents/README.md`);
+                const response = await fetch(`https://api.github.com/repos/4211421036/${repoName}/readme`);
+                if (!response.ok) throw new Error('Failed to fetch README');
+                const data = await response.json();
                 
-                if (response.ok) {
-                    const readmeData = await response.json();
-                    
-                    // If README exists, decode the content
-                    const content = atob(readmeData.content);
-                    
-                    // We'll need to include a markdown parser library for proper rendering
-                    // For simplicity, we'll just format it basically here
-                    readmeContainer.innerHTML = `
-                        <div class="readme-header">
-                            <h2><i class="fas fa-book"></i> README.md</h2>
-                            <a href="${readmeData.html_url}" target="_blank" class="view-on-github">
-                                <i class="fab fa-github"></i> View on GitHub
-                            </a>
-                        </div>
-                        <div class="readme-content">
-                            <pre>${content}</pre>
-                        </div>
-                    `;
-                } else {
-                    // If README.md doesn't exist, look for other potential README files
-                    const contentsResponse = await fetch(`https://api.github.com/repos/4211421036/${repo.name}/contents`);
-                    if (!contentsResponse.ok) throw new Error('Failed to fetch repository contents');
-                    
-                    const contents = await contentsResponse.json();
-                    const readmeFile = contents.find(file => 
-                        file.type === 'file' && 
-                        file.name.toLowerCase().includes('readme')
-                    );
-                    
-                    if (readmeFile) {
-                        const fileResponse = await fetch(readmeFile.url);
-                        const fileData = await fileResponse.json();
-                        const content = atob(fileData.content);
-                        
-                        readmeContainer.innerHTML = `
-                            <div class="readme-header">
-                                <h2><i class="fas fa-book"></i> ${readmeFile.name}</h2>
-                                <a href="${readmeFile.html_url}" target="_blank" class="view-on-github">
-                                    <i class="fab fa-github"></i> View on GitHub
-                                </a>
-                            </div>
-                            <div class="readme-content">
-                                <pre>${content}</pre>
-                            </div>
-                        `;
-                    } else {
-                        readmeContainer.innerHTML = '<div class="no-readme">No README file found in this repository.</div>';
-                    }
-                }
+                // Decode base64 content
+                return atob(data.content);
             } catch (error) {
                 console.error('Error fetching README:', error);
-                readmeContainer.innerHTML = '<div class="error-message">Failed to load README. Please try again later.</div>';
+                return 'No README found for this repository.';
             }
+        }
+        
+        // Tambahkan fungsi render markdown sederhana
+        function renderMarkdown(markdown) {
+            // Ini konversi markdown sederhana
+            let html = markdown
+                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>')
+                .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+            
+            // Konversi baris menjadi paragraf
+            const lines = html.split('\n');
+            let output = '';
+            for (let line of lines) {
+                if (line.trim() && !line.startsWith('<h') && !line.startsWith('<pre>')) {
+                    output += `<p>${line}</p>`;
+                } else {
+                    output += line;
+                }
+            }
+            
+            return output;
         }
         
         // Back button event
