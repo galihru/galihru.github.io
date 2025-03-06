@@ -863,7 +863,7 @@
         </div>
         
         <div class="tab-content-container">
-            <div id="project-details" class="tab-content active">...</div>
+            <div id="project-details" class="tab-content active"></div>
             <div id="contributors" class="tab-content">
                 <div class="contributors-container">
                     <h3>Repository Contributors</h3>
@@ -1206,10 +1206,21 @@ function displayContributors(contributors) {
         const contributorEl = document.createElement('div');
         contributorEl.className = 'contributor-item';
         contributorEl.innerHTML = `
-            <img src="${contributor.avatar_url}" alt="${contributor.login}" class="contributor-avatar">
-            <div class="contributor-info">
-                <div class="contributor-name">${contributor.login}</div>
-                <div class="contributor-commits">${contributor.contributions} commits</div>
+            <div class="contributor-card">
+                <div class="contributor-avatar">
+                    <img src="${contributor.avatar_url}" alt="${contributor.login}">
+                </div>
+                <div class="contributor-info">
+                    <div class="contributor-name">${contributor.login}</div>
+                    <div class="contributor-stats">
+                        <div class="stat">
+                            <span class="stat-value">${contributor.contributions}</span> commits
+                        </div>
+                        <div class="stat">
+                            <a href="${contributor.html_url}" target="_blank">View Profile</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
         contributorsList.appendChild(contributorEl);
