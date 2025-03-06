@@ -1088,7 +1088,6 @@ async function showDetailView(repo, rating, reviews, languages, imageUrl) {
 }
 
 // Function to initialize tab system
-// Function to initialize tab system
 function initTabSystem(repo) {
     const tabs = document.querySelectorAll('.tab-bar .tab');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -1097,24 +1096,42 @@ function initTabSystem(repo) {
     // Store current repository for later use
     window.currentRepo = repo;
 
-    // Hide all tab contents initially except the first one (details tab)
-    tabContents.forEach((content, index) => {
-        if (index === 0) {
-            content.style.display = 'block';
-            content.classList.add('active');
-            // Show days container for details tab
+    // Function to activate a tab and its content
+    function activateTab(tabId) {
+        // Update tab buttons appearance
+        tabs.forEach(tab => {
+            if (tab.getAttribute('data-tab') === tabId) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
+            }
+        });
+        
+        // Update tab contents visibility
+        tabContents.forEach(content => {
+            if (content.id === tabId) {
+                content.classList.add('active');
+                content.style.display = 'block'; // Ensure display is set to block
+            } else {
+                content.classList.remove('active');
+                content.style.display = 'none';
+            }
+        });
+        
+        // Toggle days container visibility based on tab
+        if (tabId === "project-details") {
             daysContainer.style.display = 'block';
         } else {
-            content.style.display = 'none';
-            content.classList.remove('active');
+            daysContainer.style.display = 'none';
         }
-    });
+    }
 
-    // Set first tab as active initially
-    tabs[0].classList.add('active');
+    // Initially activate the first tab
+    const initialTabId = tabs[0].getAttribute('data-tab');
+    activateTab(initialTabId);
     
     // Track current active tab
-    let currentActiveTab = tabs[0].getAttribute('data-tab');
+    let currentActiveTab = initialTabId;
     
     tabs.forEach(tab => {
         tab.addEventListener('click', async function () {
