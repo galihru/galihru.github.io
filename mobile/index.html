@@ -955,50 +955,40 @@
 
         // Fungsi untuk memuat README
         async function loadReadme(repo) {
-            try {
-                const response = await fetch(`https://api.github.com/repos/4211421036/${repo.name}/readme`);
-                const readmeData = await response.json();
-                const content = atob(readmeData.content);
-                let html = markdown
-                    .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-                    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-                    .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-                    .replace(/^#### (.*$)/gm, '<h4>$1</h4>');
-                
-                // Convert lists
-                html = html
-                    .replace(/^\* (.*$)/gm, '<li>$1</li>')
-                    .replace(/^- (.*$)/gm, '<li>$1</li>');
-                
-                // Wrap lists
-                html = html
-                    .replace(/<\/li>\n<li>/g, '</li><li>')
-                    .replace(/<li>(.*?)<\/li>/g, '<ul><li>$1</li></ul>');
-                
-                // Fix multiple consecutive lists
-                html = html.replace(/<\/ul>\n<ul>/g, '');
-                
-                // Convert code blocks
-                html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-                
-                // Convert links
-                html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
-                
-                // Convert bold and italic
-                html = html
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/\*(.*?)\*/g, '<em>$1</em>');
-                
-                // Convert paragraphs (must be after other conversions)
-                html = html.replace(/^(?!<[a-z])(.*$)/gm, '<p>$1</p>');
-                
-                return html;
-            }
-             document.getElementById('readme-content').innerHTML = `
-                <div class="readme-content">
-                    ${html}
-                </div>
-            `;
+            let html = markdown
+                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/^#### (.*$)/gm, '<h4>$1</h4>');
+            
+            // Convert lists
+            html = html
+                .replace(/^\* (.*$)/gm, '<li>$1</li>')
+                .replace(/^- (.*$)/gm, '<li>$1</li>');
+            
+            // Wrap lists
+            html = html
+                .replace(/<\/li>\n<li>/g, '</li><li>')
+                .replace(/<li>(.*?)<\/li>/g, '<ul><li>$1</li></ul>');
+            
+            // Fix multiple consecutive lists
+            html = html.replace(/<\/ul>\n<ul>/g, '');
+            
+            // Convert code blocks
+            html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+            
+            // Convert links
+            html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+            
+            // Convert bold and italic
+            html = html
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            // Convert paragraphs (must be after other conversions)
+            html = html.replace(/^(?!<[a-z])(.*$)/gm, '<p>$1</p>');
+            
+            return html;
         }
         
 
