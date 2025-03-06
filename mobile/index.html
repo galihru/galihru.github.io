@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>TripGlide - Travel Application</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Travel application created by GALIH RIDHO UTOMO">
+    <meta name="author" content="GALIH RIDHO UTOMO">
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://4211421036.github.io/g4lihru/987654567.png" type="image/x-icon">
+    <style>
+        :root {
+            --background-color: #f5f5f5;
+            --primary-color: #484848;
+            --accent-color: #3498db;
+            --card-radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--primary-color);
+            max-width: 480px;
+            margin: 0 auto;
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            background-color: white;
+            position: relative;
+        }
+
+        .header {
+            padding: 20px 16px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-left: 15px;
+        }
+
+        .search-bar {
+            margin: 10px 16px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border-radius: 25px;
+            border: none;
+            background-color: #f0f0f0;
+            font-size: 16px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+
+        .filter-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #333;
+            color: white;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .categories {
+            padding: 10px 0;
+            margin: 10px 16px;
+            overflow-x: auto;
+            white-space: nowrap;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .categories::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category {
+            display: inline-block;
+            padding: 8px 15px;
+            margin-right: 10px;
+            border-radius: 20px;
+            background-color: #f0f0f0;
+            font-size: 14px;
+        }
+
+        .category.active {
+            background-color: #333;
+            color: white;
+        }
+
+        .content-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 20px 16px 10px;
+        }
+
+        .destinations {
+            padding: 0 16px;
+            overflow-y: auto;
+            flex: 1;
+            padding-bottom: 80px;
+        }
+
+        .destination-card {
+            position: relative;
+            margin-bottom: 20px;
+            border-radius: var(--card-radius);
+            overflow: hidden;
+            background-color: #f0f0f0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: var(--card-radius);
+        }
+
+        .card-favorite {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 36px;
+            height: 36px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .card-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+            color: white;
+            border-bottom-left-radius: var(--card-radius);
+            border-bottom-right-radius: var(--card-radius);
+        }
+
+        .card-location {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .card-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .card-rating {
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .rating-star {
+            color: gold;
+            margin-right: 5px;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 0;
+            cursor: pointer;
+        }
+
+        .nav-icon {
+            font-size: 22px;
+            margin-bottom: 4px;
+            color: #888;
+        }
+
+        .nav-item.active .nav-icon {
+            color: #333;
+        }
+
+        .nav-label {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .nav-item.active .nav-label {
+            color: #333;
+        }
+
+        /* Detail View */
+        .detail-view {
+            display: none;
+            height: 100vh;
+            overflow-y: auto;
+            background-color: white;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+        }
+
+        .detail-header {
+            position: relative;
+            height: 300px;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 36px;
+            height: 36px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .detail-favorite {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 36px;
+            height: 36px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .header-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .destination-info {
+            margin-top: -40px;
+            background-color: white;
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            padding: 25px 20px;
+            position: relative;
+        }
+
+        .destination-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .country-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .country-flag {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .reviews {
+            display: flex;
+            align-items: center;
+            margin-left: 15px;
+            font-size: 14px;
+        }
+
+        .detail-rating {
+            font-weight: 500;
+            margin-right: 8px;
+        }
+
+        .destination-description {
+            font-size: 15px;
+            line-height: 1.5;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .read-more {
+            color: var(--accent-color);
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .section-heading {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 25px 0 15px;
+        }
+
+        .tours-grid {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding-bottom: 10px;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .tours-grid::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tour-card {
+            min-width: 220px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tour-image {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+        }
+
+        .tour-info {
+            padding: 12px;
+        }
+
+        .tour-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .tour-meta {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .see-all {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--accent-color);
+            text-align: right;
+            cursor: pointer;
+        }
+
+        /* Itinerary View */
+        .itinerary-view {
+            display: none;
+            height: 100vh;
+            overflow-y: auto;
+            background-color: white;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+        }
+
+        .itinerary-header {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .itinerary-title {
+            margin-left: 15px;
+            flex: 1;
+        }
+
+        .tour-name {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .tour-date {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .tab-bar {
+            display: flex;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .tab.active {
+            color: #333;
+            border-bottom: 2px solid #333;
+        }
+
+        .day-item {
+            background-color: white;
+            border-radius: 15px;
+            margin: 0 15px 15px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+
+        .day-title {
+            font-weight: 600;
+        }
+
+        .day-desc {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .expand-icon {
+            cursor: pointer;
+        }
+
+        .activity {
+            margin-bottom: 15px;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .activity-title {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .activity-desc {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .day-thumbnail {
+            width: 75px;
+            height: 75px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-right: 15px;
+        }
+
+        .book-button {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 500;
+            width: 85%;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 30;
+        }
+
+        .github-day-content {
+            display: flex;
+            align-items: center;
+        }
+
+        .github-info {
+            flex: 1;
+        }
+
+        .language-chip {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background-color: #e3f2fd;
+            color: #1976d2;
+            font-size: 12px;
+            margin-right: 5px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="splash-screen">
+        <img src="https://4211421036.github.io/g4lihru/987654567.png" alt="Logo"
+            style="width: 150px; height: 150px; background: white; border-radius: 25px;">
+    </div>
+
+    <!-- HOME VIEW -->
+    <div class="app-container" id="home-view">
+        <div class="header">
+            <div>
+                <div class="header-title">Hello, Vanessa</div>
+                <div style="font-size: 14px; color: #888;">Welcome to TripGlide</div>
+            </div>
+            <div class="user-info">
+                <img src="/api/placeholder/40/40" alt="User" class="user-avatar">
+            </div>
+        </div>
+
+        <div class="search-bar">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" placeholder="Search">
+            <div class="filter-icon">
+                <i class="fas fa-sliders-h"></i>
+            </div>
+        </div>
+
+        <div class="content-title">Select your next trip</div>
+        <div class="categories">
+            <div class="category">Asia</div>
+            <div class="category">Europe</div>
+            <div class="category active">South America</div>
+            <div class="category">North America</div>
+            <div class="category">Africa</div>
+            <div class="category">Oceania</div>
+        </div>
+
+        <div class="destinations" id="github-repos">
+            <!-- Destination cards will be loaded here -->
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item active">
+                <i class="fas fa-home nav-icon"></i>
+                <span class="nav-label">Home</span>
+            </div>
+            <div class="nav-item">
+                <i class="far fa-bookmark nav-icon"></i>
+                <span class="nav-label">Saved</span>
+            </div>
+            <div class="nav-item">
+                <i class="far fa-heart nav-icon"></i>
+                <span class="nav-label">Liked</span>
+            </div>
+            <div class="nav-item">
+                <i class="far fa-user nav-icon"></i>
+                <span class="nav-label">Profile</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- DETAIL VIEW -->
+    <div class="detail-view" id="detail-view">
+        <div class="detail-header">
+            <div class="back-button" id="back-to-home">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="detail-favorite">
+                <i class="far fa-heart"></i>
+            </div>
+            <img src="/api/placeholder/480/320" alt="Destination" class="header-image" id="detail-image">
+        </div>
+
+        <div class="destination-info">
+            <div class="destination-title">
+                <span id="detail-name">Repository Name</span>
+                <div style="font-size: 16px;">
+                    <i class="fas fa-star" style="color: gold;"></i>
+                    <span id="detail-rating">5.0</span>
+                </div>
+            </div>
+
+            <div class="country-info">
+                <img src="/api/placeholder/20/20" alt="Flag" class="country-flag">
+                <span id="detail-country">JavaScript</span>
+                <div class="reviews">
+                    <span id="detail-reviews">143 reviews</span>
+                </div>
+            </div>
+
+            <div class="destination-description" id="detail-description">
+                This is a sample repository description. Click the button below to explore the contents.
+            </div>
+            <div class="read-more" id="read-more">Read more</div>
+
+            <div class="section-heading">Programming Languages</div>
+            <div id="language-chips">
+                <!-- Language chips will be added here -->
+            </div>
+
+            <div class="section-heading">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Related Projects</span>
+                    <span class="see-all">See all</span>
+                </div>
+            </div>
+            <div class="tours-grid" id="related-repos">
+                <!-- Related repositories will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ITINERARY VIEW -->
+    <div class="itinerary-view" id="itinerary-view">
+        <div class="itinerary-header">
+            <div class="back-button" id="back-to-detail">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="itinerary-title">
+                <div class="tour-name" id="itinerary-name">Repository Details</div>
+                <div class="tour-date" id="itinerary-date">Created: Jan 15, 2023</div>
+            </div>
+            <div class="detail-favorite">
+                <i class="far fa-heart"></i>
+            </div>
+        </div>
+
+        <div class="tab-bar">
+            <div class="tab active">Project Details</div>
+            <div class="tab">Accommodation</div>
+            <div class="tab">Booking details</div>
+        </div>
+
+        <div id="days-container">
+            <!-- Day items will be loaded here -->
+        </div>
+
+        <button class="book-button">View Repository</button>
+    </div>
+
+    <script>
+        // Hide splash screen after 1 second
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('splash-screen').style.display = 'none';
+            }, 1000);
+        });
+
+        // Function to fetch GitHub repos
+        async function fetchGitHubRepos() {
+            try {
+                const response = await fetch('https://api.github.com/users/4211421036/repos');
+                const repos = await response.json();
+                const container = document.getElementById('github-repos');
+                container.innerHTML = '';
+
+                // Also populate related repos for the detail view
+                const relatedContainer = document.getElementById('related-repos');
+                relatedContainer.innerHTML = '';
+
+                repos.forEach((repo, index) => {
+                    // Create card for home view
+                    const card = document.createElement('div');
+                    card.className = 'destination-card';
+                    card.dataset.repo = JSON.stringify(repo);
+
+                    const languages = repo.language ? [repo.language] : ['Unknown'];
+                    const randomRating = (4 + Math.random()).toFixed(1);
+                    const randomReviews = Math.floor(Math.random() * 150) + 50;
+
+                    card.innerHTML = `
+                        <img src="/api/placeholder/400/220" alt="${repo.name}" class="card-image">
+                        <div class="card-favorite">
+                            <i class="far fa-heart"></i>
+                        </div>
+                        <div class="card-info">
+                            <div class="card-location">${languages.join(', ')}</div>
+                            <div class="card-name">${repo.name}</div>
+                            <div class="card-rating">
+                                <i class="fas fa-star rating-star"></i>
+                                <span>${randomRating}</span>
+                                <span style="margin-left: 8px;">${randomReviews} reviews</span>
+                            </div>
+                        </div>
+                    `;
+
+                    card.addEventListener('click', () => {
+                        showDetailView(repo, randomRating, randomReviews, languages);
+                    });
+
+                    container.appendChild(card);
+
+                    // Create card for related repos
+                    if (index < 6) {
+                        const tourCard = document.createElement('div');
+                        tourCard.className = 'tour-card';
+                        tourCard.innerHTML = `
+                            <img src="/api/placeholder/220/140" alt="${repo.name}" class="tour-image">
+                            <div class="tour-info">
+                                <div class="tour-title">${repo.name}</div>
+                                <div class="tour-meta">
+                                    <div>${languages[0]}</div>
+                                    <div><i class="fas fa-star" style="color: gold;"></i> ${randomRating}</div>
+                                </div>
+                            </div>
+                        `;
+                        relatedContainer.appendChild(tourCard);
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching GitHub repos:', error);
+            }
+        }
+
+        // Function to show detail view
+        function showDetailView(repo, rating, reviews, languages) {
+            document.getElementById('detail-name').textContent = repo.name;
+            document.getElementById('detail-country').textContent = languages[0] || 'Unknown';
+            document.getElementById('detail-rating').textContent = rating;
+            document.getElementById('detail-reviews').textContent = `${reviews} reviews`;
+            document.getElementById('detail-description').textContent = repo.description || 'No description available for this repository.';
+
+            // Set random image for detail
+            document.getElementById('detail-image').src = `/api/placeholder/480/320`;
+
+            // Add language chips
+            const languageChips = document.getElementById('language-chips');
+            languageChips.innerHTML = '';
+            
+            // Add primary language
+            if (languages[0]) {
+                const chip = document.createElement('span');
+                chip.className = 'language-chip';
+                chip.textContent = languages[0];
+                languageChips.appendChild(chip);
+            }
+            
+            // Add some fake additional languages for visual demo
+            const fakeLangs = ['HTML', 'CSS', 'JavaScript', 'Python', 'Java', 'TypeScript', 'PHP'];
+            const usedLangs = new Set(languages);
+            
+            for (let i = 0; i < 3; i++) {
+                const randomLang = fakeLangs[Math.floor(Math.random() * fakeLangs.length)];
+                if (!usedLangs.has(randomLang)) {
+                    const chip = document.createElement('span');
+                    chip.className = 'language-chip';
+                    chip.textContent = randomLang;
+                    languageChips.appendChild(chip);
+                    usedLangs.add(randomLang);
+                }
+            }
+
+            // Create project details for itinerary view
+            const daysContainer = document.getElementById('days-container');
+            daysContainer.innerHTML = '';
+
+            // Set repo name and date in itinerary view
+            document.getElementById('itinerary-name').textContent = repo.name;
+            document.getElementById('itinerary-date').textContent = `Created: ${new Date(repo.created_at).toLocaleDateString()}`;
+
+            // Add day items with repo details
+            const dayItem1 = document.createElement('div');
+            dayItem1.className = 'day-item';
+            dayItem1.innerHTML = `
+                <div class="day-header">
+                    <div>
+                        <div class="day-title">Overview</div>
+                        <div class="day-desc">Repository Details</div>
+                    </div>
+                    <i class="fas fa-chevron-down expand-icon"></i>
+                </div>
+                <div class="github-day-content">
+                    <img src="/api/placeholder/75/75" alt="${repo.name}" class="day-thumbnail">
+                    <div class="github-info">
+                        <div class="activity">
+                            <div class="activity-time">Created</div>
+                            <div class="activity-title">${new Date(repo.created_at).toLocaleDateString()}</div>
+                        </div>
+                        <div class="activity">
+                            <div class="activity-time">Updated</div>
+                            <div class="activity-title">${new Date(repo.updated_at).toLocaleDateString()}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            daysContainer.appendChild(dayItem1);
+
+            const dayItem2 = document.createElement('div');
+            dayItem2.className = 'day-item';
+            dayItem2.innerHTML = `
+                <div class="day-header">
+                    <div>
+                        <div class="day-title">Stats</div>
+                        <div class="day-desc">Repository Statistics</div>
+                    </div>
+                    <i class="fas fa-chevron-down expand-icon"></i>
+                </div>
+                <div class="activity">
+                    <div class="activity-time">Stars</div>
+                    <div class="activity-title">${repo.stargazers_count}</div>
+                </div>
+                <div class="activity">
+                    <div class="activity-time">Forks</div>
+                    <div class="activity-title">${repo.forks_count}</div>
+                </div>
+                <div class="activity">
+                    <div class="activity-time">Open Issues</div>
+                    <div class="activity-title">${repo.open_issues_count}</div>
+                </div>
+            `;
+            daysContainer.appendChild(dayItem2);
+
+            // Show detail view
+            document.getElementById('detail-view').style.display = 'block';
+        }
+
+        // Back button event
+        document.getElementById('back-to-home').addEventListener('click', function() {
+            document.getElementById('detail-view').style.display = 'none';
+        });
+
+        // Read more button event
+        document.getElementById('read-more').addEventListener('click', function() {
+            // Show itinerary view when read more is clicked
+            document.getElementById('itinerary-view').style.display = 'block';
+        });
+
+        // Back to detail event
+        document.getElementById('back-to-detail').addEventListener('click', function() {
+            document.getElementById('itinerary-view').style.display = 'none';
+        });
+
+        // Fetch GitHub repos when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchGitHubRepos();
+        });
+
+        // Service worker registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('Service Worker registered with scope: ', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+
+</html>
