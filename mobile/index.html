@@ -887,26 +887,48 @@
         .swipe-right {
     transform: translateX(100%);
 }
-        /* Ikon Like */
+        /* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    padding: 20px;
+    position: relative;
+}
+
+/* Ikon Like dan Save */
 .far.fa-heart {
-    color: gray; /* Warna default */
+    color: gray;
     cursor: pointer;
     transition: color 0.3s ease;
 }
 
 .far.fa-heart.liked {
-    color: red; /* Warna ketika di-like */
+    color: red;
 }
 
-/* Ikon Save */
 .far.fa-bookmark {
-    color: gray; /* Warna default */
+    color: gray;
     cursor: pointer;
     transition: color 0.3s ease;
 }
 
 .far.fa-bookmark.saved {
-    color: blue; /* Warna ketika disimpan */
+    color: blue;
 }
           
     </style>
@@ -1273,7 +1295,8 @@
         });
     }
 
-        function createRepoCard(repo) {
+    // Fungsi untuk membuat card repositori
+    function createRepoCard(repo) {
         const card = document.createElement('div');
         card.className = 'destination-card';
         card.innerHTML = `
@@ -1294,13 +1317,16 @@
     // Event listener untuk Like
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains('fa-heart')) {
-            const repo = JSON.parse(e.target.closest('.destination-card').dataset.repo);
-            if (e.target.classList.contains('liked')) {
-                e.target.classList.remove('liked');
-                unlikeRepo(repo);
-            } else {
-                e.target.classList.add('liked');
-                likeRepo(repo);
+            const card = e.target.closest('.destination-card');
+            if (card) {
+                const repo = JSON.parse(card.dataset.repo);
+                if (e.target.classList.contains('liked')) {
+                    e.target.classList.remove('liked');
+                    unlikeRepo(repo);
+                } else {
+                    e.target.classList.add('liked');
+                    likeRepo(repo);
+                }
             }
         }
     });
@@ -1308,13 +1334,16 @@
     // Event listener untuk Save
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains('fa-bookmark')) {
-            const repo = JSON.parse(e.target.closest('.destination-card').dataset.repo);
-            if (e.target.classList.contains('saved')) {
-                e.target.classList.remove('saved');
-                unsaveRepo(repo);
-            } else {
-                e.target.classList.add('saved');
-                saveRepo(repo);
+            const card = e.target.closest('.destination-card');
+            if (card) {
+                const repo = JSON.parse(card.dataset.repo);
+                if (e.target.classList.contains('saved')) {
+                    e.target.classList.remove('saved');
+                    unsaveRepo(repo);
+                } else {
+                    e.target.classList.add('saved');
+                    saveRepo(repo);
+                }
             }
         }
     });
@@ -2208,7 +2237,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Elemen dengan ID "search-input" tidak ditemukan.');
     }
 });
-        // Event listener untuk menu Liked
+         // Event listener untuk menu Liked
     document.querySelector('.nav-item:nth-child(3)').addEventListener('click', () => {
         displayLikedRepos();
         document.getElementById('liked-view').style.display = 'block';
