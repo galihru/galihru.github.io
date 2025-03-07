@@ -878,12 +878,13 @@
 
         <div class="search-bar">
             <i class="fas fa-search search-icon"></i>
-            <input type="text" class="search-input" placeholder="Search">
+            <input type="text" class="search-input" placeholder="Search" id="search-input">
             <div class="filter-icon">
                 <i class="fas fa-sliders-h"></i>
             </div>
         </div>
 
+        
         <div class="content-title">Select your next trip</div>
         <div class="categories">
             <div class="category">Asia</div>
@@ -1861,6 +1862,12 @@ document.getElementById('back-to-detail').addEventListener('click', function() {
 document.addEventListener('DOMContentLoaded', function() {
     initTabSystem();
     fetchGitHubRepos();
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', handleSearch);
+    } else {
+        console.error('Elemen dengan ID "search-input" tidak ditemukan.');
+    }
 });
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
