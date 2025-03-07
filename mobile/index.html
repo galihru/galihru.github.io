@@ -794,6 +794,67 @@
 .tour-card.skeleton .skeleton-image {
     height: 140px;
 }
+        /* Contributor Skeleton */
+.contributor-card.skeleton {
+    width: max-content;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.contributor-header.skeleton {
+    height: 60px;
+    background-color: #e0e0e0;
+    position: relative;
+}
+
+.contributor-avatar.skeleton {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.contributor-body.skeleton {
+    padding: 45px 20px 20px;
+}
+
+.contributor-name.skeleton {
+    width: 120px;
+    height: 20px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    margin: 0 auto 15px;
+}
+
+.contribution-stats.skeleton {
+    display: flex;
+    gap: 15px;
+}
+
+.stat.skeleton {
+    text-align: center;
+}
+
+.stat-value.skeleton {
+    width: 40px;
+    height: 20px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    margin: 0 auto 5px;
+}
+
+.stat-label.skeleton {
+    width: 50px;
+    height: 12px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    margin: 0 auto;
+}
     </style>
 </head>
 
@@ -1280,7 +1341,7 @@ function initTabSystem(repo) {
                 if (clickedTabId === "contributors") {
                     const contributorsContent = document.getElementById('contributors-list');
                     if (contributorsContent) {
-                        contributorsContent.innerHTML = '<p>Loading contributors...</p>';
+                        contributorsContent.innerHTML = createContributorSkeleton(3);
                     }
 
                     try {
@@ -1337,6 +1398,10 @@ function displayContributors(contributors) {
         console.error('Element with ID "contributors-list" not found');
         return;
     }
+
+    // Show skeleton loading based on number of contributors
+    const skeletonCount = contributors ? contributors.length : 3;
+    contributorsList.innerHTML = createContributorSkeleton(skeletonCount);
     
     contributorsList.innerHTML = '';
     
@@ -1345,206 +1410,240 @@ function displayContributors(contributors) {
         return;
     }
     
-    contributors.forEach(contributor => {
-        // Generate random stats for demonstration
-        const randomAdditions = Math.floor(Math.random() * 10000) + 100;
-        const randomDeletions = Math.floor(Math.random() * 5000) + 50;
+    setTimeout(() => {
+        contributorsList.innerHTML = '';
         
-        const contributorCard = document.createElement('div');
-        contributorCard.className = 'contributor-card';
-        contributorCard.innerHTML = `
-            <div class="contributor-header">
-                <div class="contributor-avatar">
-                    <img src="${contributor.avatar_url}" alt="${contributor.login}">
-                </div>
-            </div>
-            <div class="contributor-body">
-                <div class="contributor-name">${contributor.login}</div>
-                <div class="contribution-stats">
-                    <div class="stat">
-                        <div class="stat-value">${contributor.contributions}</div>
-                        <div class="stat-label">Commits</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-value">${randomAdditions}</div>
-                        <div class="stat-label">Added</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-value">${randomDeletions}</div>
-                        <div class="stat-label">Removed</div>
+        contributors.forEach(contributor => {
+            // Generate random stats for demonstration
+            const randomAdditions = Math.floor(Math.random() * 10000) + 100;
+            const randomDeletions = Math.floor(Math.random() * 5000) + 50;
+            
+            const contributorCard = document.createElement('div');
+            contributorCard.className = 'contributor-card';
+            contributorCard.innerHTML = `
+                <div class="contributor-header">
+                    <div class="contributor-avatar">
+                        <img src="${contributor.avatar_url}" alt="${contributor.login}">
                     </div>
                 </div>
-                <a href="${contributor.html_url}" target="_blank" class="contributor-link">View Profile</a>
-            </div>
-        `;
-        contributorsList.appendChild(contributorCard);
-        // Get the elements we want to style directly from the card we just created
-        const header = contributorCard.querySelector('.contributor-header');
-        const statValues = contributorCard.querySelectorAll('.stat-value');
-        const link = contributorCard.querySelector('.contributor-link');
-        
-        // Extract color from avatar and apply directly to these elements
-        const img = new Image();
-        img.crossOrigin = "Anonymous";
-        
-        img.onload = function() {
-            try {
-                // Create canvas for image analysis
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const size = 50;
-                canvas.width = size;
-                canvas.height = size;
-                
-                // Draw image to canvas
-                ctx.drawImage(img, 0, 0, size, size);
-                
-                // Get pixel data
-                const imageData = ctx.getImageData(0, 0, size, size).data;
-                
-                // Analyze colors
-                const colors = [];
-                
-                // Sample pixels
-                for (let i = 0; i < imageData.length; i += 20) {
-                    const r = imageData[i];
-                    const g = imageData[i + 1];
-                    const b = imageData[i + 2];
-                    const a = imageData[i + 3];
+                <div class="contributor-body">
+                    <div class="contributor-name">${contributor.login}</div>
+                    <div class="contribution-stats">
+                        <div class="stat">
+                            <div class="stat-value">${contributor.contributions}</div>
+                            <div class="stat-label">Commits</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${randomAdditions}</div>
+                            <div class="stat-label">Added</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${randomDeletions}</div>
+                            <div class="stat-label">Removed</div>
+                        </div>
+                    </div>
+                    <a href="${contributor.html_url}" target="_blank" class="contributor-link">View Profile</a>
+                </div>
+            `;
+            contributorsList.appendChild(contributorCard);
+            // Get the elements we want to style directly from the card we just created
+            const header = contributorCard.querySelector('.contributor-header');
+            const statValues = contributorCard.querySelectorAll('.stat-value');
+            const link = contributorCard.querySelector('.contributor-link');
+            
+            // Extract color from avatar and apply directly to these elements
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            
+            img.onload = function() {
+                try {
+                    // Create canvas for image analysis
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const size = 50;
+                    canvas.width = size;
+                    canvas.height = size;
                     
-                    // Skip transparent pixels
-                    if (a < 125) continue;
+                    // Draw image to canvas
+                    ctx.drawImage(img, 0, 0, size, size);
                     
-                    colors.push({ r, g, b });
-                }
-                
-                // Get average color (simpler approach)
-                let totalR = 0, totalG = 0, totalB = 0;
-                colors.forEach(color => {
-                    totalR += color.r;
-                    totalG += color.g;
-                    totalB += color.b;
-                });
-                
-                const avgR = Math.round(totalR / colors.length);
-                const avgG = Math.round(totalG / colors.length);
-                const avgB = Math.round(totalB / colors.length);
-                
-                // Calculate brightness using YIQ formula
-                const brightness = ((avgR * 299) + (avgG * 587) + (avgB * 114)) / 1000;
-                const isDark = brightness < 128;
-                
-                // Create accessible colors based on dominant color
-                let accentColor, gradientStart, gradientEnd;
-                
-                if (isDark) {
-                    // If dominant color is dark, brighten it for better visibility on white background
-                    accentColor = {
-                        r: Math.min(avgR + 50, 255),
-                        g: Math.min(avgG + 50, 255),
-                        b: Math.min(avgB + 50, 255)
-                    };
+                    // Get pixel data
+                    const imageData = ctx.getImageData(0, 0, size, size).data;
                     
-                    // Make darker gradients for better text contrast
-                    gradientStart = {
-                        r: avgR,
-                        g: avgG,
-                        b: avgB
-                    };
+                    // Analyze colors
+                    const colors = [];
                     
-                    gradientEnd = {
-                        r: Math.max(avgR - 40, 0),
-                        g: Math.max(avgG - 40, 0),
-                        b: Math.max(avgB - 40, 0)
-                    };
-                } else {
-                    // If dominant color is light, darken it for better visibility on white background
-                    accentColor = {
-                        r: Math.max(avgR - 60, 0),
-                        g: Math.max(avgG - 60, 0),
-                        b: Math.max(avgB - 60, 0)
-                    };
+                    // Sample pixels
+                    for (let i = 0; i < imageData.length; i += 20) {
+                        const r = imageData[i];
+                        const g = imageData[i + 1];
+                        const b = imageData[i + 2];
+                        const a = imageData[i + 3];
+                        
+                        // Skip transparent pixels
+                        if (a < 125) continue;
+                        
+                        colors.push({ r, g, b });
+                    }
                     
-                    // Make light gradients for header
-                    gradientStart = {
-                        r: avgR,
-                        g: avgG,
-                        b: avgB
-                    };
-                    
-                    gradientEnd = {
-                        r: Math.max(avgR - 40, 0),
-                        g: Math.max(avgG - 40, 0),
-                        b: Math.max(avgB - 40, 0)
-                    };
-                }
-                
-                // Ensure minimum contrast for accent color (for text visibility)
-                const accentBrightness = ((accentColor.r * 299) + (accentColor.g * 587) + (accentColor.b * 114)) / 1000;
-                if (accentBrightness > 200) {
-                    // Too bright for text on white, darken it
-                    accentColor.r = Math.max(accentColor.r - 100, 0);
-                    accentColor.g = Math.max(accentColor.g - 100, 0);
-                    accentColor.b = Math.max(accentColor.b - 100, 0);
-                } else if (accentBrightness > 125 && accentBrightness <= 200) {
-                    // Medium brightness, darken a bit
-                    accentColor.r = Math.max(accentColor.r - 50, 0);
-                    accentColor.g = Math.max(accentColor.g - 50, 0);
-                    accentColor.b = Math.max(accentColor.b - 50, 0);
-                }
-                
-                // Convert to hex
-                const accentHex = rgbToHex(accentColor.r, accentColor.g, accentColor.b);
-                const gradientStartHex = rgbToHex(gradientStart.r, gradientStart.g, gradientStart.b);
-                const gradientEndHex = rgbToHex(gradientEnd.r, gradientEnd.g, gradientEnd.b);
-                
-                // Apply styles
-                if (header) {
-                    header.style.background = `linear-gradient(135deg, ${gradientStartHex}, ${gradientEndHex})`;
-                }
-                
-                statValues.forEach(statValue => {
-                    statValue.style.color = accentHex;
-                });
-                
-                if (link) {
-                    link.style.color = accentHex;
-                    
-                    // Add hover effect with a slightly different shade
-                    const hoverColor = isDark ? 
-                        rgbToHex(
-                            Math.min(accentColor.r + 30, 255),
-                            Math.min(accentColor.g + 30, 255),
-                            Math.min(accentColor.b + 30, 255)
-                        ) : 
-                        rgbToHex(
-                            Math.max(accentColor.r - 30, 0),
-                            Math.max(accentColor.g - 30, 0),
-                            Math.max(accentColor.b - 30, 0)
-                        );
-                    
-                    link.addEventListener('mouseover', function() {
-                        this.style.color = hoverColor;
+                    // Get average color (simpler approach)
+                    let totalR = 0, totalG = 0, totalB = 0;
+                    colors.forEach(color => {
+                        totalR += color.r;
+                        totalG += color.g;
+                        totalB += color.b;
                     });
                     
-                    link.addEventListener('mouseout', function() {
-                        this.style.color = accentHex;
+                    const avgR = Math.round(totalR / colors.length);
+                    const avgG = Math.round(totalG / colors.length);
+                    const avgB = Math.round(totalB / colors.length);
+                    
+                    // Calculate brightness using YIQ formula
+                    const brightness = ((avgR * 299) + (avgG * 587) + (avgB * 114)) / 1000;
+                    const isDark = brightness < 128;
+                    
+                    // Create accessible colors based on dominant color
+                    let accentColor, gradientStart, gradientEnd;
+                    
+                    if (isDark) {
+                        // If dominant color is dark, brighten it for better visibility on white background
+                        accentColor = {
+                            r: Math.min(avgR + 50, 255),
+                            g: Math.min(avgG + 50, 255),
+                            b: Math.min(avgB + 50, 255)
+                        };
+                        
+                        // Make darker gradients for better text contrast
+                        gradientStart = {
+                            r: avgR,
+                            g: avgG,
+                            b: avgB
+                        };
+                        
+                        gradientEnd = {
+                            r: Math.max(avgR - 40, 0),
+                            g: Math.max(avgG - 40, 0),
+                            b: Math.max(avgB - 40, 0)
+                        };
+                    } else {
+                        // If dominant color is light, darken it for better visibility on white background
+                        accentColor = {
+                            r: Math.max(avgR - 60, 0),
+                            g: Math.max(avgG - 60, 0),
+                            b: Math.max(avgB - 60, 0)
+                        };
+                        
+                        // Make light gradients for header
+                        gradientStart = {
+                            r: avgR,
+                            g: avgG,
+                            b: avgB
+                        };
+                        
+                        gradientEnd = {
+                            r: Math.max(avgR - 40, 0),
+                            g: Math.max(avgG - 40, 0),
+                            b: Math.max(avgB - 40, 0)
+                        };
+                    }
+                    
+                    // Ensure minimum contrast for accent color (for text visibility)
+                    const accentBrightness = ((accentColor.r * 299) + (accentColor.g * 587) + (accentColor.b * 114)) / 1000;
+                    if (accentBrightness > 200) {
+                        // Too bright for text on white, darken it
+                        accentColor.r = Math.max(accentColor.r - 100, 0);
+                        accentColor.g = Math.max(accentColor.g - 100, 0);
+                        accentColor.b = Math.max(accentColor.b - 100, 0);
+                    } else if (accentBrightness > 125 && accentBrightness <= 200) {
+                        // Medium brightness, darken a bit
+                        accentColor.r = Math.max(accentColor.r - 50, 0);
+                        accentColor.g = Math.max(accentColor.g - 50, 0);
+                        accentColor.b = Math.max(accentColor.b - 50, 0);
+                    }
+                    
+                    // Convert to hex
+                    const accentHex = rgbToHex(accentColor.r, accentColor.g, accentColor.b);
+                    const gradientStartHex = rgbToHex(gradientStart.r, gradientStart.g, gradientStart.b);
+                    const gradientEndHex = rgbToHex(gradientEnd.r, gradientEnd.g, gradientEnd.b);
+                    
+                    // Apply styles
+                    if (header) {
+                        header.style.background = `linear-gradient(135deg, ${gradientStartHex}, ${gradientEndHex})`;
+                    }
+                    
+                    statValues.forEach(statValue => {
+                        statValue.style.color = accentHex;
                     });
+                    
+                    if (link) {
+                        link.style.color = accentHex;
+                        
+                        // Add hover effect with a slightly different shade
+                        const hoverColor = isDark ? 
+                            rgbToHex(
+                                Math.min(accentColor.r + 30, 255),
+                                Math.min(accentColor.g + 30, 255),
+                                Math.min(accentColor.b + 30, 255)
+                            ) : 
+                            rgbToHex(
+                                Math.max(accentColor.r - 30, 0),
+                                Math.max(accentColor.g - 30, 0),
+                                Math.max(accentColor.b - 30, 0)
+                            );
+                        
+                        link.addEventListener('mouseover', function() {
+                            this.style.color = hoverColor;
+                        });
+                        
+                        link.addEventListener('mouseout', function() {
+                            this.style.color = accentHex;
+                        });
+                    }
+                    
+                } catch (error) {
+                    console.error('Error extracting color:', error);
                 }
-                
-            } catch (error) {
-                console.error('Error extracting color:', error);
-            }
-        };
-        
-        img.onerror = function() {
-            console.error('Error loading image');
-        };
-        
-        img.src = contributor.avatar_url;
-    });
+            };
+            
+            img.onerror = function() {
+                console.error('Error loading image');
+            };
+            
+            img.src = contributor.avatar_url;
+        });1000); // Simulate 1 second loading delay
+    }
 }
 
+function createContributorSkeleton(count) {
+    let html = '';
+    for (let i = 0; i < count; i++) {
+        html += `
+            <div class="contributor-card skeleton">
+                <div class="contributor-header skeleton">
+                    <div class="contributor-avatar skeleton"></div>
+                </div>
+                <div class="contributor-body skeleton">
+                    <div class="contributor-name skeleton"></div>
+                    <div class="contribution-stats skeleton">
+                        <div class="stat skeleton">
+                            <div class="stat-value skeleton"></div>
+                            <div class="stat-label skeleton"></div>
+                        </div>
+                        <div class="stat skeleton">
+                            <div class="stat-value skeleton"></div>
+                            <div class="stat-label skeleton"></div>
+                        </div>
+                        <div class="stat skeleton">
+                            <div class="stat-value skeleton"></div>
+                            <div class="stat-label skeleton"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    return html;
+}
 // Helper function to convert RGB to Hex
 function rgbToHex(r, g, b) {
     return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
