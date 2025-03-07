@@ -1232,13 +1232,8 @@ function initTabSystem(repo) {
     }
 }
 
-async function extractDominantColor(imageUrl, elementSelector) {
+async function extractDominantColor(imageUrl, elementSelector, cssProperty) {
     return new Promise((resolve, reject) => {
-        if (!imageUrl) {
-            reject(new Error('No image URL provided'));
-            return;
-        }
-        
         // Buat elemen gambar sementara
         const img = new Image();
         img.crossOrigin = "Anonymous";  // Penting untuk CORS
@@ -1300,6 +1295,9 @@ async function extractDominantColor(imageUrl, elementSelector) {
                 // Periksa kontras dan buat warna yang aksesibel
                 const accessibleColors = generateAccessibleColors(dominantColor.r, dominantColor.g, dominantColor.b);
                 
+                // Terapkan warna ke elemen
+                applyColorsToElements(accessibleColors, elementSelector);
+                
                 resolve({
                     original: dominantHex,
                     accessible: accessibleColors
@@ -1315,11 +1313,6 @@ async function extractDominantColor(imageUrl, elementSelector) {
             console.error('Image loading error:', err);
             reject(err);
         };
-        
-        // Tambahkan penanganan timeout untuk mencegah hanging
-        setTimeout(() => {
-            reject(new Error('Image loading timed out'));
-        }, 5000); // 5 detik timeout
         
         img.src = imageUrl;
     });
@@ -1439,6 +1432,38 @@ function generateAccessibleColors(r, g, b) {
         gradient: `linear-gradient(135deg, ${rgbToHex(gradientStart.r, gradientStart.g, gradientStart.b)}, ${rgbToHex(gradientEnd.r, gradientEnd.g, gradientEnd.b)})`
     };
 }
+
+// Terapkan warna ke elemen-elemen CSS
+function applyColorsToElements(colors, elementSelector = null) {
+    // Jika tidak ada elemen spesifik, tidak melakukan apa-apa
+    if (!elementSelector) return;
+    
+    const elements = document.querySelectorAll(elementSelector);
+    
+    elements.forEach(element => {
+        // Terapkan warna berdasarkan jenis elemen
+        if (element.classList.contains('contributor-header')) {
+            element.style.background = colors.gradient;
+        }
+        
+        if (element.classList.contains('stat-value')) {
+            element.style.color = colors.accent;
+        }
+        
+        if (element.classList.contains('contributor-link')) {
+            element.style.color = colors.accent;
+            
+            // Tambahkan efek hover dengan JavaScript
+            element.addEventListener('mouseover', function() {
+                this.style.color = colors.secondary;
+            });
+            
+            element.addEventListener('mouseout', function() {
+                this.style.color = colors.accent;
+            });
+        }
+    });
+}
 // Function to display contributors
 function displayContributors(contributors) {
     const contributorsList = document.getElementById('contributors-list');
@@ -1489,45 +1514,15 @@ function displayContributors(contributors) {
         `;
         contributorsList.appendChild(contributorCard);
          // Ekstrak dan terapkan warna dominan dari avatar
-        const currentCard = contributorsList.children[contributorsList.children.length - 1];
-        
-        try {
-            // Ekstrak dan terapkan warna dominan dari avatar dengan scope yang benar
-            extractDominantColor(
-                avatarUrl,
-                `#contributors-list .contributor-card:nth-child(${contributorsList.children.length})`
-            ).then(colors => {
-                // Pilih elemen dalam kartu ini saja untuk menerapkan warna
-                if (currentCard) {
-                    const header = currentCard.querySelector('.contributor-header');
-                    const statValues = currentCard.querySelectorAll('.stat-value');
-                    const link = currentCard.querySelector('.contributor-link');
-                    
-                    if (header) header.style.background = colors.accessible.gradient;
-                    
-                    statValues.forEach(statValue => {
-                        if (statValue) statValue.style.color = colors.accessible.accent;
-                    });
-                    
-                    if (link) {
-                        link.style.color = colors.accessible.accent;
-                        
-                        // Tambahkan efek hover dengan JavaScript
-                        link.addEventListener('mouseover', function() {
-                            this.style.color = colors.accessible.secondary;
-                        });
-                        
-                        link.addEventListener('mouseout', function() {
-                            this.style.color = colors.accessible.accent;
-                        });
-                    }
-                }
-            }).catch(error => {
-                console.warn('Could not extract colors from avatar, using defaults:', error);
-            });
-        } catch (error) {
-            console.warn('Error in color extraction:', error);
-        }
+        // Ekstrak dan terapkan warna dominan dari avatar
+        extractDominantColor(
+            contributor.avatar_url,
+            `#contributors-list .contributor-card:nth-child(${contributorsList.children.length}) .contributor-header, 
+             #contributors-list .contributor-card:nth-child(${contributorsList.children.length}) .stat-value,
+             #contributors-list .contributor-card:nth-child(${contributorsList.children.length}) .contributor-link`
+        ).catch(error => {
+            console.warn('Could not extract colors from avatar, using defaults:', error);
+        });
     });
 }
 // Function to load contributors (updated with error handling)
