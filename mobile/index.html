@@ -1125,104 +1125,112 @@ function initTabSystem(repo) {
     }
 
     // Initially activate the first tab
-    const initialTabId = tabs[0].getAttribute('data-tab');
-    activateTab(initialTabId);
+    if (tabs.length > 0) {
+        const initialTabId = tabs[0].getAttribute('data-tab');
+        activateTab(initialTabId);
 
-    // Track current active tab
-    let currentActiveTab = initialTabId;
+        // Track current active tab
+        let currentActiveTab = initialTabId;
 
-    tabs.forEach(tab => {
-        tab.addEventListener('click', async function () {
-            const clickedTabId = this.getAttribute('data-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', async function () {
+                const clickedTabId = this.getAttribute('data-tab');
 
-            // Always update tab appearance
-            tabs.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
+                // Always update tab appearance
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
 
-            // If clicking the same tab that's already active, do nothing else
-            if (clickedTabId === currentActiveTab) {
-                return;
-            }
-
-            // Hide all tab contents
-            tabContents.forEach(content => {
-                content.classList.remove('active');
-                content.style.display = 'none';
-            });
-
-            // Get corresponding tab content
-            const activeContent = document.getElementById(clickedTabId);
-
-            // Show active tab content
-            if (activeContent) {
-                activeContent.classList.add('active');
-                activeContent.style.display = 'block';
-            }
-
-            // Toggle days container visibility based on tab
-            if (clickedTabId === "project-details") {
-                if (daysContainer) daysContainer.style.display = 'block';
-            } else {
-                if (daysContainer) daysContainer.style.display = 'none';
-            }
-
-            // Update current active tab
-            currentActiveTab = clickedTabId;
-
-            // Handle different tab contents
-            if (clickedTabId === "contributors") {
-                const contributorsContent = document.getElementById('contributors-list');
-                if (contributorsContent) {
-                    contributorsContent.innerHTML = '<p>Loading contributors...</p>';
+                // If clicking the same tab that's already active, do nothing else
+                if (clickedTabId === currentActiveTab) {
+                    return;
                 }
 
-                try {
-                    // Use the stored repository object to get the name
-                    if (window.currentRepo && window.currentRepo.name) {
-                        const contributors = await fetchRepoContributors(window.currentRepo.name);
-                        if (contributorsContent) {
-                            contributorsContent.innerHTML = displayContributors(contributors); // Langsung panggil fungsi render
-                        }
-                    } else {
-                        throw new Error('Repository information not available');
-                    }
-                } catch (error) {
-                    console.error('Error loading contributors:', error);
+                // Hide all tab contents
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    content.style.display = 'none';
+                });
+
+                // Get corresponding tab content
+                const activeContent = document.getElementById(clickedTabId);
+
+                // Show active tab content
+                if (activeContent) {
+                    activeContent.classList.add('active');
+                    activeContent.style.display = 'block';
+                }
+
+                // Toggle days container visibility based on tab
+                if (clickedTabId === "project-details") {
+                    if (daysContainer) daysContainer.style.display = 'block';
+                } else {
+                    if (daysContainer) daysContainer.style.display = 'none';
+                }
+
+                // Update current active tab
+                currentActiveTab = clickedTabId;
+
+                // Handle different tab contents
+                if (clickedTabId === "contributors") {
+                    const contributorsContent = document.getElementById('contributors-list');
                     if (contributorsContent) {
-                        contributorsContent.innerHTML = '<p>Unable to load contributors. GitHub API rate limits may apply.</p>';
+                        contributorsContent.innerHTML = '<p>Loading contributors...</p>';
                     }
-                }
-            }
 
-            if (clickedTabId === "readme") {
-                const readmeContainer = document.querySelector('#readme .readme-container');
-                if (readmeContainer) {
-                    readmeContainer.innerHTML = '<p>Loading README...</p>';
-                }
-
-                try {
-                    // Use the stored repository object to get the name
-                    if (window.currentRepo && window.currentRepo.name) {
-                        const readmeContent = await fetchRepoReadme(window.currentRepo.name);
-                        if (readmeContainer) {
-                            readmeContainer.innerHTML = renderMarkdown(readmeContent);
+                    try {
+                        // Use the stored repository object to get the name
+                        if (window.currentRepo && window.currentRepo.name) {
+                            const contributors = await fetchRepoContributors(window.currentRepo.name);
+                            if (contributorsContent) {
+                                displayContributors(contributors);
+                            }
+                        } else {
+                            throw new Error('Repository information not available');
                         }
-                    } else {
-                        throw new Error('Repository information not available');
-                    }
-                } catch (error) {
-                    console.error('Error loading README:', error);
-                    if (readmeContainer) {
-                        readmeContainer.innerHTML = '<p>No README found for this repository or GitHub API rate limits may apply.</p>';
+                    } catch (error) {
+                        console.error('Error loading contributors:', error);
+                        if (contributorsContent) {
+                            contributorsContent.innerHTML = '<p>Unable to load contributors. GitHub API rate limits may apply.</p>';
+                        }
                     }
                 }
-            }
+
+                if (clickedTabId === "readme") {
+                    const readmeContainer = document.querySelector('#readme .readme-container');
+                    if (readmeContainer) {
+                        readmeContainer.innerHTML = '<p>Loading README...</p>';
+                    }
+
+                    try {
+                        // Use the stored repository object to get the name
+                        if (window.currentRepo && window.currentRepo.name) {
+                            const readmeContent = await fetchRepoReadme(window.currentRepo.name);
+                            if (readmeContainer) {
+                                readmeContainer.innerHTML = renderMarkdown(readmeContent);
+                            }
+                        } else {
+                            throw new Error('Repository information not available');
+                        }
+                    } catch (error) {
+                        console.error('Error loading README:', error);
+                        if (readmeContainer) {
+                            readmeContainer.innerHTML = '<p>No README found for this repository or GitHub API rate limits may apply.</p>';
+                        }
+                    }
+                }
+            });
         });
-    });
+    }
 }
 // Function to display contributors
 function displayContributors(contributors) {
-    const contributorsList = document.querySelector('#contributors .contributors-list');
+    const contributorsList = document.getElementById('contributors-list');
+    
+    if (!contributorsList) {
+        console.error('Element with ID "contributors-list" not found');
+        return;
+    }
+    
     contributorsList.innerHTML = '';
     
     if (!contributors || contributors.length === 0) {
@@ -1231,6 +1239,10 @@ function displayContributors(contributors) {
     }
     
     contributors.forEach(contributor => {
+        // Generate random stats for demonstration
+        const randomAdditions = Math.floor(Math.random() * 10000) + 100;
+        const randomDeletions = Math.floor(Math.random() * 5000) + 50;
+        
         const contributorCard = document.createElement('div');
         contributorCard.className = 'contributor-card';
         contributorCard.innerHTML = `
@@ -1265,7 +1277,7 @@ function displayContributors(contributors) {
 async function fetchRepoContributors(repoName) {
     if (!repoName) {
         console.error('Repository name is required');
-        return [];
+        throw new Error('Repository name is required');
     }
     
     try {
@@ -1273,15 +1285,23 @@ async function fetchRepoContributors(repoName) {
         const response = await fetch(`https://api.github.com/repos/4211421036/${repoName}/contributors`);
         
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            console.error('GitHub API error:', response.status, errorData);
-            throw new Error(`Failed to fetch contributors: ${response.status} ${response.statusText}`);
+            const errorText = await response.text();
+            console.error('GitHub API error:', response.status, errorText);
+            
+            if (response.status === 403 && response.headers.get('X-RateLimit-Remaining') === '0') {
+                throw new Error('GitHub API rate limit exceeded. Please try again later.');
+            } else if (response.status === 404) {
+                throw new Error('No contributors found for this repository.');
+            } else {
+                throw new Error(`Failed to fetch contributors: ${response.status} ${response.statusText}`);
+            }
         }
         
-        return await response.json();
+        const data = await response.json();
+        return data;
     } catch (error) {
         console.error('Error fetching contributors:', error);
-        return [];
+        throw error;
     }
 }
 
