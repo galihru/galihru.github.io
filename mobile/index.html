@@ -1268,50 +1268,24 @@ function displayContributors(contributors) {
     });
 }
 // Function to load contributors (updated with error handling)
-async function fetchRepoContributors(repo.name).then(contributors => {
-    const contributorsList = document.getElementById('contributors-list');
-    contributorsList.innerHTML = '';
-    
-    if (contributors.length === 0) {
-        contributorsList.innerHTML = '<p>No contributors found for this repository.</p>';
-        return;
+async function fetchRepoContributors(repoName) {
+    if (!repoName) {
+        console.error('Repository name is required');
+        return [];
     }
-    
-    contributors.forEach(contributor => {
-        const randomCommits = Math.floor(Math.random() * 100) + 1;
-        const randomAdditions = Math.floor(Math.random() * 10000) + 100;
-        const randomDeletions = Math.floor(Math.random() * 5000) + 50;
-        
-        const contributorCard = document.createElement('div');
-        contributorCard.className = 'contributor-card';
-        contributorCard.innerHTML = `
-            <div class="contributor-header">
-                <div class="contributor-avatar">
-                    <img src="${contributor.avatar_url}" alt="${contributor.login}">
-                </div>
-            </div>
-            <div class="contributor-body">
-                <div class="contributor-name">${contributor.login}</div>
-                <div class="contribution-stats">
-                    <div class="stat">
-                        <div class="stat-value">${contributor.contributions}</div>
-                        <div class="stat-label">Commits</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-value">${randomAdditions}</div>
-                        <div class="stat-label">Added</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-value">${randomDeletions}</div>
-                        <div class="stat-label">Removed</div>
-                    </div>
-                </div>
-                <a href="${contributor.html_url}" target="_blank" class="contributor-link">View Profile</a>
-            </div>
-        `;
-        contributorsList.appendChild(contributorCard);
-    });
-});
+
+    try {
+        const response = await fetch(`https://api.github.com/repos/4211421036/${repoName}/contributors`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch contributors: ${response.status} ${response.statusText}`);
+        }
+        const contributors = await response.json();
+        return contributors;
+    } catch (error) {
+        console.error('Error fetching contributors:', error);
+        return [];
+    }
+}
 
 // Function to fetch README (updated with error handling)
 async function fetchRepoReadme(repoName) {
