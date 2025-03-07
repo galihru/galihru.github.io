@@ -141,12 +141,38 @@
             border-radius: 20px;
             background-color: #f0f0f0;
             font-size: 14px;
+            transition: background-color 0.3s ease;
         }
 
         .category.active {
             background-color: #333;
             color: white;
         }
+
+        .category.skeleton {
+            display: inline-block;
+            padding: 8px 15px;
+            margin-right: 10px;
+            border-radius: 20px;
+            background-color: #e0e0e0;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .category.skeleton::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0.3) 50%,
+        rgba(255,255,255,0) 100%
+    );
+    animation: shimmer 1.5s infinite;
+}
 
         .content-title {
             font-size: 20px;
@@ -885,14 +911,9 @@
         </div>
 
         
-        <div class="content-title">Select your next trip</div>
-        <div class="categories">
-            <div class="category">Asia</div>
-            <div class="category">Europe</div>
-            <div class="category active">South America</div>
-            <div class="category">North America</div>
-            <div class="category">Africa</div>
-            <div class="category">Oceania</div>
+        <div class="content-title">Shortcut Search Chip</div>
+        <div class="categories" id="categories">
+            
         </div>
 
         <div class="destinations" id="github-repos">
@@ -1018,12 +1039,15 @@
         });
 
         let allRepos = []; // Variabel untuk menyimpan semua repositori
+        let uniqueLanguages = new Set(); // Set untuk menyimpan bahasa pemrograman unik
 
         // Function to fetch GitHub repos
         async function fetchGitHubRepos() {
             // Show skeleton loading
     const relatedContainer = document.getElementById('related-repos');
             const container = document.getElementById('github-repos');
+             const categoriesContainer = document.getElementById('categories');
+             categoriesContainer.innerHTML = createCategorySkeletons(6); // Skeleton untuk chip
             container.innerHTML = createSkeletonCards(6);
     relatedContainer.innerHTML = createRelatedSkeletonCards(6);
 
@@ -1033,6 +1057,16 @@
         if (!response.ok) throw new Error('Failed to fetch repositories');
         allRepos = await response.json(); // Simpan semua repositori ke variabel allRepos
         filterAndDisplayRepos(allRepos); // Tampilkan semua repositori pertama kali
+
+        // Kumpulkan semua bahasa pemrograman unik
+            allRepos.forEach(repo => {
+                if (repo.language) {
+                    uniqueLanguages.add(repo.language);
+                }
+            });
+
+            // Tampilkan chip berdasarkan bahasa pemrograman
+            displayCategories(Array.from(uniqueLanguages));
         
         container.innerHTML = '';
 
@@ -1113,6 +1147,63 @@
         console.error('Error fetching GitHub repos:', error);
     }
 }
+        // Function to display categories (chips)
+    function displayCategories(languages) {
+        const categoriesContainer = document.getElementById('categories');
+        categoriesContainer.innerHTML = ''; // Kosongkan container
+
+        languages.forEach(language => {
+            const category = document.createElement('div');
+            category.className = 'category';
+            category.textContent = language;
+            category.addEventListener('click', () => {
+                // Hapus class active dari semua chip
+                document.querySelectorAll('.category').forEach(cat => cat.classList.remove('active'));
+                // Tambahkan class active ke chip yang diklik
+                category.classList.add('active');
+                // Filter repositori berdasarkan bahasa yang dipilih
+                filterReposByLanguage(language);
+            });
+            categoriesContainer.appendChild(category);
+        });
+    }
+
+    // Function to filter repos by selected language
+    function filterReposByLanguage(language) {
+        if (language === 'All') {
+            filterAndDisplayRepos(allRepos); // Tampilkan semua repositori
+        } else {
+            const filteredRepos = allRepos.filter(repo => repo.language === language);
+            filterAndDisplayRepos(filteredRepos); // Tampilkan repositori yang difilter
+        }
+    }
+
+    // Function to create skeleton loading for categories
+    function createCategorySkeletons(count) {
+        let html = '';
+        for (let i = 0; i < count; i++) {
+            html += `<div class="category skeleton"></div>`;
+        }
+        return html;
+    }
+
+    // Function to create skeleton loading for repos
+    function createSkeletonCards(count) {
+        let html = '';
+        for (let i = 0; i < count; i++) {
+            html += `
+                <div class="destination-card skeleton">
+                    <div class="skeleton-image"></div>
+                    <div class="skeleton-info">
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line medium"></div>
+                        <div class="skeleton-line long"></div>
+                    </div>
+                </div>
+            `;
+        }
+        return html;
+    }
          // Function to filter and display repos based on search input
     function filterAndDisplayRepos(repos) {
         const container = document.getElementById('github-repos');
