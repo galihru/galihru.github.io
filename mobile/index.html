@@ -887,6 +887,27 @@
         .swipe-right {
     transform: translateX(100%);
 }
+        /* Ikon Like */
+.far.fa-heart {
+    color: gray; /* Warna default */
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.far.fa-heart.liked {
+    color: red; /* Warna ketika di-like */
+}
+
+/* Ikon Save */
+.far.fa-bookmark {
+    color: gray; /* Warna default */
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.far.fa-bookmark.saved {
+    color: blue; /* Warna ketika disimpan */
+}
           
     </style>
 </head>
@@ -997,6 +1018,30 @@
             </div>
         </div>
     </div>
+
+    <!-- Menu Liked -->
+<div id="liked-view" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Liked Repositories</h2>
+        </div>
+        <div class="modal-body" id="liked-repos">
+            <!-- Repositori yang di-like akan ditampilkan di sini -->
+        </div>
+    </div>
+</div>
+
+<!-- Menu Saved -->
+<div id="saved-view" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Saved Repositories</h2>
+        </div>
+        <div class="modal-body" id="saved-repos">
+            <!-- Repositori yang disimpan akan ditampilkan di sini -->
+        </div>
+    </div>
+</div>
 
     <!-- ITINERARY VIEW -->
     <div class="itinerary-view" id="itinerary-view">
@@ -1160,6 +1205,119 @@
         console.error('Error fetching GitHub repos:', error);
     }
 }
+
+        // Fungsi untuk menyimpan data ke localStorage
+    function saveToLocalStorage(key, data) {
+        localStorage.setItem(key, JSON.stringify(data));
+    }
+
+    // Fungsi untuk mengambil data dari localStorage
+    function getFromLocalStorage(key) {
+        const data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : [];
+    }
+
+    // Fungsi untuk menambahkan repositori ke daftar Like
+    function likeRepo(repo) {
+        const likedRepos = getFromLocalStorage('likedRepos');
+        if (!likedRepos.some(r => r.id === repo.id)) {
+            likedRepos.push(repo);
+            saveToLocalStorage('likedRepos', likedRepos);
+        }
+    }
+
+    // Fungsi untuk menghapus repositori dari daftar Like
+    function unlikeRepo(repo) {
+        let likedRepos = getFromLocalStorage('likedRepos');
+        likedRepos = likedRepos.filter(r => r.id !== repo.id);
+        saveToLocalStorage('likedRepos', likedRepos);
+    }
+
+    // Fungsi untuk menambahkan repositori ke daftar Save
+    function saveRepo(repo) {
+        const savedRepos = getFromLocalStorage('savedRepos');
+        if (!savedRepos.some(r => r.id === repo.id)) {
+            savedRepos.push(repo);
+            saveToLocalStorage('savedRepos', savedRepos);
+        }
+    }
+
+    // Fungsi untuk menghapus repositori dari daftar Save
+    function unsaveRepo(repo) {
+        let savedRepos = getFromLocalStorage('savedRepos');
+        savedRepos = savedRepos.filter(r => r.id !== repo.id);
+        saveToLocalStorage('savedRepos', savedRepos);
+    }
+
+    // Fungsi untuk menampilkan repositori yang di-like
+    function displayLikedRepos() {
+        const likedRepos = getFromLocalStorage('likedRepos');
+        const likedReposContainer = document.getElementById('liked-repos');
+        likedReposContainer.innerHTML = '';
+
+        likedRepos.forEach(repo => {
+            const card = createRepoCard(repo);
+            likedReposContainer.appendChild(card);
+        });
+    }
+
+    // Fungsi untuk menampilkan repositori yang disimpan
+    function displaySavedRepos() {
+        const savedRepos = getFromLocalStorage('savedRepos');
+        const savedReposContainer = document.getElementById('saved-repos');
+        savedReposContainer.innerHTML = '';
+
+        savedRepos.forEach(repo => {
+            const card = createRepoCard(repo);
+            savedReposContainer.appendChild(card);
+        });
+    }
+
+        function createRepoCard(repo) {
+        const card = document.createElement('div');
+        card.className = 'destination-card';
+        card.innerHTML = `
+            <img src="${repo.imageUrl}" alt="${repo.name}" class="card-image">
+            <div class="card-info">
+                <div class="card-name">${repo.name}</div>
+                <div class="card-location">${repo.language || 'Unknown'}</div>
+                <div class="card-rating">
+                    <i class="fas fa-star rating-star"></i>
+                    <span>${repo.rating}</span>
+                    <span style="margin-left: 8px;">${repo.reviews} reviews</span>
+                </div>
+            </div>
+        `;
+        return card;
+    }
+
+    // Event listener untuk Like
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('fa-heart')) {
+            const repo = JSON.parse(e.target.closest('.destination-card').dataset.repo);
+            if (e.target.classList.contains('liked')) {
+                e.target.classList.remove('liked');
+                unlikeRepo(repo);
+            } else {
+                e.target.classList.add('liked');
+                likeRepo(repo);
+            }
+        }
+    });
+
+    // Event listener untuk Save
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('fa-bookmark')) {
+            const repo = JSON.parse(e.target.closest('.destination-card').dataset.repo);
+            if (e.target.classList.contains('saved')) {
+                e.target.classList.remove('saved');
+                unsaveRepo(repo);
+            } else {
+                e.target.classList.add('saved');
+                saveRepo(repo);
+            }
+        }
+    });
         // Fungsi untuk menutup modal dengan animasi swipe
     function closeModalWithSwipe(modal) {
         modal.classList.add('swipe-right'); // Tambahkan class untuk animasi swipe
@@ -2050,6 +2208,24 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Elemen dengan ID "search-input" tidak ditemukan.');
     }
 });
+        // Event listener untuk menu Liked
+    document.querySelector('.nav-item:nth-child(3)').addEventListener('click', () => {
+        displayLikedRepos();
+        document.getElementById('liked-view').style.display = 'block';
+    });
+
+    // Event listener untuk menu Saved
+    document.querySelector('.nav-item:nth-child(2)').addEventListener('click', () => {
+        displaySavedRepos();
+        document.getElementById('saved-view').style.display = 'block';
+    });
+
+    // Tutup modal Liked dan Saved
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal') || e.target.classList.contains('close-modal')) {
+            e.target.style.display = 'none';
+        }
+    });
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('../sw.js')
