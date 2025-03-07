@@ -1281,7 +1281,6 @@ function displayContributors(contributors) {
             </div>
         `;
         contributorsList.appendChild(contributorCard);
-         // Ekstrak dan terapkan warna dominan dari avatar
         // Get the elements we want to style directly from the card we just created
         const header = contributorCard.querySelector('.contributor-header');
         const statValues = contributorCard.querySelectorAll('.stat-value');
@@ -1319,7 +1318,7 @@ function displayContributors(contributors) {
                     // Skip transparent pixels
                     if (a < 125) continue;
                     
-                    colors.push({ r, g, b, count: 1 });
+                    colors.push({ r, g, b });
                 }
                 
                 // Get average color (simpler approach)
@@ -1334,41 +1333,105 @@ function displayContributors(contributors) {
                 const avgG = Math.round(totalG / colors.length);
                 const avgB = Math.round(totalB / colors.length);
                 
-                // Create hex color
-                const mainColor = rgbToHex(avgR, avgG, avgB);
+                // Calculate brightness using YIQ formula
+                const brightness = ((avgR * 299) + (avgG * 587) + (avgB * 114)) / 1000;
+                const isDark = brightness < 128;
                 
-                // Create gradient color (slightly lighter and darker)
-                const lighterColor = rgbToHex(
-                    Math.min(avgR + 20, 255),
-                    Math.min(avgG + 20, 255),
-                    Math.min(avgB + 20, 255)
-                );
+                // Create accessible colors based on dominant color
+                let accentColor, gradientStart, gradientEnd;
                 
-                const darkerColor = rgbToHex(
-                    Math.max(avgR - 20, 0),
-                    Math.max(avgG - 20, 0),
-                    Math.max(avgB - 20, 0)
-                );
+                if (isDark) {
+                    // If dominant color is dark, brighten it for better visibility on white background
+                    accentColor = {
+                        r: Math.min(avgR + 50, 255),
+                        g: Math.min(avgG + 50, 255),
+                        b: Math.min(avgB + 50, 255)
+                    };
+                    
+                    // Make darker gradients for better text contrast
+                    gradientStart = {
+                        r: avgR,
+                        g: avgG,
+                        b: avgB
+                    };
+                    
+                    gradientEnd = {
+                        r: Math.max(avgR - 40, 0),
+                        g: Math.max(avgG - 40, 0),
+                        b: Math.max(avgB - 40, 0)
+                    };
+                } else {
+                    // If dominant color is light, darken it for better visibility on white background
+                    accentColor = {
+                        r: Math.max(avgR - 60, 0),
+                        g: Math.max(avgG - 60, 0),
+                        b: Math.max(avgB - 60, 0)
+                    };
+                    
+                    // Make light gradients for header
+                    gradientStart = {
+                        r: avgR,
+                        g: avgG,
+                        b: avgB
+                    };
+                    
+                    gradientEnd = {
+                        r: Math.max(avgR - 40, 0),
+                        g: Math.max(avgG - 40, 0),
+                        b: Math.max(avgB - 40, 0)
+                    };
+                }
+                
+                // Ensure minimum contrast for accent color (for text visibility)
+                const accentBrightness = ((accentColor.r * 299) + (accentColor.g * 587) + (accentColor.b * 114)) / 1000;
+                if (accentBrightness > 200) {
+                    // Too bright for text on white, darken it
+                    accentColor.r = Math.max(accentColor.r - 100, 0);
+                    accentColor.g = Math.max(accentColor.g - 100, 0);
+                    accentColor.b = Math.max(accentColor.b - 100, 0);
+                } else if (accentBrightness > 125 && accentBrightness <= 200) {
+                    // Medium brightness, darken a bit
+                    accentColor.r = Math.max(accentColor.r - 50, 0);
+                    accentColor.g = Math.max(accentColor.g - 50, 0);
+                    accentColor.b = Math.max(accentColor.b - 50, 0);
+                }
+                
+                // Convert to hex
+                const accentHex = rgbToHex(accentColor.r, accentColor.g, accentColor.b);
+                const gradientStartHex = rgbToHex(gradientStart.r, gradientStart.g, gradientStart.b);
+                const gradientEndHex = rgbToHex(gradientEnd.r, gradientEnd.g, gradientEnd.b);
                 
                 // Apply styles
                 if (header) {
-                    header.style.background = `linear-gradient(135deg, ${lighterColor}, ${darkerColor})`;
+                    header.style.background = `linear-gradient(135deg, ${gradientStartHex}, ${gradientEndHex})`;
                 }
                 
                 statValues.forEach(statValue => {
-                    statValue.style.color = mainColor;
+                    statValue.style.color = accentHex;
                 });
                 
                 if (link) {
-                    link.style.color = mainColor;
+                    link.style.color = accentHex;
                     
-                    // Add hover effect
+                    // Add hover effect with a slightly different shade
+                    const hoverColor = isDark ? 
+                        rgbToHex(
+                            Math.min(accentColor.r + 30, 255),
+                            Math.min(accentColor.g + 30, 255),
+                            Math.min(accentColor.b + 30, 255)
+                        ) : 
+                        rgbToHex(
+                            Math.max(accentColor.r - 30, 0),
+                            Math.max(accentColor.g - 30, 0),
+                            Math.max(accentColor.b - 30, 0)
+                        );
+                    
                     link.addEventListener('mouseover', function() {
-                        this.style.color = darkerColor;
+                        this.style.color = hoverColor;
                     });
                     
                     link.addEventListener('mouseout', function() {
-                        this.style.color = mainColor;
+                        this.style.color = accentHex;
                     });
                 }
                 
