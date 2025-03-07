@@ -1232,128 +1232,7 @@ function initTabSystem(repo) {
     }
 }
 
-// Modified applyColorsToElements function to properly handle all styling
-function applyColorsToElements(colors, elementSelector = null) {
-    // If no element specified, exit
-    if (!elementSelector) return;
-    
-    const element = document.querySelector(elementSelector);
-    if (!element) return;
-    
-    // Apply colors to the card and its children
-    const header = element.querySelector('.contributor-header');
-    const statValues = element.querySelectorAll('.stat-value');
-    const contributorLink = element.querySelector('.contributor-link');
-    
-    if (header) {
-        header.style.background = colors.gradient;
-    }
-    
-    statValues.forEach(statValue => {
-        statValue.style.color = colors.accent;
-    });
-    
-    if (contributorLink) {
-        contributorLink.style.color = colors.accent;
-        
-        // Add hover effects
-        contributorLink.addEventListener('mouseover', function() {
-            this.style.color = colors.secondary;
-        });
-        
-        contributorLink.addEventListener('mouseout', function() {
-            this.style.color = colors.accent;
-        });
-    }
-}
 
-// Modify the extractDominantColor function to use the updated applyColorsToElements
-async function extractDominantColor(imageUrl, elementSelector) {
-    return new Promise((resolve, reject) => {
-        // Create temporary image element
-        const img = new Image();
-        img.crossOrigin = "Anonymous";  // Important for CORS
-        
-        img.onload = function() {
-            try {
-                // Create canvas to analyze image
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                
-                // Set canvas size (scaled for performance)
-                const size = 50; // Small sample is enough for dominant color
-                canvas.width = size;
-                canvas.height = size;
-                
-                // Draw to canvas
-                ctx.drawImage(img, 0, 0, size, size);
-                
-                // Get pixel data
-                const imageData = ctx.getImageData(0, 0, size, size).data;
-                
-                // Analyze colors
-                const colorCounts = {};
-                const colors = [];
-                
-                // Sample every 5 pixels for better performance
-                for (let i = 0; i < imageData.length; i += 20) {
-                    const r = imageData[i];
-                    const g = imageData[i + 1];
-                    const b = imageData[i + 2];
-                    const a = imageData[i + 3];
-                    
-                    // Skip transparent pixels
-                    if (a < 125) continue;
-                    
-                    const rgbColor = `${r},${g},${b}`;
-                    
-                    if (!colorCounts[rgbColor]) {
-                        colorCounts[rgbColor] = 0;
-                        colors.push({ r, g, b, count: 0 });
-                    }
-                    
-                    // Find and update index in colors array
-                    const colorIndex = colors.findIndex(c => `${c.r},${c.g},${c.b}` === rgbColor);
-                    if (colorIndex !== -1) {
-                        colors[colorIndex].count++;
-                    }
-                }
-                
-                // Sort colors by count
-                colors.sort((a, b) => b.count - a.count);
-                
-                // Get dominant color (first color)
-                const dominantColor = colors.length > 0 ? colors[0] : { r: 60, g: 60, b: 60 }; // Default if extraction fails
-                
-                // Convert RGB to hex format
-                const dominantHex = rgbToHex(dominantColor.r, dominantColor.g, dominantColor.b);
-                
-                // Check contrast and create accessible colors
-                const accessibleColors = generateAccessibleColors(dominantColor.r, dominantColor.g, dominantColor.b);
-                
-                // Apply colors to elements
-                applyColorsToElements(accessibleColors, elementSelector);
-                
-                resolve({
-                    original: dominantHex,
-                    accessible: accessibleColors
-                });
-            } catch (error) {
-                console.error('Error extracting color:', error);
-                // Return default color if failed
-                reject(error);
-            }
-        };
-        
-        img.onerror = function(err) {
-            console.error('Image loading error:', err);
-            reject(err);
-        };
-        
-        img.src = imageUrl;
-    });
-}
-// Function to display contributors
 function displayContributors(contributors) {
     const contributorsList = document.getElementById('contributors-list');
     
@@ -1403,15 +1282,112 @@ function displayContributors(contributors) {
         `;
         contributorsList.appendChild(contributorCard);
          // Ekstrak dan terapkan warna dominan dari avatar
-        extractDominantColor(contributor.avatar_url, `#contributor-${index}`)
-            .then(colors => {
-                // Store colors as a data attribute on the card for potential later use
-                contributorCard.dataset.colors = JSON.stringify(colors);
-            })
-            .catch(error => {
-                console.warn('Could not extract colors from avatar, using defaults:', error);
-            });
+        // Get the elements we want to style directly from the card we just created
+        const header = contributorCard.querySelector('.contributor-header');
+        const statValues = contributorCard.querySelectorAll('.stat-value');
+        const link = contributorCard.querySelector('.contributor-link');
+        
+        // Extract color from avatar and apply directly to these elements
+        const img = new Image();
+        img.crossOrigin = "Anonymous";
+        
+        img.onload = function() {
+            try {
+                // Create canvas for image analysis
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const size = 50;
+                canvas.width = size;
+                canvas.height = size;
+                
+                // Draw image to canvas
+                ctx.drawImage(img, 0, 0, size, size);
+                
+                // Get pixel data
+                const imageData = ctx.getImageData(0, 0, size, size).data;
+                
+                // Analyze colors
+                const colors = [];
+                
+                // Sample pixels
+                for (let i = 0; i < imageData.length; i += 20) {
+                    const r = imageData[i];
+                    const g = imageData[i + 1];
+                    const b = imageData[i + 2];
+                    const a = imageData[i + 3];
+                    
+                    // Skip transparent pixels
+                    if (a < 125) continue;
+                    
+                    colors.push({ r, g, b, count: 1 });
+                }
+                
+                // Get average color (simpler approach)
+                let totalR = 0, totalG = 0, totalB = 0;
+                colors.forEach(color => {
+                    totalR += color.r;
+                    totalG += color.g;
+                    totalB += color.b;
+                });
+                
+                const avgR = Math.round(totalR / colors.length);
+                const avgG = Math.round(totalG / colors.length);
+                const avgB = Math.round(totalB / colors.length);
+                
+                // Create hex color
+                const mainColor = rgbToHex(avgR, avgG, avgB);
+                
+                // Create gradient color (slightly lighter and darker)
+                const lighterColor = rgbToHex(
+                    Math.min(avgR + 20, 255),
+                    Math.min(avgG + 20, 255),
+                    Math.min(avgB + 20, 255)
+                );
+                
+                const darkerColor = rgbToHex(
+                    Math.max(avgR - 20, 0),
+                    Math.max(avgG - 20, 0),
+                    Math.max(avgB - 20, 0)
+                );
+                
+                // Apply styles
+                if (header) {
+                    header.style.background = `linear-gradient(135deg, ${lighterColor}, ${darkerColor})`;
+                }
+                
+                statValues.forEach(statValue => {
+                    statValue.style.color = mainColor;
+                });
+                
+                if (link) {
+                    link.style.color = mainColor;
+                    
+                    // Add hover effect
+                    link.addEventListener('mouseover', function() {
+                        this.style.color = darkerColor;
+                    });
+                    
+                    link.addEventListener('mouseout', function() {
+                        this.style.color = mainColor;
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Error extracting color:', error);
+            }
+        };
+        
+        img.onerror = function() {
+            console.error('Error loading image');
+        };
+        
+        img.src = contributor.avatar_url;
     });
+}
+
+// Helper function to convert RGB to Hex
+function rgbToHex(r, g, b) {
+    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 }
 // Function to load contributors (updated with error handling)
 async function fetchRepoContributors(repoName) {
