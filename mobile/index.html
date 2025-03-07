@@ -887,26 +887,7 @@
         .swipe-right {
     transform: translateX(100%);
 }
-        .tab-content-container {
-    display: flex;
-    overflow: hidden;
-    position: relative;
-}
-
-.tab-content {
-    flex: 0 0 100%;
-    transition: transform 0.3s ease; /* Animasi untuk perpindahan tab */
-}
-
-/* Class untuk animasi swipe */
-.tab-content.swipe-left {
-    transform: translateX(-100%);
-}
-
-.tab-content.swipe-right {
-    transform: translateX(100%);
-}
-        
+          
     </style>
 </head>
 
@@ -1223,93 +1204,6 @@
         });
     }
 
-         // Fungsi untuk mengupdate tab aktif
-    function updateActiveTab(index) {
-        // Hapus class active dari semua tab dan konten
-        tabs.forEach(tab => tab.classList.remove('active'));
-        tabContents.forEach(content => content.classList.remove('active'));
-
-        // Tambahkan class active ke tab dan konten yang sesuai
-        tabs[index].classList.add('active');
-        tabContents[index].classList.add('active');
-    }
-
-    // Fungsi untuk pindah ke tab berikutnya (swipe ke kiri)
-    function goToNextTab() {
-        if (currentTabIndex < tabs.length - 1) {
-            currentTabIndex++;
-            updateActiveTab(currentTabIndex);
-            animateTabTransition('left');
-        }
-    }
-
-    // Fungsi untuk pindah ke tab sebelumnya (swipe ke kanan)
-    function goToPreviousTab() {
-        if (currentTabIndex > 0) {
-            currentTabIndex--;
-            updateActiveTab(currentTabIndex);
-            animateTabTransition('right');
-        }
-    }
-
-    // Fungsi untuk animasi perpindahan tab
-    function animateTabTransition(direction) {
-        const currentContent = tabContents[currentTabIndex];
-        const previousContent = tabContents[direction === 'left' ? currentTabIndex - 1 : currentTabIndex + 1];
-
-        if (direction === 'left') {
-            currentContent.classList.add('swipe-left');
-            previousContent.classList.add('swipe-right');
-        } else {
-            currentContent.classList.add('swipe-right');
-            previousContent.classList.add('swipe-left');
-        }
-
-        // Setelah animasi selesai, hapus class animasi
-        setTimeout(() => {
-            currentContent.classList.remove('swipe-left', 'swipe-right');
-            previousContent.classList.remove('swipe-left', 'swipe-right');
-        }, 300); // Sesuaikan dengan durasi animasi
-    }
-
-    // Fungsi untuk menangani swipe gesture
-    function handleSwipeGesture(container) {
-        container.addEventListener('touchstart', (e) => {
-            touchStartX = e.touches[0].clientX; // Simpan posisi awal touch (X)
-            isSwiping = true; // Mulai swipe
-        });
-
-        container.addEventListener('touchmove', (e) => {
-            if (!isSwiping) return; // Hanya lanjutkan jika sedang swipe
-
-            const touchEndX = e.touches[0].clientX;
-            const deltaX = touchEndX - touchStartX; // Perbedaan posisi X
-
-            // Jika swipe ke kiri lebih dari 50px, pindah ke tab berikutnya
-            if (deltaX < -50) {
-                goToNextTab();
-                isSwiping = false; // Berhenti swipe
-            }
-            // Jika swipe ke kanan lebih dari 50px, pindah ke tab sebelumnya
-            else if (deltaX > 50) {
-                goToPreviousTab();
-                isSwiping = false; // Berhenti swipe
-            }
-        });
-
-        container.addEventListener('touchend', () => {
-            isSwiping = false; // Berhenti swipe saat jari diangkat
-        });
-    }
-
-    // Tambahkan event listener untuk tab container
-    const tabContainer = document.querySelector('.tab-content-container');
-    if (tabContainer) {
-        handleSwipeGesture(tabContainer);
-    }
-
-    // Inisialisasi tab aktif pertama kali
-    updateActiveTab(currentTabIndex);
         // Function to display categories (chips)
     function displayCategories(languages) {
         const categoriesContainer = document.getElementById('categories');
