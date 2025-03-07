@@ -699,9 +699,10 @@
                 border: 3px solid white;
                 position: absolute;
                 bottom: -35px;
-                left: 20px;
+                left: 50%;
                 background-color: #fff;
                 overflow: hidden;
+                transform: translateX(-50%);
             }
             
             .contributor-avatar img {
@@ -726,6 +727,12 @@
                 border-radius: 8px;
                 padding: 10px;
                 margin-top: 15px;
+                justify-content: space-evenly;
+                align-content: space-around;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 10px;
             }
     </style>
 </head>
@@ -1110,6 +1117,7 @@ function initTabSystem(repo) {
             if (content.id === tabId) {
                 content.classList.add('active');
                 content.style.display = 'block'; // Ensure display is set to block
+                content.style.padding = '0px 25px 0 25px';
             } else {
                 content.classList.remove('active');
                 content.style.display = 'none';
