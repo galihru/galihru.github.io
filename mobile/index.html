@@ -1511,15 +1511,15 @@ function displayContributors(contributors) {
             </div>
         `;
         contributorsList.appendChild(contributorCard);
-    });
-     // Ekstrak dan terapkan warna dominan dari avatar
-    extractDominantColor(
-        contributor.avatar_url,
-        `#contributors-list .contributor-card:nth-child(${contributorsList.children.length}) .contributor-header, 
-         #contributors-list .contributor-card:nth-child(${contributorsList.children.length}) .stat-value,
-         #contributors-list .contributor-card:nth-child(${contributorsList.children.length}) .contributor-link`
-    ).catch(error => {
-        console.warn('Could not extract colors from avatar, using defaults:', error);
+         // Ekstrak dan terapkan warna dominan dari avatar
+        extractDominantColor(
+            contributor.avatar_url,
+            `#contributors-list .contributor-card:nth-child(${contributorsList.children.length}) .contributor-header, 
+             #contributors-list .contributor-card:nth-child(${contributorsList.children.length}) .stat-value,
+             #contributors-list .contributor-card:nth-child(${contributorsList.children.length}) .contributor-link`
+        ).catch(error => {
+            console.warn('Could not extract colors from avatar, using defaults:', error);
+        });
     });
 }
 // Function to load contributors (updated with error handling)
