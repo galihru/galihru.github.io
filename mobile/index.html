@@ -1171,7 +1171,7 @@ function initTabSystem(repo) {
 
             // Handle different tab contents
             if (clickedTabId === "contributors") {
-                const contributorsContent = document.getElementById('contributors-content');
+                const contributorsContent = document.getElementById('contributors-list');
                 if (contributorsContent) {
                     contributorsContent.innerHTML = '<p>Loading contributors...</p>';
                 }
@@ -1181,7 +1181,7 @@ function initTabSystem(repo) {
                     if (window.currentRepo && window.currentRepo.name) {
                         const contributors = await fetchRepoContributors(window.currentRepo.name);
                         if (contributorsContent) {
-                            contributorsContent.innerHTML = displayContributors(contributors);
+                            displayContributors(contributors); // Langsung panggil fungsi render
                         }
                     } else {
                         throw new Error('Repository information not available');
