@@ -26,6 +26,13 @@
     <link rel="icon" href="https://4211421036.github.io/g4lihru/987654567.png" type="image/x-icon">
     <link rel="alternate" media="only screen and (max-width: 640px)" href="https://4211421036.github.io/mobile/" />
     <script type src="/theme.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if (window.innerWidth < 720) {
+                document.head.innerHTML += '<meta http-equiv="refresh" content="0;url=https://m.example.com">';
+            }
+        });
+    </script>
 </head>
 
 <body>
