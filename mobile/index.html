@@ -867,7 +867,7 @@
             <div id="contributors" class="tab-content">
                 <div class="contributors-container">
                     <h3>Repository Contributors</h3>
-                    <div class="contributors-list"></div>
+                    <div id="contributors-list" class="contributors-list"></div>
                 </div>
             </div>
             <div id="readme" class="tab-content">
@@ -1267,14 +1267,18 @@ async function fetchRepoContributors(repoName) {
         console.error('Repository name is required');
         return [];
     }
-
+    
     try {
+        console.log(`Fetching contributors for: ${repoName}`);
         const response = await fetch(`https://api.github.com/repos/4211421036/${repoName}/contributors`);
+        
         if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            console.error('GitHub API error:', response.status, errorData);
             throw new Error(`Failed to fetch contributors: ${response.status} ${response.statusText}`);
         }
-        const contributors = await response.json();
-        return contributors;
+        
+        return await response.json();
     } catch (error) {
         console.error('Error fetching contributors:', error);
         return [];
