@@ -732,6 +732,68 @@
                 align-items: center;
                 gap: 10px;
             }
+        /* Skeleton Loading Styles */
+.skeleton {
+    position: relative;
+    overflow: hidden;
+    background-color: #f0f0f0;
+    border-radius: var(--card-radius);
+}
+
+.skeleton::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0.3) 50%,
+        rgba(255,255,255,0) 100%
+    );
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.skeleton-image {
+    width: 100%;
+    height: 220px;
+    background-color: #e0e0e0;
+    border-radius: var(--card-radius);
+}
+
+.skeleton-info {
+    padding: 15px;
+}
+
+.skeleton-line {
+    height: 12px;
+    background-color: #e0e0e0;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+
+.skeleton-line.short {
+    width: 30%;
+}
+
+.skeleton-line.medium {
+    width: 50%;
+}
+
+.skeleton-line.long {
+    width: 80%;
+}
+
+/* Adjust tour card skeleton */
+.tour-card.skeleton .skeleton-image {
+    height: 140px;
+}
     </style>
 </head>
 
@@ -895,17 +957,20 @@
 
         // Function to fetch GitHub repos
         async function fetchGitHubRepos() {
+            // Show skeleton loading
+    const relatedContainer = document.getElementById('related-repos');
+            const container = document.getElementById('github-repos');
+            container.innerHTML = createSkeletonCards(6);
+    relatedContainer.innerHTML = createRelatedSkeletonCards(6);
+
     try {
         // Fetch repos list
         const response = await fetch('https://api.github.com/users/4211421036/repos');
         if (!response.ok) throw new Error('Failed to fetch repositories');
         const repos = await response.json();
         
-        const container = document.getElementById('github-repos');
         container.innerHTML = '';
 
-        // Also populate related repos for the detail view
-        const relatedContainer = document.getElementById('related-repos');
         relatedContainer.innerHTML = '';
 
         // Process each repository
@@ -982,6 +1047,39 @@
     } catch (error) {
         console.error('Error fetching GitHub repos:', error);
     }
+}
+
+function createSkeletonCards(count) {
+    let html = '';
+    for (let i = 0; i < count; i++) {
+        html += `
+            <div class="destination-card skeleton">
+                <div class="skeleton-image"></div>
+                <div class="skeleton-info">
+                    <div class="skeleton-line short"></div>
+                    <div class="skeleton-line medium"></div>
+                    <div class="skeleton-line long"></div>
+                </div>
+            </div>
+        `;
+    }
+    return html;
+}
+
+function createRelatedSkeletonCards(count) {
+    let html = '';
+    for (let i = 0; i < count; i++) {
+        html += `
+            <div class="tour-card skeleton">
+                <div class="skeleton-image"></div>
+                <div class="skeleton-info">
+                    <div class="skeleton-line short"></div>
+                    <div class="skeleton-line medium"></div>
+                </div>
+            </div>
+        `;
+    }
+    return html;
 }
 
 // Function to show detail view
