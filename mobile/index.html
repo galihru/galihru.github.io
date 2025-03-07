@@ -1016,6 +1016,8 @@
             }, 100);
         });
 
+        let allRepos = []; // Variabel untuk menyimpan semua repositori
+
         // Function to fetch GitHub repos
         async function fetchGitHubRepos() {
             // Show skeleton loading
@@ -1028,14 +1030,23 @@
         // Fetch repos list
         const response = await fetch('https://api.github.com/users/4211421036/repos');
         if (!response.ok) throw new Error('Failed to fetch repositories');
-        const repos = await response.json();
+        allRepos = await response.json(); // Simpan semua repositori ke variabel allRepos
+            
+            filterAndDisplayRepos(allRepos); // Tampilkan semua repositori pertama kali
         
         container.innerHTML = '';
 
         relatedContainer.innerHTML = '';
 
         // Process each repository
-        for (const repo of repos) {
+    function filterAndDisplayRepos(repos) {
+        const container = document.getElementById('github-repos');
+        const relatedContainer = document.getElementById('related-repos');
+        container.innerHTML = '';
+        relatedContainer.innerHTML = '';
+
+        // Process each repository
+        repos.forEach(async (repo) => {
             // Try to get a repository image
             let imageUrl = 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png'; // Default image
             
@@ -1104,8 +1115,23 @@
                 });
                 relatedContainer.appendChild(tourCard);
             }
-        }
-    } catch (error) {
+        });
+    }
+        // Function to handle search input
+    function handleSearch() {
+        const searchInput = document.getElementById('search-input').value.toLowerCase();
+        const filteredRepos = allRepos.filter(repo => {
+            const repoName = repo.name.toLowerCase();
+            const repoLanguage = repo.language ? repo.language.toLowerCase() : '';
+            return repoName.includes(searchInput) || repoLanguage.includes(searchInput);
+        });
+        filterAndDisplayRepos(filteredRepos);
+    }
+
+    // Add event listener to search input
+    document.getElementById('search-input').addEventListener('input', handleSearch);
+
+    catch (error) {
         console.error('Error fetching GitHub repos:', error);
     }
 }
