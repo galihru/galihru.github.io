@@ -1181,7 +1181,7 @@ function initTabSystem(repo) {
                     if (window.currentRepo && window.currentRepo.name) {
                         const contributors = await fetchRepoContributors(window.currentRepo.name);
                         if (contributorsContent) {
-                            displayContributors(contributors); // Langsung panggil fungsi render
+                            contributorsContent.innerHTML = displayContributors(contributors); // Langsung panggil fungsi render
                         }
                     } else {
                         throw new Error('Repository information not available');
