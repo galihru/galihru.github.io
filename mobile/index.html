@@ -1232,41 +1232,77 @@ function initTabSystem(repo) {
     }
 }
 
-async function extractDominantColor(imageUrl, elementSelector, cssProperty) {
+// Modified applyColorsToElements function to properly handle all styling
+function applyColorsToElements(colors, elementSelector = null) {
+    // If no element specified, exit
+    if (!elementSelector) return;
+    
+    const element = document.querySelector(elementSelector);
+    if (!element) return;
+    
+    // Apply colors to the card and its children
+    const header = element.querySelector('.contributor-header');
+    const statValues = element.querySelectorAll('.stat-value');
+    const contributorLink = element.querySelector('.contributor-link');
+    
+    if (header) {
+        header.style.background = colors.gradient;
+    }
+    
+    statValues.forEach(statValue => {
+        statValue.style.color = colors.accent;
+    });
+    
+    if (contributorLink) {
+        contributorLink.style.color = colors.accent;
+        
+        // Add hover effects
+        contributorLink.addEventListener('mouseover', function() {
+            this.style.color = colors.secondary;
+        });
+        
+        contributorLink.addEventListener('mouseout', function() {
+            this.style.color = colors.accent;
+        });
+    }
+}
+
+// Modify the extractDominantColor function to use the updated applyColorsToElements
+async function extractDominantColor(imageUrl, elementSelector) {
     return new Promise((resolve, reject) => {
-        // Buat elemen gambar sementara
+        // Create temporary image element
         const img = new Image();
-        img.crossOrigin = "Anonymous";  // Penting untuk CORS
+        img.crossOrigin = "Anonymous";  // Important for CORS
         
         img.onload = function() {
             try {
-                // Buat canvas untuk menganalisis gambar
+                // Create canvas to analyze image
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 
-                // Atur ukuran canvas sesuai gambar (diskalakan untuk performa)
-                const size = 50; // Sampel kecil cukup untuk warna dominan
+                // Set canvas size (scaled for performance)
+                const size = 50; // Small sample is enough for dominant color
                 canvas.width = size;
                 canvas.height = size;
                 
-                // Gambar ke canvas
+                // Draw to canvas
                 ctx.drawImage(img, 0, 0, size, size);
                 
-                // Dapatkan data pixel
+                // Get pixel data
                 const imageData = ctx.getImageData(0, 0, size, size).data;
                 
-                // Analisis warna
+                // Analyze colors
                 const colorCounts = {};
                 const colors = [];
                 
-                // Sampel setiap 5 piksel untuk performa yang lebih baik
+                // Sample every 5 pixels for better performance
                 for (let i = 0; i < imageData.length; i += 20) {
                     const r = imageData[i];
                     const g = imageData[i + 1];
                     const b = imageData[i + 2];
                     const a = imageData[i + 3];
                     
-                    // Lewati piksel transparan
+                    // Skip transparent pixels
                     if (a < 125) continue;
                     
                     const rgbColor = `${r},${g},${b}`;
@@ -1276,26 +1312,26 @@ async function extractDominantColor(imageUrl, elementSelector, cssProperty) {
                         colors.push({ r, g, b, count: 0 });
                     }
                     
-                    // Temukan dan perbarui indeks di array colors
+                    // Find and update index in colors array
                     const colorIndex = colors.findIndex(c => `${c.r},${c.g},${c.b}` === rgbColor);
                     if (colorIndex !== -1) {
                         colors[colorIndex].count++;
                     }
                 }
                 
-                // Urutkan warna berdasarkan jumlah
+                // Sort colors by count
                 colors.sort((a, b) => b.count - a.count);
                 
-                // Ambil warna dominan (warna pertama)
-                const dominantColor = colors.length > 0 ? colors[0] : { r: 60, g: 60, b: 60 }; // Default jika tidak bisa ekstrak
+                // Get dominant color (first color)
+                const dominantColor = colors.length > 0 ? colors[0] : { r: 60, g: 60, b: 60 }; // Default if extraction fails
                 
-                // Konversi RGB ke format hex
+                // Convert RGB to hex format
                 const dominantHex = rgbToHex(dominantColor.r, dominantColor.g, dominantColor.b);
                 
-                // Periksa kontras dan buat warna yang aksesibel
+                // Check contrast and create accessible colors
                 const accessibleColors = generateAccessibleColors(dominantColor.r, dominantColor.g, dominantColor.b);
                 
-                // Terapkan warna ke elemen
+                // Apply colors to elements
                 applyColorsToElements(accessibleColors, elementSelector);
                 
                 resolve({
@@ -1304,7 +1340,7 @@ async function extractDominantColor(imageUrl, elementSelector, cssProperty) {
                 });
             } catch (error) {
                 console.error('Error extracting color:', error);
-                // Kembalikan warna default jika gagal
+                // Return default color if failed
                 reject(error);
             }
         };
@@ -1315,153 +1351,6 @@ async function extractDominantColor(imageUrl, elementSelector, cssProperty) {
         };
         
         img.src = imageUrl;
-    });
-}
-
-// Konversi RGB ke Hex
-function rgbToHex(r, g, b) {
-    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
-}
-
-// Hitung kecerahan warna (formula YIQ)
-function calculateBrightness(r, g, b) {
-    return ((r * 299) + (g * 587) + (b * 114)) / 1000;
-}
-
-// Hitung rasio kontras antara dua warna
-function calculateContrastRatio(color1, color2) {
-    // Konversi RGB ke nilai relatif luminansi
-    const getLuminance = (r, g, b) => {
-        const rgb = [r, g, b].map(v => {
-            v /= 255;
-            return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
-        });
-        return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
-    };
-    
-    const luminance1 = getLuminance(color1.r, color1.g, color1.b);
-    const luminance2 = getLuminance(color2.r, color2.g, color2.b);
-    
-    const lighter = Math.max(luminance1, luminance2);
-    const darker = Math.min(luminance1, luminance2);
-    
-    return (lighter + 0.05) / (darker + 0.05);
-}
-
-// Buat variasi warna yang aksesibel berdasarkan warna dominan
-function generateAccessibleColors(r, g, b) {
-    // Warna asli
-    const originalColor = { r, g, b };
-    const originalHex = rgbToHex(r, g, b);
-    
-    // Hitung kecerahan
-    const brightness = calculateBrightness(r, g, b);
-    
-    // Tentukan apakah warna terang atau gelap
-    const isDark = brightness < 128;
-    
-    // Warna teks - kontras tinggi dengan warna asli
-    const textColor = isDark ? 
-        { r: 240, g: 240, b: 240 } : 
-        { r: 33, g: 33, b: 33 };
-    
-    // Buat warna sekunder (dengan saturasi dan kecerahan dimodifikasi untuk aksesibilitas)
-    let secondaryColor;
-    
-    if (isDark) {
-        // Jika asli gelap, buat sekunder lebih terang
-        secondaryColor = {
-            r: Math.min(r + 70, 255),
-            g: Math.min(g + 70, 255),
-            b: Math.min(b + 70, 255)
-        };
-    } else {
-        // Jika asli terang, buat sekunder lebih gelap
-        secondaryColor = {
-            r: Math.max(r - 70, 0),
-            g: Math.max(g - 70, 0),
-            b: Math.max(b - 70, 0)
-        };
-    }
-    
-    // Buat warna aksen (gunakan komplementer yang dimodifikasi)
-    const accentColor = {
-        r: Math.abs(255 - r),
-        g: Math.abs(255 - g),
-        b: Math.abs(255 - b)
-    };
-    
-    // Periksa kontras antara aksen dan teks
-    const accentTextContrast = calculateContrastRatio(accentColor, textColor);
-    
-    // Sesuaikan aksen jika kontras terlalu rendah
-    if (accentTextContrast < 4.5) {
-        if (isDark) {
-            accentColor.r = Math.min(accentColor.r + 50, 255);
-            accentColor.g = Math.min(accentColor.g + 50, 255);
-            accentColor.b = Math.min(accentColor.b + 50, 255);
-        } else {
-            accentColor.r = Math.max(accentColor.r - 50, 0);
-            accentColor.g = Math.max(accentColor.g - 50, 0);
-            accentColor.b = Math.max(accentColor.b - 50, 0);
-        }
-    }
-    
-    // Gradien warna (sedikit lebih terang/gelap dari warna asli)
-    const gradientStart = {
-        r: Math.min(r + 20, 255),
-        g: Math.min(g + 20, 255),
-        b: Math.min(b + 20, 255)
-    };
-    
-    const gradientEnd = {
-        r: Math.max(r - 20, 0),
-        g: Math.max(g - 20, 0),
-        b: Math.max(b - 20, 0)
-    };
-    
-    return {
-        primary: originalHex,
-        primaryRgb: `${r}, ${g}, ${b}`,
-        secondary: rgbToHex(secondaryColor.r, secondaryColor.g, secondaryColor.b),
-        secondaryRgb: `${secondaryColor.r}, ${secondaryColor.g}, ${secondaryColor.b}`,
-        accent: rgbToHex(accentColor.r, accentColor.g, accentColor.b),
-        accentRgb: `${accentColor.r}, ${accentColor.g}, ${accentColor.b}`,
-        text: isDark ? '#F0F0F0' : '#212121',
-        isDark: isDark,
-        gradient: `linear-gradient(135deg, ${rgbToHex(gradientStart.r, gradientStart.g, gradientStart.b)}, ${rgbToHex(gradientEnd.r, gradientEnd.g, gradientEnd.b)})`
-    };
-}
-
-// Terapkan warna ke elemen-elemen CSS
-function applyColorsToElements(colors, elementSelector = null) {
-    // Jika tidak ada elemen spesifik, tidak melakukan apa-apa
-    if (!elementSelector) return;
-    
-    const elements = document.querySelectorAll(elementSelector);
-    
-    elements.forEach(element => {
-        // Terapkan warna berdasarkan jenis elemen
-        if (element.classList.contains('contributor-header')) {
-            element.style.background = colors.gradient;
-        }
-        
-        if (element.classList.contains('stat-value')) {
-            element.style.color = colors.accent;
-        }
-        
-        if (element.classList.contains('contributor-link')) {
-            element.style.color = colors.accent;
-            
-            // Tambahkan efek hover dengan JavaScript
-            element.addEventListener('mouseover', function() {
-                this.style.color = colors.secondary;
-            });
-            
-            element.addEventListener('mouseout', function() {
-                this.style.color = colors.accent;
-            });
-        }
     });
 }
 // Function to display contributors
@@ -1514,15 +1403,14 @@ function displayContributors(contributors) {
         `;
         contributorsList.appendChild(contributorCard);
          // Ekstrak dan terapkan warna dominan dari avatar
-        // Ekstrak dan terapkan warna dominan dari avatar
-        extractDominantColor(
-            contributor.avatar_url,
-            `#contributors-list .contributor-card:nth-child(${contributorsList.children.length}) .contributor-header, 
-             #contributors-list .contributor-card:nth-child(${contributorsList.children.length}) .stat-value,
-             #contributors-list .contributor-card:nth-child(${contributorsList.children.length}) .contributor-link`
-        ).catch(error => {
-            console.warn('Could not extract colors from avatar, using defaults:', error);
-        });
+        extractDominantColor(contributor.avatar_url, `#contributor-${index}`)
+            .then(colors => {
+                // Store colors as a data attribute on the card for potential later use
+                contributorCard.dataset.colors = JSON.stringify(colors);
+            })
+            .catch(error => {
+                console.warn('Could not extract colors from avatar, using defaults:', error);
+            });
     });
 }
 // Function to load contributors (updated with error handling)
