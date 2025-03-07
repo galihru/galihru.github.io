@@ -868,7 +868,7 @@
                 <div class="contributors-container">
                     <h3>Repository Contributors</h3>
                     <div id="contributors-content">
-                        <div id="contributors-list"></div>
+                        <div class="contributors-list" id="contributors-list"></div>
                     </div>
                 </div>
             </div>
@@ -1224,7 +1224,7 @@ function initTabSystem(repo) {
 }
 // Function to display contributors
 function displayContributors(contributors) {
-    const contributorsList = document.getElementById('contributors-content');
+    const contributorsList = document.querySelector('#contributors .contributors-list');
     
     // Periksa apakah elemen ada
     if (!contributorsList) {
