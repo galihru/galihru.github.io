@@ -28,7 +28,6 @@ function processHTML(html) {
   styleTags.forEach((styleTag) => {
     let css = styleTag.innerHTML;
 
-    // Process classes
     css = css.replace(/\.([a-zA-Z0-9_-]+)/g, (match, cls) => {
       if (!classMap.has(cls)) {
         classMap.set(cls, generateHash(cls));
