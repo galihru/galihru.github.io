@@ -1,8 +1,9 @@
-const fs = require('fs');
-const { minify } = require('html-minifier');
-const { parse } = require('node-html-parser');
-const crypto = require('crypto');
+import fs from 'fs';
+import { minify } from 'html-minifier';
+import { parse } from 'node-html-parser';
+import crypto from 'crypto';
 
+// Config
 const htmlFile = 'mobile/index.html';
 const minifyConfig = {
   collapseWhitespace: true,
