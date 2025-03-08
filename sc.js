@@ -3,7 +3,6 @@ const { minify } = require('html-minifier');
 const { parse } = require('node-html-parser');
 const crypto = require('crypto');
 
-// Config
 const htmlFile = 'mobile/index.html';
 const minifyConfig = {
   collapseWhitespace: true,
