@@ -77,7 +77,9 @@ function processHTML(html) {
         `(?:className|classList\\.\\w+)\\s*=\\s*['"]${key}['"]`,
         'g'
       );
-      scriptContent = scriptContent.replace(regex, `$1="${value}"`);
+      scriptContent = scriptContent.replace(regex, (match) => {
+        return match.replace(key, value);
+      });
 
       // Handle innerHTML templates
       const innerHtmlRegex = new RegExp(`class=['"]${key}['"]`, 'g');
@@ -123,7 +125,7 @@ function processHTML(html) {
           // Handle JSON string in dataset
           return match.replace(value, value.replace(/"class":"([^"]+)"/g, (m, cls) => {
             return `"class":"${classMap.get(cls) || cls}"`;
-          });
+          }));
         }
         return match;
       }
