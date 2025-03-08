@@ -9,11 +9,12 @@ const minifyConfig = {
   collapseWhitespace: true,
   removeComments: true,
   minifyCSS: true,
-  minifyJS: true
+  minifyJS: true,
 };
 
 function generateHash(str) {
-  return crypto.createHash('sha256')
+  return crypto
+    .createHash('sha256')
     .update(str)
     .digest('hex')
     .substring(0, 8);
@@ -26,9 +27,9 @@ function processHTML(html) {
   const idMap = new Map();
 
   // Process CSS
-  styleTags.forEach(styleTag => {
+  styleTags.forEach((styleTag) => {
     let css = styleTag.innerHTML;
-    
+
     // Process classes
     css = css.replace(/\.([a-zA-Z0-9_-]+)/g, (match, cls) => {
       if (!classMap.has(cls)) {
@@ -49,11 +50,12 @@ function processHTML(html) {
   });
 
   // Process HTML elements
-  root.querySelectorAll('*').forEach(element => {
+  root.querySelectorAll('*').forEach((element) => {
     // Update classes
     if (element.classNames) {
-      const newClasses = element.classNames.split(' ')
-        .map(cls => classMap.get(cls) || cls)
+      const newClasses = element.classNames
+        .split(' ')
+        .map((cls) => classMap.get(cls) || cls)
         .join(' ');
       element.setAttribute('class', newClasses);
     }
@@ -66,15 +68,18 @@ function processHTML(html) {
   });
 
   // Process script tags
-  root.querySelectorAll('script').forEach(script => {
+  root.querySelectorAll('script').forEach((script) => {
     let scriptContent = script.innerHTML;
-    
+
     // Update class names in scripts
     classMap.forEach((value, key) => {
       // Handle regular class assignments
-      const regex = new RegExp(`(?:className|classList\\.\\w+)\\s*=\\s*['"]${key}['"]`, 'g');
+      const regex = new RegExp(
+        `(?:className|classList\\.\\w+)\\s*=\\s*['"]${key}['"]`,
+        'g'
+      );
       scriptContent = scriptContent.replace(regex, `$1="${value}"`);
-      
+
       // Handle innerHTML templates
       const innerHtmlRegex = new RegExp(`class=['"]${key}['"]`, 'g');
       scriptContent = scriptContent.replace(innerHtmlRegex, `class="${value}"`);
@@ -83,11 +88,14 @@ function processHTML(html) {
     // Update IDs in scripts
     idMap.forEach((value, key) => {
       // Handle regular ID assignments
-      const regex = new RegExp(`(?:getElementById|querySelector|querySelectorAll)\\s*\\(\\s*['"]#?${key}['"]\\s*\\)`, 'g');
+      const regex = new RegExp(
+        `(?:getElementById|querySelector|querySelectorAll)\\s*\\(\\s*['"]#?${key}['"]\\s*\\)`,
+        'g'
+      );
       scriptContent = scriptContent.replace(regex, (match) => {
         return match.replace(key, value);
       });
-      
+
       // Handle innerHTML templates
       const innerHtmlRegex = new RegExp(`id=['"]${key}['"]`, 'g');
       scriptContent = scriptContent.replace(innerHtmlRegex, `id="${value}"`);
@@ -131,10 +139,10 @@ function processHTML(html) {
 // Main process
 fs.readFile(htmlFile, 'utf8', (err, data) => {
   if (err) throw err;
-  
+
   const processedHtml = processHTML(data);
   const minifiedHtml = minify(processedHtml, minifyConfig);
-  
+
   fs.writeFile(htmlFile, minifiedHtml, 'utf8', (err) => {
     if (err) throw err;
     console.log('CSS hashed and HTML minified successfully!');
