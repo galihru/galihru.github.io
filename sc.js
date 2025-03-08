@@ -25,7 +25,6 @@ function processHTML(html) {
   const classMap = new Map();
   const idMap = new Map();
 
-  // Process CSS
   styleTags.forEach((styleTag) => {
     let css = styleTag.innerHTML;
 
