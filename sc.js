@@ -3,7 +3,6 @@ import { minify } from 'html-minifier';
 import { parse } from 'node-html-parser';
 import crypto from 'crypto';
 
-// Config
 const htmlFile = 'mobile/index.html';
 const minifyConfig = {
   collapseWhitespace: true,
