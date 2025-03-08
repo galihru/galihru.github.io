@@ -2267,6 +2267,211 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     </script>
+    <script>
+        // Fungsi untuk menghasilkan string acak
+function generateRandomString(length = 8) {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+// Kelas untuk mengelola CSS obfuscation
+class CSSObfuscator {
+  constructor() {
+    this.classMap = {};
+    this.idMap = {};
+    this.styleElement = null;
+  }
+
+  // Inisialisasi obfuscator dan proses stylesheet
+  init() {
+    // Buat elemen style untuk CSS yang akan dimodifikasi
+    this.styleElement = document.createElement('style');
+    document.head.appendChild(this.styleElement);
+    
+    // Proses semua stylesheet
+    this.processStylesheets();
+    
+    // Proses semua elemen HTML
+    this.processHTMLElements();
+    
+    // Simpan mapping di sessionStorage untuk konsistensi selama sesi
+    sessionStorage.setItem('obfuscatorClassMap', JSON.stringify(this.classMap));
+    sessionStorage.setItem('obfuscatorIdMap', JSON.stringify(this.idMap));
+  }
+
+  // Mendapatkan mapping dari sessionStorage jika ada
+  loadMappingFromSession() {
+    const classMap = sessionStorage.getItem('obfuscatorClassMap');
+    const idMap = sessionStorage.getItem('obfuscatorIdMap');
+    
+    if (classMap) {
+      this.classMap = JSON.parse(classMap);
+    }
+    
+    if (idMap) {
+      this.idMap = JSON.parse(idMap);
+    }
+  }
+
+  // Mendapatkan nama class yang terobfuscasi
+  getObfuscatedClass(className) {
+    // Jika class belum ada di map, buat yang baru
+    if (!this.classMap[className]) {
+      this.classMap[className] = `c_${generateRandomString()}`;
+    }
+    return this.classMap[className];
+  }
+
+  // Mendapatkan ID yang terobfuscasi
+  getObfuscatedId(id) {
+    // Jika ID belum ada di map, buat yang baru
+    if (!this.idMap[id]) {
+      this.idMap[id] = `i_${generateRandomString()}`;
+    }
+    return this.idMap[id];
+  }
+
+  // Memproses semua stylesheet
+  processStylesheets() {
+    // Kumpulkan semua aturan CSS dari stylesheet eksternal dan internal
+    const cssRules = [];
+    
+    // Proses stylesheet internal
+    for (let i = 0; i < document.styleSheets.length; i++) {
+      try {
+        const styleSheet = document.styleSheets[i];
+        if (styleSheet.cssRules) {
+          for (let j = 0; j < styleSheet.cssRules.length; j++) {
+            cssRules.push(styleSheet.cssRules[j]);
+          }
+        }
+      } catch (e) {
+        console.warn('Cannot access stylesheet rules:', e);
+      }
+    }
+    
+    // Proses setiap aturan CSS
+    for (const rule of cssRules) {
+      if (rule.selectorText) {
+        const newSelector = this.processSelector(rule.selectorText);
+        const newCSSText = rule.cssText.replace(rule.selectorText, newSelector);
+        this.styleElement.textContent += newCSSText + '\n';
+      } else {
+        this.styleElement.textContent += rule.cssText + '\n';
+      }
+    }
+  }
+
+  // Memproses selector CSS untuk mengubah nama class dan ID
+  processSelector(selector) {
+    // Tangani selector gabungan (yang dipisahkan oleh koma)
+    if (selector.includes(',')) {
+      const parts = selector.split(',');
+      return parts.map(part => this.processSelector(part.trim())).join(', ');
+    }
+    
+    // Temukan dan ganti semua class dan ID di selector
+    return selector.replace(/\.([\w-]+)/g, (match, className) => {
+      return '.' + this.getObfuscatedClass(className);
+    }).replace(/#([\w-]+)/g, (match, id) => {
+      return '#' + this.getObfuscatedId(id);
+    });
+  }
+
+  // Memproses elemen HTML untuk mengubah nama class dan ID
+  processHTMLElements() {
+    // Proses class
+    const elementsWithClass = document.querySelectorAll('[class]');
+    elementsWithClass.forEach(element => {
+      const classes = element.className.split(' ').filter(Boolean);
+      const newClasses = classes.map(cls => this.getObfuscatedClass(cls));
+      element.className = newClasses.join(' ');
+    });
+    
+    // Proses ID
+    const elementsWithId = document.querySelectorAll('[id]');
+    elementsWithId.forEach(element => {
+      const id = element.id;
+      element.id = this.getObfuscatedId(id);
+    });
+    
+    // Perbarui event listener dan JavaScript yang menggunakan selector
+    this.updateJavaScriptSelectors();
+  }
+
+  // Memperbarui JavaScript selector (querySelector, dll.)
+  updateJavaScriptSelectors() {
+    // Override querySelector dan querySelectorAll
+    const originalQuerySelector = Element.prototype.querySelector;
+    const originalQuerySelectorAll = Element.prototype.querySelectorAll;
+    const obfuscator = this;
+    
+    Element.prototype.querySelector = function(selector) {
+      const newSelector = obfuscator.processSelector(selector);
+      return originalQuerySelector.call(this, newSelector);
+    };
+    
+    Element.prototype.querySelectorAll = function(selector) {
+      const newSelector = obfuscator.processSelector(selector);
+      return originalQuerySelectorAll.call(this, newSelector);
+    };
+    
+    // Juga override document.querySelector dan document.querySelectorAll
+    const originalDocQuerySelector = Document.prototype.querySelector;
+    const originalDocQuerySelectorAll = Document.prototype.querySelectorAll;
+    
+    Document.prototype.querySelector = function(selector) {
+      const newSelector = obfuscator.processSelector(selector);
+      return originalDocQuerySelector.call(this, newSelector);
+    };
+    
+    Document.prototype.querySelectorAll = function(selector) {
+      const newSelector = obfuscator.processSelector(selector);
+      return originalDocQuerySelectorAll.call(this, newSelector);
+    };
+    
+    // Handle getElementById
+    const originalGetElementById = Document.prototype.getElementById;
+    
+    Document.prototype.getElementById = function(id) {
+      const newId = obfuscator.getObfuscatedId(id);
+      return originalGetElementById.call(this, newId);
+    };
+    
+    // Handle getElementsByClassName
+    const originalGetElementsByClassName = Document.prototype.getElementsByClassName;
+    
+    Document.prototype.getElementsByClassName = function(className) {
+      // Tangani beberapa class (dipisahkan oleh spasi)
+      if (className.includes(' ')) {
+        const classes = className.split(' ').filter(Boolean);
+        const newClasses = classes.map(cls => obfuscator.getObfuscatedClass(cls));
+        return originalGetElementsByClassName.call(this, newClasses.join(' '));
+      }
+      const newClassName = obfuscator.getObfuscatedClass(className);
+      return originalGetElementsByClassName.call(this, newClassName);
+    };
+  }
+}
+
+// Jalankan obfuscator saat DOM selesai dimuat
+document.addEventListener('DOMContentLoaded', () => {
+  const obfuscator = new CSSObfuscator();
+  
+  // Coba muat dari sessionStorage untuk konsistensi selama sesi
+  obfuscator.loadMappingFromSession();
+  
+  // Inisialisasi
+  obfuscator.init();
+  
+  // Log untuk debugging
+  console.log('CSS obfuscation applied. Class map:', obfuscator.classMap, 'ID map:', obfuscator.idMap);
+});
+    </script>
 </body>
 
 </html>
