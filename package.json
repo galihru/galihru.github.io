@@ -4,13 +4,13 @@
   "description": "Website",
   "main": "sc.js",
   "scripts": {
-    "start": "node sc.js",
+    "start": "node sc.js"
   },
   "dependencies": {
     "crypto": "^1.0.1",
     "html-minifier": "^4.0.0",
     "terser": "^5.37.0",
-    "node-html-parser": "^6.1.5",
+    "node-html-parser": "^6.1.5"
   },
   "devDependencies": {
     "prettier": "^3.2.5"
