@@ -293,8 +293,7 @@
             await updateCarouselContent();
             updateCarousel();
         });
-        // Get random string for CSS class names to make them harder to read
-function getRandomClassName(length = 8) {
+        function getRandomClassName(length = 8) {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let result = '';
     for (let i = 0; i < length; i++) {
@@ -653,7 +652,6 @@ function createClipElement(lang, percentage) {
     clip.addEventListener('click', () => {
         showCategoryRepos(lang);
     });
-
     return clip;
 }
 
@@ -752,18 +750,6 @@ function createRepoCard(repo) {
     card.addEventListener('click', () => {
         window.open(repo.html_url, '_blank');
     });
-    
-    // Create clips for language percentages
-    const clipsContainer = document.createElement('div');
-    clipsContainer.className = classNames.clipContainer;
-    
-    const percentages = calculateLanguagePercentages(repo);
-    Object.entries(percentages).forEach(([lang, percentage]) => {
-        const clip = createClipElement(lang, percentage);
-        clipsContainer.appendChild(clip);
-    });
-    
-    card.appendChild(clipsContainer);
     
     return card;
 }
@@ -924,6 +910,20 @@ function showCategoryRepos(category) {
     repos.forEach(repo => {
         const card = createRepoCard(repo);
         modalBody.appendChild(card);
+
+        // Calculate language percentages
+        const percentages = calculateLanguagePercentages(repo);
+
+        // Create clips for each language
+        const clipsContainer = document.createElement('div');
+        clipsContainer.className = classNames.clipContainer;
+
+        Object.entries(percentages).forEach(([lang, percentage]) => {
+            const clip = createClipElement(lang, percentage);
+            clipsContainer.appendChild(clip);
+        });
+
+        modalBody.appendChild(clipsContainer);
     });
 }
 
@@ -1022,6 +1022,9 @@ async function fetchGitHubRepos(username) {
 // Initialize the UI
 async function initializeUI(username) {
     try {
+        // Get the existing carousel elements
+        const carouselContainer = document.querySelector('.carousel-track').parentElement;
+        
         // Fetch repositories
         const repos = await fetchGitHubRepos(username);
         
@@ -1031,8 +1034,12 @@ async function initializeUI(username) {
         // Create UI
         const repoCardsContainer = createRepoCards(categorizedRepos);
         
-        // Insert the new UI into the body
-        document.body.appendChild(repoCardsContainer);
+        // Insert the new UI after the carousel
+        if (carouselContainer.nextElementSibling) {
+            carouselContainer.parentElement.insertBefore(repoCardsContainer, carouselContainer.nextElementSibling);
+        } else {
+            carouselContainer.parentElement.appendChild(repoCardsContainer);
+        }
         
     } catch (error) {
         console.error('Error initializing repository cards:', error);
@@ -1041,9 +1048,16 @@ async function initializeUI(username) {
 
 // Initialize when the document is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Use the GitHub username
+    // Use the same GitHub username from the carousel code
     initializeUI('4211421036');
 });
+
+// Integrate with existing carousel functionality
+const existingTrack = document.querySelector('.carousel-track');
+const existingItems = Array.from(existingTrack.children);
+const existingNextButton = document.querySelector('.carousel-next');
+const existingPrevButton = document.querySelector('.carousel-prev');
+let existingCurrentIndex = 0;
     </script>
      <script>
         if ('serviceWorker' in navigator) {
