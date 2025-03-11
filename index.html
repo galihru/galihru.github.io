@@ -37,7 +37,7 @@
 
 <body>
     <div id="splash-screen"
-        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--background-color); display: flex; align-items: center; justify-content: center; z-index: 1000;">
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--background-colors); display: flex; align-items: center; justify-content: center; z-index: 1000;">
         <img src="https://4211421036.github.io/g4lihru/987654567.png" alt="Logo"
             style="width: 150px; height: 150px; background: white; border-radius: 25px;">
     </div>
@@ -339,29 +339,29 @@ styleElement.textContent = `
     /* Auto Dark/Light Theme */
 @media (prefers-color-scheme: dark) {
     :root {
-        --background-color: #1e1e1e;
-        --text-color: #ffffff;
-        --card-background: #1f2227;
-        --card-hover-background: #3d3d3d;
-        --border-color: #444;
-        --primary-color: #ffffff;
-        --primary-hover-color: #0056b3;
-        --clip-background: #2d3a57;
-        --clip-hover-background: #555;
+        --background-colors: #1e1e1e;
+        --text-colors: #ffffff;
+        --card-backgrounds: #1f2227;
+        --card-hover-backgrounds: #3d3d3d;
+        --border-colors: #444;
+        --primary-colors: #ffffff;
+        --primary-hover-colors: #0056b3;
+        --clip-backgrounds: #2d3a57;
+        --clip-hover-backgrounds: #555;
     }
 }
 
 @media (prefers-color-scheme: light) {
     :root {
-        --background-color: #f5f5f5;
-        --text-color: #333;
-        --card-background: #ffffff;
-        --card-hover-background: #f0f0f0;
-        --border-color: #ddd;
-        --primary-color: #007bff;
-        --primary-hover-color: #0056b3;
-        --clip-background: #e0e0e0;
-        --clip-hover-background: #d0d0d0;
+        --background-colors: #f5f5f5;
+        --text-colors: #333;
+        --card-backgrounds: #ffffff;
+        --card-hover-backgrounds: #f0f0f0;
+        --border-colors: #ddd;
+        --primary-colors: #007bff;
+        --primary-hover-colors: #0056b3;
+        --clip-backgrounds: #e0e0e0;
+        --clip-hover-backgrounds: #d0d0d0;
     }
 }
 
@@ -371,9 +371,9 @@ styleElement.textContent = `
     flex-wrap: wrap;
     gap: 20px;
     padding: 20px;
-    background-color: var(--background-color);
+    background-color: var(--background-colors);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: var(--text-color);
+    color: var(--text-colors);
 }
 
 .${classNames.allCategoriesLink} {
@@ -384,18 +384,18 @@ styleElement.textContent = `
     margin-bottom: 15px;
     font-weight: bold;
     cursor: pointer;
-    color: var(--primary-color);
+    color: var(--primary-colors);
     transition: color 0.3s ease;
 }
 
 .${classNames.allCategoriesLink}:hover {
-    color: var(--primary-hover-color);
+    color: var(--primary-hover-colors);
 }
 
 .${classNames.categorySection} {
     flex: 1;
     min-width: 300px;
-    background-color: var(--card-background);
+    background-color: var(--card-backgrounds);
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -414,18 +414,18 @@ styleElement.textContent = `
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 15px;
-    color: var(--text-color);
+    color: var(--text-colors);
 }
 
 .${classNames.categoryIcon} {
     margin-left: 10px;
     cursor: pointer;
-    color: var(--primary-color);
+    color: var(--primary-colors);
     transition: color 0.3s ease;
 }
 
 .${classNames.categoryIcon}:hover {
-    color: var(--primary-hover-color);
+    color: var(--primary-hover-colors);
 }
 
 .${classNames.cardsContainer} {
@@ -436,7 +436,7 @@ styleElement.textContent = `
 
 .${classNames.card} {
     display: flex;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-colors);
     padding-bottom: 15px;
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -466,12 +466,12 @@ styleElement.textContent = `
 .${classNames.cardTitle} {
     font-weight: bold;
     margin-bottom: 5px;
-    color: var(--text-color);
+    color: var(--text-colors);
 }
 
 .${classNames.cardDescription} {
     font-size: 14px;
-    color: var(--text-color);
+    color: var(--text-colors);
     margin-bottom: 8px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -483,7 +483,7 @@ styleElement.textContent = `
     display: flex;
     justify-content: space-between;
     font-size: 12px;
-    color: var(--text-color);
+    color: var(--text-colors);
 }
 
 .${classNames.modal} {
@@ -499,7 +499,7 @@ styleElement.textContent = `
 }
 
 .${classNames.modalContent} {
-    background-color: var(--card-background);
+    background-color: var(--card-backgrounds);
     margin: 50px auto;
     width: 90%;
     max-width: 1000px;
@@ -512,30 +512,30 @@ styleElement.textContent = `
     justify-content: space-between;
     align-items: center;
     padding: 15px 20px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-colors);
 }
 
 .${classNames.modalTitle} {
     font-size: 20px;
     font-weight: bold;
-    color: var(--text-color);
+    color: var(--text-colors);
 }
 
 .${classNames.modalClose} {
     font-size: 24px;
     cursor: pointer;
-    color: var(--text-color);
+    color: var(--text-colors);
     transition: color 0.3s ease;
 }
 
 .${classNames.modalClose}:hover {
-    color: var(--primary-color);
+    color: var(--primary-colors);
 }
 
 .${classNames.modalBack} {
     font-size: 16px;
     cursor: pointer;
-    color: var(--primary-color);
+    color: var(--primary-colors);
     display: none;
     align-items: center;
     margin-right: auto;
@@ -543,7 +543,7 @@ styleElement.textContent = `
 }
 
 .${classNames.modalBack}:hover {
-    color: var(--primary-hover-color);
+    color: var(--primary-hover-colors);
     text-decoration: underline;
 }
 
@@ -558,7 +558,7 @@ styleElement.textContent = `
 }
 
 .${classNames.categoryCard} {
-    background-color: var(--card-background);
+    background-color: var(--card-backgrounds);
     border-radius: 12px;
     padding: 20px;
     cursor: pointer;
@@ -573,18 +573,18 @@ styleElement.textContent = `
 .${classNames.categoryCardIcon} {
     font-size: 30px;
     margin-bottom: 10px;
-    color: var(--primary-color);
+    color: var(--primary-colors);
 }
 
 .${classNames.categoryCardTitle} {
     font-weight: bold;
     font-size: 18px;
     margin-bottom: 5px;
-    color: var(--text-color);
+    color: var(--text-colors);
 }
 
 .${classNames.categoryCardCount} {
-    color: var(--text-color);
+    color: var(--text-colors);
     font-size: 14px;
 }
 
@@ -599,13 +599,13 @@ styleElement.textContent = `
     font-size: 12px;
     padding: 5px 10px;
     border-radius: 15px;
-    background-color: var(--clip-background);
+    background-color: var(--clip-backgrounds);
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .${classNames.clip}:hover {
-    background-color: var(--clip-hover-background);
+    background-color: var(--clip-hover-backgrounds);
     transform: translateY(-2px);
 }
 `;
