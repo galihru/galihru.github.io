@@ -294,7 +294,6 @@
             updateCarousel();
         });
         // Get random string for CSS class names to make them harder to read
-// Get random string for CSS class names to make them harder to read
 function getRandomClassName(length = 8) {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let result = '';
@@ -330,7 +329,9 @@ const classNames = {
     categoryCard: getRandomClassName(),
     categoryCardIcon: getRandomClassName(),
     categoryCardTitle: getRandomClassName(),
-    categoryCardCount: getRandomClassName()
+    categoryCardCount: getRandomClassName(),
+    clipContainer: getRandomClassName(),
+    clip: getRandomClassName()
 };
 
 // Inject CSS
@@ -537,6 +538,26 @@ styleElement.textContent = `
         color: #666;
         font-size: 14px;
     }
+    
+    .${classNames.clipContainer} {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 10px;
+    }
+    
+    .${classNames.clip} {
+        font-size: 12px;
+        padding: 5px 10px;
+        border-radius: 15px;
+        background-color: #e0e0e0;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    .${classNames.clip}:hover {
+        background-color: #d0d0d0;
+    }
 `;
 document.head.appendChild(styleElement);
 
@@ -611,6 +632,31 @@ function detectLanguages(repo) {
     return languages;
 }
 
+// Function to calculate language percentages in a repository
+function calculateLanguagePercentages(repo) {
+    const languages = detectLanguages(repo);
+    const totalLanguages = languages.length;
+    const percentages = {};
+
+    languages.forEach(lang => {
+        percentages[lang] = (100 / totalLanguages).toFixed(1);
+    });
+
+    return percentages;
+}
+
+// Function to create a clip element
+function createClipElement(lang, percentage) {
+    const clip = document.createElement('div');
+    clip.className = classNames.clip;
+    clip.textContent = `${lang} ${percentage}%`;
+    clip.addEventListener('click', () => {
+        showCategoryRepos(lang);
+    });
+
+    return clip;
+}
+
 // Function to categorize repositories by programming language
 function categorizeRepositoriesByLanguage(repos) {
     const categorized = {};
@@ -667,7 +713,6 @@ function createRepoCard(repo) {
     // Create card image
     const image = document.createElement('img');
     image.className = classNames.cardImage;
-    // Try to get a more specific image
     image.src = repo.owner.avatar_url; // Use owner avatar as default image
     image.alt = repo.name;
     
@@ -707,6 +752,18 @@ function createRepoCard(repo) {
     card.addEventListener('click', () => {
         window.open(repo.html_url, '_blank');
     });
+    
+    // Create clips for language percentages
+    const clipsContainer = document.createElement('div');
+    clipsContainer.className = classNames.clipContainer;
+    
+    const percentages = calculateLanguagePercentages(repo);
+    Object.entries(percentages).forEach(([lang, percentage]) => {
+        const clip = createClipElement(lang, percentage);
+        clipsContainer.appendChild(clip);
+    });
+    
+    card.appendChild(clipsContainer);
     
     return card;
 }
@@ -965,9 +1022,6 @@ async function fetchGitHubRepos(username) {
 // Initialize the UI
 async function initializeUI(username) {
     try {
-        // Get the existing carousel elements
-        const carouselContainer = document.querySelector('.carousel-track').parentElement;
-        
         // Fetch repositories
         const repos = await fetchGitHubRepos(username);
         
@@ -977,12 +1031,8 @@ async function initializeUI(username) {
         // Create UI
         const repoCardsContainer = createRepoCards(categorizedRepos);
         
-        // Insert the new UI after the carousel
-        if (carouselContainer.nextElementSibling) {
-            carouselContainer.parentElement.insertBefore(repoCardsContainer, carouselContainer.nextElementSibling);
-        } else {
-            carouselContainer.parentElement.appendChild(repoCardsContainer);
-        }
+        // Insert the new UI into the body
+        document.body.appendChild(repoCardsContainer);
         
     } catch (error) {
         console.error('Error initializing repository cards:', error);
@@ -991,16 +1041,9 @@ async function initializeUI(username) {
 
 // Initialize when the document is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Use the same GitHub username from the carousel code
+    // Use the GitHub username
     initializeUI('4211421036');
 });
-
-// Integrate with existing carousel functionality
-const existingTrack = document.querySelector('.carousel-track');
-const existingItems = Array.from(existingTrack.children);
-const existingNextButton = document.querySelector('.carousel-next');
-const existingPrevButton = document.querySelector('.carousel-prev');
-let existingCurrentIndex = 0;
     </script>
      <script>
         if ('serviceWorker' in navigator) {
