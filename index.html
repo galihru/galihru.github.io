@@ -479,7 +479,7 @@ function detectLanguages(repo) {
     // Check language using repo name, description, and actual language
     const langMap = {
         'python': ['python', 'django', 'flask', 'py'],
-        'javascript': ['javascript', 'js', 'node', 'react', 'vue', 'angular'],
+        'javascript': ['JavaScript', 'js', 'node', 'react', 'vue', 'angular'],
         'typescript': ['typescript', 'ts'],
         'html': ['html', 'web'],
         'css': ['css', 'style', 'scss', 'sass'],
@@ -494,6 +494,7 @@ function detectLanguages(repo) {
         'go': ['golang', 'go'],
         'rust': ['rust', 'rs'],
         'dart': ['dart', 'flutter']
+        'tex': ['tex']
     };
     
     // Push the actual language if provided by GitHub
