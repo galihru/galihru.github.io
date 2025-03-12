@@ -1,9 +1,10 @@
 name: Update Repos List
 on:
   schedule:
-    - cron: '*/1 * * * *'
-  workflow_dispatch:
-
+    - cron: '*/1 * * * *' # Menjalankan setiap 1 menit, sesuaikan dengan kebutuhan Anda.
+  push:
+    branches:
+      - main
 jobs:
   update-repos:
     runs-on: ubuntu-latest
