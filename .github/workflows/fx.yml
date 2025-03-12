@@ -27,7 +27,7 @@ jobs:
         run: npm install @octokit/rest fuzzysort
 
       - name: Generate repository data
-        run: node generate-repo-data.js
+        run: node scripts/update-repos.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
