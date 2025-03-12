@@ -1,0 +1,8 @@
+# Ignore node_modules
+node_modules/
+
+# Ignore package-lock.json (jika tidak diperlukan)
+package-lock.json
+
+# Ignore file repos.json (jika tidak ingin di-track)
+repos.json
