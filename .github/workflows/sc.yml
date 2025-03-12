@@ -24,20 +24,10 @@ jobs:
         run: |
           node scripts/update-repos.js
 
-      - name: Check for changes
-        id: changes
-        run: |
-          if git diff --quiet; then
-            echo "::set-output name=has_changes::false"
-          else
-            echo "::set-output name=has_changes::true"
-          fi
-
       - name: Commit and push changes
-        if: steps.changes.outputs.has_changes == 'true'
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git add repos.json
+          git add .
           git commit -m "Update repos list [skip ci]"
           git push
