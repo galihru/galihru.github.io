@@ -85,8 +85,11 @@ document.addEventListener('visibilitychange', function() {
 `;
 
 function processHTML(inputFilePath, outputFilePath) {
+    let htmlContent = ''; // Deklarasi di luar blok try agar bisa diakses di catch
+
     try {
-        let htmlContent = fs.readFileSync(inputFilePath, 'utf8');
+        // Baca file HTML
+        htmlContent = fs.readFileSync(inputFilePath, 'utf8');
 
         // Generate nonce
         const nonce = generateNonce();
@@ -124,8 +127,12 @@ function processHTML(inputFilePath, outputFilePath) {
         console.error('Terjadi kesalahan saat meminifikasi HTML:', error);
 
         // Jika terjadi error, simpan HTML tanpa minifikasi
-        fs.writeFileSync(outputFilePath, htmlContent, 'utf8');
-        console.log('File HTML disimpan tanpa minifikasi karena terjadi error.');
+        if (htmlContent) {
+            fs.writeFileSync(outputFilePath, htmlContent, 'utf8');
+            console.log('File HTML disimpan tanpa minifikasi karena terjadi error.');
+        } else {
+            console.error('Tidak dapat menyimpan file HTML karena konten tidak tersedia.');
+        }
     }
 }
 
