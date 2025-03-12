@@ -1,7 +1,7 @@
 name: Update Repos List
 on:
   schedule:
-    - cron: '*/1 * * * *' # Menjalankan setiap 1 menit, sesuaikan dengan kebutuhan Anda.
+    - cron: '*/1 * * * *'
   push:
     branches:
       - main
@@ -18,7 +18,7 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: npm install axios
+        run: npm install
 
       - name: Fetch repos and generate JSON
         run: |
@@ -29,5 +29,5 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git add repos.json
-          git commit -m "Update repos list"
+          git commit -m "Update repos list [skip ci]"
           git push
