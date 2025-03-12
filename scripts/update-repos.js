@@ -1,5 +1,5 @@
-const fs = require('fs');
-const { Octokit } = require('@octokit/rest');
+import fs from 'fs';
+import { Octokit } from '@octokit/rest';
 
 // Inisialisasi Octokit dengan token GitHub
 const octokit = new Octokit({
@@ -111,4 +111,5 @@ async function generateRepoData() {
   }
 }
 
+// Panggil fungsi utama
 generateRepoData();
