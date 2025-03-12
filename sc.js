@@ -85,58 +85,90 @@ document.addEventListener('visibilitychange', function() {
 `;
 
 function processHTML(inputFilePath, outputFilePath) {
-    let htmlContent = ''; // Deklarasi di luar blok try agar bisa diakses di catch
-
     try {
-        // Baca file HTML
-        htmlContent = fs.readFileSync(inputFilePath, 'utf8');
+        // Read HTML file
+        let htmlContent = fs.readFileSync(inputFilePath, 'utf8');
 
-        // Generate nonce
+        // Generate nonce for script
         const nonce = generateNonce();
 
-        // Tambahkan script bfcache hanya jika belum ada
+        // Fix problematic script tags - looking for issues with type attributes
+        // First, fix any script tags that have type attribute without a value
+        htmlContent = htmlContent.replace(/<script\s+type(\s|>)/gi, '<script type="text/javascript"$1');
+        
+        // Fix any script tags with an empty type attribute
+        htmlContent = htmlContent.replace(/<script\s+type=""\s*>/gi, '<script type="text/javascript">');
+        
+        // Fix any script tags with only spaces in type attribute
+        htmlContent = htmlContent.replace(/<script\s+type="\s*"\s*>/gi, '<script type="text/javascript">');
+
+        // Add bfcache script if it doesn't exist already
         if (!htmlContent.includes('Page restored from bfcache')) {
-            htmlContent = htmlContent.replace('</body>', `<script nonce="${nonce}">${bfcacheScript}</script></body>`);
+            htmlContent = htmlContent.replace('</body>', `<script nonce="${nonce}" type="text/javascript">${bfcacheScript}</script></body>`);
         }
 
-        // Minifikasi HTML dengan opsi yang aman
-        const minifiedHTML = minify(htmlContent, {
-            collapseWhitespace: true,
-            removeComments: true,
-            removeRedundantAttributes: true,
-            removeEmptyAttributes: true,
-            minifyJS: true,
-            minifyCSS: true,
-            collapseBooleanAttributes: true,
-            removeScriptTypeAttributes: false, // Nonaktifkan pemrosesan atribut type
-            removeStyleLinkTypeAttributes: false, // Nonaktifkan pemrosesan atribut type
-            useShortDoctype: true,
-            removeOptionalTags: false,
-            removeTagWhitespace: false,
-            processConditionalComments: true,
-            removeAttributeQuotes: true,
-            sortAttributes: true,
-            sortClassName: true,
-        });
+        // Try minification with safer options
+        let minifiedHTML;
+        try {
+            minifiedHTML = minify(htmlContent, {
+                collapseWhitespace: true,
+                removeComments: true,
+                removeRedundantAttributes: true,
+                removeEmptyAttributes: true,
+                minifyJS: true,
+                minifyCSS: true,
+                collapseBooleanAttributes: true,
+                removeScriptTypeAttributes: false, // Disable processing of type attributes
+                removeStyleLinkTypeAttributes: false, // Disable processing of type attributes
+                useShortDoctype: true,
+                removeOptionalTags: false,
+                removeTagWhitespace: false,
+                processConditionalComments: true,
+                removeAttributeQuotes: true,
+                sortAttributes: true,
+                sortClassName: true
+            });
+        } catch (minifyError) {
+            // If first attempt fails, try with more conservative options
+            console.log('First minification attempt failed, trying with safer options:', minifyError.message);
+            
+            minifiedHTML = minify(htmlContent, {
+                collapseWhitespace: true,
+                removeComments: true,
+                minifyJS: false, // Disable JS minification
+                minifyCSS: false, // Disable CSS minification
+                collapseBooleanAttributes: true,
+                removeScriptTypeAttributes: false, 
+                removeStyleLinkTypeAttributes: false,
+                useShortDoctype: true,
+                removeOptionalTags: false,
+                removeTagWhitespace: false,
+                processConditionalComments: true,
+                removeAttributeQuotes: false, // Don't remove quotes
+                sortAttributes: false, // Don't sort attributes
+                sortClassName: false // Don't sort classes
+            });
+        }
 
-        // Simpan output ke file baru
+        // Save output to new file
         fs.writeFileSync(outputFilePath, minifiedHTML, 'utf8');
 
-        console.log(`Minifikasi selesai & bfcache script ditambahkan. Hasil disimpan di: ${outputFilePath}`);
+        console.log(`Minification completed & bfcache script added. Results saved to: ${outputFilePath}`);
     } catch (error) {
-        console.error('Terjadi kesalahan saat meminifikasi HTML:', error);
+        console.error('Error occurred during HTML minification:', error);
 
-        // Jika terjadi error, simpan HTML tanpa minifikasi
-        if (htmlContent) {
-            fs.writeFileSync(outputFilePath, htmlContent, 'utf8');
-            console.log('File HTML disimpan tanpa minifikasi karena terjadi error.');
-        } else {
-            console.error('Tidak dapat menyimpan file HTML karena konten tidak tersedia.');
+        // If there's an error, read the HTML file again and save without minification
+        try {
+            const originalHtml = fs.readFileSync(inputFilePath, 'utf8');
+            fs.writeFileSync(outputFilePath, originalHtml, 'utf8');
+            console.log('HTML file saved without minification due to an error.');
+        } catch (readError) {
+            console.error('Could not save HTML file because content is not available:', readError);
         }
     }
 }
 
-const inputPaths = path.resolve(process.env.GITHUB_WORKSPACE, 'template.html');
-const outputPaths = path.resolve(process.env.GITHUB_WORKSPACE, 'index.html');
+const inputPath = path.resolve(process.env.GITHUB_WORKSPACE || '.', 'template.html');
+const outputPath = path.resolve(process.env.GITHUB_WORKSPACE || '.', 'index.html');
 
-processHTML(inputPaths, outputPaths);
+processHTML(inputPath, outputPath);
