@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <script>
+        // Fungsi untuk mengambil daftar repo dari repos.json
+        async function fetchRepos() {
+            try {
+                const response = await fetch('/repos.json');
+                if (!response.ok) throw new Error('Gagal mengambil data repo');
+                return await response.json();
+            } catch (error) {
+                console.error('Error:', error);
+                return [];
+            }
+        }
+
+        // Fungsi untuk mengecek typo dan redirect
+        async function checkTypoAndRedirect() {
+            const repos = await fetchRepos(); // Ambil daftar repo
+            const path = window.location.pathname; // Ambil path dari URL
+            const parts = path.split('/').filter(part => part.trim() !== ''); // Pisahkan path
+
+            if (parts.length > 0) {
+                const repoName = parts[0].toLowerCase(); // Ambil bagian pertama (nama repo)
+
+                // Cari repo yang mirip (fuzzy match)
+                const matchedRepo = repos.find(repo => repo.includes(repoName) || repoName.includes(repo));
+
+                if (matchedRepo) {
+                    // Redirect ke repo yang benar
+                    window.location.href = `https://4211421036.github.io/${matchedRepo}`;
+                    return;
+                }
+            }
+
+            // Jika tidak ditemukan, tetap di halaman 404
+            document.getElementById('message').innerText = 'Halaman tidak ditemukan.';
+        }
+
+        // Jalankan fungsi saat halaman dimuat
+        window.onload = checkTypoAndRedirect;
+    </script>
+</head>
+<body>
+    <div id="message">Mengarahkan...</div>
+</body>
+</html>
