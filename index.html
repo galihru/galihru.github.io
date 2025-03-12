@@ -6,8 +6,8 @@
     <meta charset="UTF-8">
     <link href=/manifest.json rel=manifest crossorigin=use-credentials>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="keywords" content="HTML, CSS, JavaScript, Web Development, SEO">
     <meta name="description" content="This is collation application created by GALIH RIDHO UTOMO ">
+    <meta name="keywords" content="HTML, CSS, JavaScript, Web Development, SEO">
     <meta name="author" content="GALIH RIDHO UTOMO">
     <meta name="robots" content="index, follow">
     <meta property="og:title" content="Web Page">
@@ -26,7 +26,7 @@
     <link rel="icon" href="https://4211421036.github.io/g4lihru/987654567.png" type="image/x-icon">
     <link rel="alternate" media="only screen and (max-width: 640px)" href="https://4211421036.github.io/mobile/" />
     <script type src="/theme.js"></script>
-    <script type="text/javascript">
+    <script>
         document.addEventListener("DOMContentLoaded", function () {
             if (window.innerWidth < 720) {
                 document.head.innerHTML += '<meta http-equiv="refresh" content="0;url=https://4211421036.github.io/mobile">';
@@ -41,7 +41,7 @@
         <img src="https://4211421036.github.io/g4lihru/987654567.png" alt="Logo"
             style="width: 150px; height: 150px; background: white; border-radius: 25px;">
     </div>
-    <script type="text/javascript">
+    <script>
         // Hide splash screen after 3 seconds
         window.addEventListener('load', () => {
             setTimeout(() => {
@@ -111,7 +111,7 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript">
+    <script>
         // Function to fetch GitHub repos
         async function fetchGitHubRepos() {
             try {
@@ -159,7 +159,7 @@
         // Call the function when page loads
         fetchGitHubRepos();
     </script>
-    <script type="text/javascript">
+    <script>
         const track = document.querySelector('.carousel-track');
         const items = Array.from(track.children);
         const nextButton = document.querySelector('.carousel-next');
@@ -1123,6 +1123,81 @@ let existingCurrentIndex = 0;
             });
         }
     </script>
-</body>
+<script nonce="2JmTCNav+BFlVn7+6x00hQ==">
+performance.mark('app-init-start');
+
+function loadThirdParty(element) {
+    const actualSrc = element.dataset.src;
+    const actualType = element.dataset.type;
+    
+    if (actualType === 'script') {
+        const script = document.createElement('script');
+        script.src = actualSrc;
+        script.async = true;
+        element.parentNode.replaceChild(script, element);
+    } else if (actualType === 'iframe') {
+        const iframe = document.createElement('iframe');
+        iframe.src = actualSrc;
+        Object.assign(iframe, {
+            width: element.dataset.width || '100%',
+            height: element.dataset.height || '100%',
+            frameborder: '0'
+        });
+        element.parentNode.replaceChild(iframe, element);
+    }
+    
+    performance.mark('third-party-load-' + actualSrc);
+    performance.measure('third-party-loading', 'app-init-start', 'third-party-load-' + actualSrc);
+}
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            loadThirdParty(entry.target);
+            observer.unobserve(entry.target);
+        }
+    });
+}, {
+    rootMargin: '50px'
+});
+window.addEventListener('pageshow', function(event) {
+    performance.mark('pageshow-start');
+    if (event.persisted) {
+        console.log('Page restored from bfcache');
+        performance.measure('bfcache-restoration', 'pageshow-start');
+    }
+});
+
+window.addEventListener('load', function() {
+    performance.mark('page-load-complete');
+    performance.measure('total-page-load', 'app-init-start', 'page-load-complete');
+    
+    // Initialize lazy loading
+    document.querySelectorAll('[data-lazy]').forEach(element => {
+        observer.observe(element);
+    });
+});
+
+// Send performance metrics to analytics
+function sendPerformanceMetrics() {
+    const metrics = performance.getEntriesByType('measure');
+    console.log('Performance metrics:', metrics);
+    // Here you could send these metrics to your analytics service
+}
+
+
+window.addEventListener('pagehide', function(event) {
+    console.log('Page is being unloaded');
+});
+
+document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'hidden') {
+        performance.mark('page-hide');
+        performance.measure('page-visible-duration', 'app-init-start', 'page-hide');
+        sendPerformanceMetrics();
+        console.log('Page hidden, prepare for restoration');
+    }
+});
+</script></body>
 
 </html>
