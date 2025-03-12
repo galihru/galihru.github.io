@@ -24,6 +24,11 @@ jobs:
         run: |
           node scripts/update-repos.js
 
+      - name: Clean working directory
+        run: |
+          git reset --hard
+          git clean -fd
+
       - name: Commit and push changes
         run: |
           git config --global user.name "GitHub Actions"
