@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Fetch complete history for better merging
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -31,10 +33,24 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Commit and push if changed
+      - name: Configure Git
         run: |
           git config --global user.name 'GitHub Action'
           git config --global user.email 'action@github.com'
+
+      - name: Commit and push changes
+        run: |
+          # Check if repo-data.json exists, if yes, remove it
+          if [ -f "repo-data.json" ]; then
+            git rm repo-data.json
+            git commit -m "Remove existing repo-data.json"
+          fi
+          
+          # Add the newly generated repo-data.json
           git add repo-data.json
-          git diff --quiet && git diff --staged --quiet || git commit -m "Update repository data"
+          
+          # Commit if there are changes
+          git diff --staged --quiet || git commit -m "Update repository data"
+          
+          # Push changes
           git push
