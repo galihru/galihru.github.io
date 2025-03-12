@@ -203,8 +203,8 @@ function processHTML(inputFilePath, outputFilePath) {
             minifyJS: true,
             minifyCSS: true,
             collapseBooleanAttributes: true,
-            removeScriptTypeAttributes: true,
-            removeStyleLinkTypeAttributes: true,
+            removeScriptTypeAttributes: false, // Nonaktifkan
+            removeStyleLinkTypeAttributes: false, // Nonaktifkan
             useShortDoctype: true,
             removeOptionalTags: false,
             removeTagWhitespace: false,
