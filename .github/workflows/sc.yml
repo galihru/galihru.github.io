@@ -1,8 +1,8 @@
 name: Update Repos List
 on:
   schedule:
-    - cron: '*/1 * * * *' # Jalankan setiap hari jam 00:00 UTC
-  workflow_dispatch: # Memungkinkan Anda menjalankan workflow secara manual
+    - cron: '*/1 * * * *'
+  workflow_dispatch:
 
 jobs:
   update-repos:
