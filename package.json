@@ -10,7 +10,8 @@
     "crypto": "^1.0.1",
     "html-minifier": "^4.0.0",
     "terser": "^5.37.0",
-    "node-html-parser": "^6.1.5"
+    "node-html-parser": "^6.1.5",
+    "axios": "^1.8.2"
   },
   "devDependencies": {
     "prettier": "^3.2.5"
