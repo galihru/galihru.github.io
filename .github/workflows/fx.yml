@@ -39,12 +39,6 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          # Check if repo-data.json exists, if yes, remove it
-          if [ -f "repo-data.json" ]; then
-            git rm repo-data.json
-            git commit -m "Remove existing repo-data.json"
-          fi
-          
           # Add the newly generated repo-data.json
           git add repo-data.json
           
