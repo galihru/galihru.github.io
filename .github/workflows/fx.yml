@@ -1,15 +1,13 @@
 name: Generate Repository Data
-
 on:
   schedule:
-    - cron: '*/120 * * * *'
+    - cron: '0 */12 * * *'  # Setiap 12 jam
   # Jalankan secara manual dari tab Actions
   workflow_dispatch:
   # Jalankan ketika ada push ke branch main
   push:
     branches:
       - main
-
 jobs:
   generate-repo-data:
     runs-on: ubuntu-latest
@@ -17,36 +15,42 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Fetch complete history for better merging
-
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-
+      
       - name: Install dependencies
         run: npm install @octokit/rest fuzzysort
-
+      
       - name: Generate repository data
         run: node scripts/update-repos.js
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-
-      - name: Configure Git
+      
+      - name: Commit and push if changed
         run: |
           git config --global user.name 'GitHub Action'
           git config --global user.email 'action@github.com'
-
-      - name: Commit and push changes
-        run: |
-          # Pull latest changes from remote to avoid conflicts
-          git pull origin main --rebase
           
-          # Add the newly generated repo-data.json
+          # Stash any changes dari proses generate
+          git stash -u
+          
+          # Pull perubahan terbaru
+          git pull origin main
+          
+          # Apply stash kembali
+          git stash pop
+          
+          # Add perubahan
           git add repo-data.json
           
-          # Commit if there are changes
-          git diff --staged --quiet || git commit -m "Update repository data"
-          
-          # Push changes
-          git push
+          # Commit jika ada perubahan
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update repository data"
+            git push
+          fi
