@@ -2,7 +2,7 @@ name: Generate Repository Data
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '0 0 * * *'
   # Jalankan secara manual dari tab Actions
   workflow_dispatch:
   # Jalankan ketika ada push ke branch main
