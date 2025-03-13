@@ -1,7 +1,6 @@
 name: Generate Repository Data
 
 on:
-  # Jalankan setiap hari pada pukul 00:00 UTC
   schedule:
     - cron: '*/5 * * * *'
   # Jalankan secara manual dari tab Actions
