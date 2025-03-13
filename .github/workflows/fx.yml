@@ -39,6 +39,9 @@ jobs:
 
       - name: Commit and push changes
         run: |
+          # Pull latest changes from remote to avoid conflicts
+          git pull origin main --rebase
+          
           # Add the newly generated repo-data.json
           git add repo-data.json
           
