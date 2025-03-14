@@ -517,7 +517,7 @@
   <header role="banner">
       <!-- Logo -->
       <a title="Logo" href="/" class="logo">
-        <img src="345677.png" alt="logo" width="60" height="60">
+        <img src="345677.png" alt="logo" width="60">
         Web App
       </a>
       
@@ -538,21 +538,21 @@
   <!-- Main content container with correct attributes -->
   <main id="main-content" class="container" role="main" tabindex="-1">
     <section class="loading" id="loading" role="status" aria-live="polite">
-        <h1>Mencari repositori...</h1>
+        <h1 lang="id">Mencari repositori...</h1>
         <div class="loader" role="alert" aria-label="Loading"></div>
         <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="progressbar-label">
             <div class="progress-bar-inner"></div>
         </div>
-        <p id="progressbar-label">Sedang mencoba menemukan repositori yang sesuai...</p>
+        <p lang="id" id="progressbar-label">Sedang mencoba menemukan repositori yang sesuai...</p>
     </section>
     
     <section id="not-found" class="not-found" role="alert" aria-live="assertive">
       <p class="error-code" role="text">404</p>
-      <h1>Halaman Tidak Ditemukan</h1>
-      <p>Maaf, halaman <strong id="original-path" role="text"></strong> tidak ditemukan.</p>
+      <h1 lang="id">Halaman Tidak Ditemukan</h1>
+      <p lang="id">Maaf, halaman <strong id="original-path" role="text"></strong> tidak ditemukan.</p>
       
       <div id="suggestions" class="suggestions" role="region" aria-labelledby="suggestions-heading">
-        <h2 id="suggestions-heading">Mungkin maksud Anda:</h2>
+        <h2 lang="id" id="suggestions-heading">Mungkin maksud Anda:</h2>
         <table aria-describedby="suggestions-heading">
           <thead>
             <tr>
@@ -567,7 +567,7 @@
         </table>
       </div>
       
-      <p><a title="To Home" href="/" accesskey="h">Kembali ke Halaman Utama</a></p>
+      <p><a lang="id" title="To Home" href="/" accesskey="h">Kembali ke Halaman Utama</a></p>
     </section>
 
     <!-- Dialog untuk Preview Link -->
@@ -588,10 +588,10 @@
         </div>
       </div>
       <!-- Iframe container -->
-      <div id="iframe-container" style="display: block; width: 100%; height: 100%;">
+      <div id="iframe-container" style="display: block; width: 100%; height: 100%;" aria-hidden="true">
         <iframe id="repo-preview" src="" title="Repository Preview" width="100%" height="100%" style="border: none; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);"></iframe>
       </div>
-      <div id="repo-info" style="display: none;" class="repo-info">
+      <div id="repo-info" style="display: none;" class="repo-info" aria-hidden="true">
         <!-- Informasi repositori akan ditampilkan di sini -->
       </div>
     </section>
