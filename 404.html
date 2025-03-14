@@ -24,7 +24,7 @@
     :root {
     /* Variabel tema terang (default) */
         --bg-color: #f8f9fa;
-        --bg-element: #ffffff;
+        --bg-element: gb (255 255 255 / 50%));
         --color-text: #333333;
         --color-primary: #0047b3; /* Digelapkan dari #1e5799 untuk kontras lebih baik */
         --color-primary-hover: #092c61;
@@ -47,7 +47,7 @@
     :root.dark-mode {
         /* Variabel tema gelap */
         --bg-color: #121212;
-        --bg-element: #1a1a1a;
+        --bg-element: rgb(26 26 26 / 50%);
         --color-text: #ffffff;
         --color-primary: #ffffff; /* Lebih terang dari #4a90e2 untuk kontras lebih baik */
         --color-primary-hover: #d7e7fd;
@@ -87,8 +87,10 @@
         background-color: var(--bg-element);
         box-shadow: 0 2px 4px var(--shadow-color);
         transition: background-color 0.3s, color 0.3s;
-        position: fixxd;
+        position: fixed;
         width: -webkit-fill-available;
+        z-index: 9;
+        backdrop-filter: blur(20px);
     }
 
     .loading {
