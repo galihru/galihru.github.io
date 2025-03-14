@@ -21,7 +21,6 @@ jobs:
       run: npm install
 
     - name: Run 404.js
-      run: node 404.js
       
     - name: Stash changes
       run: git stash
