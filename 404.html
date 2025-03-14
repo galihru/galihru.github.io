@@ -275,6 +275,10 @@
           <i class="fas fa-external-link-alt"></i>
         </span>
       </div>
+      <!-- Added iframe container -->
+      <div id="iframe-container" style="display: none; width: 100%; height: 80%;">
+        <iframe id="repo-preview" src="" title="Repository Preview" width="100%" height="100%" style="border: none; background-color: white; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 5px;"></iframe>
+      </div>
       <div id="repo-info" class="repo-info">
         <!-- Informasi repositori akan ditampilkan di sini -->
       </div>
@@ -377,30 +381,59 @@
       const repoInfoDiv = document.getElementById('repo-info');
       const dialogLinkIcon = document.getElementById('dialog-link-icon');
       const progressInner = document.querySelector('.dialog-progress-inner');
-
+      
+      // Show iframe element
+      const iframeContainer = document.getElementById('iframe-container');
+      const repoPreview = document.getElementById('repo-preview');
+      
       // Tampilkan progress bar
       progressInner.style.width = '0%';
-
+    
       // Ambil nama pemilik dan repositori dari URL
-      const repoPath = new URL(url).pathname.split('/').slice(1, 3).join('/');
-
-      // Fetch informasi repositori dari API GitHub
+      const urlParts = new URL(url).pathname.split('/').filter(part => part);
+      const owner = urlParts[0];
+      const repo = urlParts[1];
+      const repoPath = `${owner}/${repo}`;
+      
       try {
-        const response = await fetch(`https://api.github.com/repos/${repoPath}`);
-        const repoData = await response.json();
-
-        // Tampilkan informasi repositori
-        repoInfoDiv.innerHTML = `
-          <h3>${repoData.full_name}</h3>
-          <p>${repoData.description || "Tidak ada deskripsi"}</p>
-          <p><strong>Bahasa:</strong> ${repoData.language}</p>
-          <p><strong>Stars:</strong> ${repoData.stargazers_count}</p>
-          <p><strong>Forks:</strong> ${repoData.forks_count}</p>
-        `;
-
+        // Check if GitHub Pages exists for this repo
+        const pagesUrl = `https://${owner}.github.io/${repo}/`;
+        
+        // Try to fetch the GitHub Pages URL to see if it exists
+        const pageCheckResponse = await fetch(pagesUrl, { method: 'HEAD' })
+          .catch(e => ({ ok: false })); // Handle network errors
+        
+        if (pageCheckResponse.ok) {
+          // GitHub Pages exists, show in iframe
+          iframeContainer.style.display = 'block';
+          repoInfoDiv.style.display = 'none';
+          repoPreview.src = pagesUrl;
+          repoPreview.title = `${repo} - GitHub Pages Preview`;
+        } else {
+          // GitHub Pages doesn't exist or is not accessible, show repo info instead
+          iframeContainer.style.display = 'none';
+          repoInfoDiv.style.display = 'block';
+          
+          // Fetch informasi repositori dari API GitHub
+          const response = await fetch(`https://api.github.com/repos/${repoPath}`);
+          const repoData = await response.json();
+    
+          // Tampilkan informasi repositori
+          repoInfoDiv.innerHTML = `
+            <h3>${repoData.full_name}</h3>
+            <p>${repoData.description || "Tidak ada deskripsi"}</p>
+            <p><strong>Bahasa:</strong> ${repoData.language || "Tidak ditentukan"}</p>
+            <p><strong>Stars:</strong> ${repoData.stargazers_count}</p>
+            <p><strong>Forks:</strong> ${repoData.forks_count}</p>
+          `;
+        }
+    
         // Set link icon untuk membuka link di tab baru
-        dialogLinkIcon.onclick = () => window.open(repoData.html_url, '_blank');
-
+        const pageOrRepoUrl = pageCheckResponse.ok ? 
+          `https://${owner}.github.io/${repo}/` : 
+          `https://github.com/${repoPath}`;
+        dialogLinkIcon.onclick = () => window.open(pageOrRepoUrl, '_blank');
+    
         // Sembunyikan progress bar setelah selesai
         progressInner.style.width = '100%';
         setTimeout(() => {
@@ -408,9 +441,11 @@
         }, 500);
       } catch (error) {
         console.error('Error fetching repo info:', error);
+        repoInfoDiv.style.display = 'block';
+        iframeContainer.style.display = 'none';
         repoInfoDiv.innerHTML = `<p>Gagal memuat informasi repositori.</p>`;
       }
-
+    
       // Tampilkan dialog
       document.getElementById('dialog').style.display = 'block';
     }
