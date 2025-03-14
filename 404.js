@@ -1,26 +1,31 @@
 import fs from 'fs';
 import crypto from 'crypto';
 
-// Function to generate hash
+// Fungsi untuk menghasilkan hash yang konsisten
 function generateHash(input) {
   return crypto.createHash('sha256').update(input).digest('hex').substr(0, 8);
 }
 
-// Function to generate nonce
+// Fungsi untuk menghasilkan nonce
 function generateNonce() {
   return crypto.randomBytes(16).toString('hex');
 }
 
-// Generate hashed ID and CSS class names
-const hashedIds = {
+// Generate hash untuk semua komponen
+const componentHashes = {
+  header: generateHash('header'),
+  nav: generateHash('nav'),
+  dialog: generateHash('dialog'),
+  progress: generateHash('progress'),
   loading: generateHash('loading'),
   notFound: generateHash('not-found'),
   originalPath: generateHash('original-path'),
   suggestions: generateHash('suggestions'),
   suggestionList: generateHash('suggestion-list'),
   mainContent: generateHash('main-content'),
-  skipLink: generateHash('skip-link'),
   errorMessage: generateHash('error-message'),
+  themeToggle: generateHash('theme-toggle'),
+  progressBar: generateHash('progress-bar'),
 };
 
 const hashedCssClasses = {
@@ -30,11 +35,15 @@ const hashedCssClasses = {
   suggestions: generateHash('suggestions'),
   suggestionItem: generateHash('suggestion-item'),
   loader: generateHash('loader'),
-  skipLink: generateHash('skip-link'),
   visually_hidden: generateHash('visually-hidden'),
+  button: generateHash('button'),
+  progressBar: generateHash('progress-bar'),
+  dialog: generateHash('dialog'),
+  header: generateHash('header'),
+  nav: generateHash('nav'),
 };
 
-// Generate nonce for CSP
+// Generate nonce untuk CSP
 const styleNonce = generateNonce();
 const scriptNonce = generateNonce();
 
@@ -67,7 +76,19 @@ const htmlContent = `
       line-height: 1.6;
       margin: 0;
       padding: 20px;
-      color: #333;
+      color: var(--text-color);
+      background-color: var(--background);
+      transition: all 0.3s ease;
+    }
+    :root {
+      --background: #ffffff;
+      --text-color: #333333;
+      --primary-color: #3498db;
+    }
+    [data-theme="dark"] {
+      --background: #1a1a1a;
+      --text-color: #ffffff;
+      --primary-color: #2ecc71;
     }
     .${hashedCssClasses.container} {
       max-width: 800px;
@@ -91,15 +112,16 @@ const htmlContent = `
       margin-top: 20px;
       text-align: left;
       padding: 20px;
-      background-color: #f8f9fa;
+      background-color: var(--background);
       border-radius: 5px;
+      border: 1px solid var(--text-color);
     }
     .${hashedCssClasses.suggestionItem} {
       margin-bottom: 10px;
     }
     .${hashedCssClasses.loader} {
       border: 5px solid #f3f3f3;
-      border-top: 5px solid #3498db;
+      border-top: 5px solid var(--primary-color);
       border-radius: 50%;
       width: 50px;
       height: 50px;
@@ -110,17 +132,17 @@ const htmlContent = `
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    .${hashedCssClasses.skipLink} {
+    .skipLink {
       position: absolute;
       top: -40px;
       left: 0;
-      background: #3498db;
+      background: var(--primary-color);
       color: white;
       padding: 8px;
       z-index: 100;
       transition: top 0.3s;
     }
-    .${hashedCssClasses.skipLink}:focus {
+    .skipLink:focus {
       top: 0;
     }
     .${hashedCssClasses.visually_hidden} {
@@ -135,102 +157,110 @@ const htmlContent = `
       border: 0;
     }
     a {
-      color: #3498db;
+      color: var(--primary-color);
       text-decoration: underline;
       font-weight: bold;
     }
     a:hover, a:focus {
-      color: #2980b9;
+      color: var(--primary-color);
       text-decoration: underline;
-      outline: 2px solid #3498db;
+      outline: 2px solid var(--primary-color);
+    }
+    .${hashedCssClasses.button} {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .${hashedCssClasses.progressBar} {
+      width: 0%;
+      height: 10px;
+      background-color: var(--primary-color);
+      transition: width 0.3s ease;
     }
   </style>
 </head>
 <body>
-  <a href="#${hashedIds.mainContent}" class="${hashedCssClasses.skipLink}" id="${hashedIds.skipLink}">Lewati ke konten utama</a>
+  <header id="${componentHashes.header}" role="banner">
+    <nav aria-label="Navigasi utama">
+      <button id="${componentHashes.themeToggle}" class="${hashedCssClasses.button}">Toggle Tema</button>
+    </nav>
+  </header>
+
+  <a href="#${componentHashes.mainContent}" class=".skipLink" id="skipLink">Skip Link</a>
   
   <div class="${hashedCssClasses.container}">
-    <main id="${hashedIds.mainContent}" tabindex="-1">
-      <div id="${hashedIds.loading}" role="status" aria-live="polite">
+    <main id="${componentHashes.mainContent}" tabindex="-1">
+      <div id="${componentHashes.loading}" role="status" aria-live="polite">
         <h1>Mencari repositori...</h1>
         <div class="${hashedCssClasses.loader}" aria-hidden="true"></div>
-        <p>Sedang mencoba menemukan repositori yang sesuai...</p>
+        <p role="text">Sedang mencoba menemukan repositori yang sesuai...</p>
       </div>
       
-      <div id="${hashedIds.notFound}" class="${hashedCssClasses.notFound}" role="alert" aria-labelledby="not-found-heading">
+      <div id="${componentHashes.notFound}" class="${hashedCssClasses.notFound}" role="alert" aria-labelledby="not-found-heading">
         <p class="${hashedCssClasses.errorCode}" aria-hidden="true">404</p>
         <h1 id="not-found-heading">Halaman Tidak Ditemukan</h1>
-        <p>Maaf, halaman <strong id="${hashedIds.originalPath}"></strong> tidak ditemukan.</p>
+        <p role="text">Maaf, halaman <strong id="${componentHashes.originalPath}"></strong> tidak ditemukan.</p>
         
-        <div id="${hashedIds.suggestions}" class="${hashedCssClasses.suggestions}" aria-labelledby="suggestions-heading">
+        <div id="${componentHashes.suggestions}" class="${hashedCssClasses.suggestions}" aria-labelledby="suggestions-heading">
           <h2 id="suggestions-heading">Mungkin maksud Anda:</h2>
-          <ul id="${hashedIds.suggestionList}" role="list" aria-label="Daftar saran repositori"></ul>
+          <ul id="${componentHashes.suggestionList}" role="list" aria-label="Daftar saran repositori"></ul>
         </div>
         
-        <p id="${hashedIds.errorMessage}"></p>
+        <p id="${componentHashes.errorMessage}"></p>
         
         <p><a href="/" aria-label="Kembali ke Halaman Utama">Kembali ke Halaman Utama</a></p>
       </div>
     </main>
     
     <footer role="contentinfo">
-      <p>© 2025 GALIH RIDHO UTOMO. Semua hak dilindungi.</p>
+      <p role="text">© 2025 GALIH RIDHO UTOMO. Semua hak dilindungi.</p>
     </footer>
   </div>
   
   <script nonce="${scriptNonce}" src="https://cdn.jsdelivr.net/npm/fuzzysort@2.0.4/fuzzysort.min.js"></script>
   <script nonce="${scriptNonce}">
-    // Function to get slug from URL
+    // Fungsi untuk toggle tema
+    const themeToggle = document.getElementById('${componentHashes.themeToggle}');
+    const currentTheme = localStorage.getItem('theme') || 'light';
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      applyTheme(newTheme);
+    });
+
+    // Init tema
+    applyTheme(currentTheme);
+
+    // Fungsi untuk mendapatkan slug dari URL
     function getSlug(path) {
-      // Remove leading and trailing slashes
       path = path.replace(/^\/|\/$/g, '');
-      // Get the first part of the path as slug
       return path.split('/')[0];
     }
 
-    // Function for fuzzy matching
+    // Fungsi untuk fuzzy matching
     async function findMatchingRepo(slug) {
       try {
-        // Get repo data from JSON
         const response = await fetch('/repo-data.json');
-        if (!response.ok) {
-          throw new Error('Failed to fetch repo data');
-        }
+        if (!response.ok) throw new Error('Gagal mengambil data repositori');
         const repoData = await response.json();
         
-        // Create array of all repo name variations
-        const allRepoVariations = [];
-        repoData.forEach(repo => {
-          // Add original repo name
-          allRepoVariations.push({
-            name: repo.name,
-            original: repo.name,
-            hasIndex: repo.hasIndex,
-            indexPath: repo.indexPath,
-            url: repo.url
-          });
-          
-          // Add repo name variations
-          repo.variations.forEach(variation => {
-            allRepoVariations.push({
-              name: variation,
-              original: repo.name,
-              hasIndex: repo.hasIndex,
-              indexPath: repo.indexPath,
-              url: repo.url
-            });
-          });
-        });
+        const allRepoVariations = repoData.flatMap(repo => [
+          { name: repo.name, original: repo.name, hasIndex: repo.hasIndex, indexPath: repo.indexPath, url: repo.url },
+          ...repo.variations.map(variation => ({ name: variation, original: repo.name, hasIndex: repo.hasIndex, indexPath: repo.indexPath, url: repo.url }))
+        ]);
         
-        // Perform fuzzy matching
         const results = fuzzysort.go(slug, allRepoVariations, { key: 'name', limit: 5 });
         
-        // If there are matching results
         if (results.length > 0) {
-          // Get the best match
           const bestMatch = results[0].obj;
-          
-          // Return matching repo information
           return {
             found: true,
             name: bestMatch.original,
@@ -243,91 +273,72 @@ const htmlContent = `
         
         return { found: false, allMatches: [] };
       } catch (error) {
-        console.error('Error finding matching repo:', error);
+        console.error('Error:', error);
         return { found: false, allMatches: [], error: error.message };
       }
     }
 
-    // Main function for handling redirects
+    // Fungsi utama untuk handle redirect
     async function handleRedirect() {
-      // Get path from URL
       const path = window.location.pathname;
-      
-      // Get slug
       const slug = getSlug(path);
       
-      // Always show the 404 page for invalid URLs instead of redirecting to home
-      // Only direct to valid repos if found
       try {
-        // Show loading initially
-        document.getElementById('${hashedIds.loading}').style.display = 'block';
+        document.getElementById('${componentHashes.loading}').style.display = 'block';
+        document.getElementById('${componentHashes.originalPath}').textContent = path;
         
-        // Set the original path text
-        document.getElementById('${hashedIds.originalPath}').textContent = path;
-        
-        // If slug exists, try to find matching repo
         if (slug) {
           const matchResult = await findMatchingRepo(slug);
           
           if (matchResult.found) {
-            // If found, redirect to correct URL
             window.location.href = matchResult.url;
             return;
           }
           
-          // Show suggestions if available
-          const suggestionList = document.getElementById('${hashedIds.suggestionList}');
-          if (matchResult.allMatches && matchResult.allMatches.length > 0) {
+          const suggestionList = document.getElementById('${componentHashes.suggestionList}');
+          if (matchResult.allMatches.length > 0) {
             matchResult.allMatches.forEach(match => {
               const item = document.createElement('li');
               item.className = '${hashedCssClasses.suggestionItem}';
-              
               const link = document.createElement('a');
               link.href = match.url;
               link.textContent = match.original;
               link.setAttribute('aria-label', 'Kunjungi repositori ' + match.original);
-              
               item.appendChild(link);
               suggestionList.appendChild(item);
             });
           } else {
-            document.getElementById('${hashedIds.suggestions}').style.display = 'none';
+            document.getElementById('${componentHashes.suggestions}').style.display = 'none';
           }
           
-          // If there was an error fetching the repo data
           if (matchResult.error) {
-            document.getElementById('${hashedIds.errorMessage}').textContent = 
-              'Terjadi kesalahan saat mencoba menemukan repositori: ' + matchResult.error;
+            document.getElementById('${componentHashes.errorMessage}').textContent = 
+              'Terjadi kesalahan: ' + matchResult.error;
           }
         } else {
-          // If no slug, still show 404 instead of redirecting
-          document.getElementById('${hashedIds.suggestions}').style.display = 'none';
+          document.getElementById('${componentHashes.suggestions}').style.display = 'none';
         }
         
-        // Hide loading and show not found
-        document.getElementById('${hashedIds.loading}').style.display = 'none';
-        document.getElementById('${hashedIds.notFound}').style.display = 'block';
+        document.getElementById('${componentHashes.loading}').style.display = 'none';
+        document.getElementById('${componentHashes.notFound}').style.display = 'block';
         
-        // Set focus to the main content for screen readers
         setTimeout(() => {
-          document.getElementById('${hashedIds.mainContent}').focus();
+          document.getElementById('${componentHashes.mainContent}').focus();
         }, 100);
       } catch (error) {
-        console.error('Error in redirect handling:', error);
-        document.getElementById('${hashedIds.loading}').style.display = 'none';
-        document.getElementById('${hashedIds.notFound}').style.display = 'block';
-        document.getElementById('${hashedIds.errorMessage}').textContent = 
+        console.error('Error:', error);
+        document.getElementById('${componentHashes.loading}').style.display = 'none';
+        document.getElementById('${componentHashes.notFound}').style.display = 'block';
+        document.getElementById('${componentHashes.errorMessage}').textContent = 
           'Terjadi kesalahan: ' + error.message;
       }
     }
 
-    // Run redirect function when page loads
+    // Event listeners
     window.addEventListener('DOMContentLoaded', handleRedirect);
-    
-    // Make sure the skip link works properly
-    document.getElementById('${hashedIds.skipLink}').addEventListener('click', function(e) {
+    document.getElementById('skipLink').addEventListener('click', function(e) {
       e.preventDefault();
-      document.getElementById('${hashedIds.mainContent}').focus();
+      document.getElementById('${componentHashes.mainContent}').focus();
     });
   </script>
 </body>
@@ -337,4 +348,4 @@ const htmlContent = `
 // Write HTML file
 fs.writeFileSync('404.html', htmlContent);
 
-console.log('File 404.html berhasil dibuat dengan perbaikan aksesibilitas dan logika yang benar!');
+console.log('File 404.html berhasil dibuat dengan semua perbaikan!');
