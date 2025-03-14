@@ -22,19 +22,22 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     :root {
-        /* Variabel tema terang (default) */
+    /* Variabel tema terang (default) */
         --bg-color: #f8f9fa;
         --bg-element: #ffffff;
-        --color-text: #333;
-        --color-primary: #1e5799;
-        --color-primary-hover: #154b73;
+        --color-text: #333333;
+        --color-primary: #0b3b81; /* Digelapkan dari #1e5799 untuk kontras lebih baik */
+        --color-primary-hover: #092c61;
         --border-color: #ddd;
         --shadow-color: rgba(0, 0, 0, 0.1);
-        --table-header-bg: #1e5799;
+        --table-header-bg: #0b3b81; /* Digelapkan untuk kontras lebih baik */
         --table-header-color: #ffffff;
-        --error-color: #b22222;
+        --error-color: #9c0000; /* Digelapkan dari #b22222 */
         --loader-border: #ddd;
         --progress-bg: #ddd;
+        --link-color: #0b3b81; /* Warna link dengan kontras lebih baik */
+        --link-hover-color: #092c61;
+        --theme-toggle-text: #ffffff; /* Warna teks untuk tombol tema */
     }
     
     :root.dark-mode {
@@ -42,15 +45,18 @@
         --bg-color: #121212;
         --bg-element: #1a1a1a;
         --color-text: #ffffff;
-        --color-primary: #4a90e2;
-        --color-primary-hover: #357abd;
+        --color-primary: #5e9bff; /* Lebih terang dari #4a90e2 untuk kontras lebih baik */
+        --color-primary-hover: #80b5ff;
         --border-color: #444;
         --shadow-color: rgba(0, 0, 0, 0.3);
-        --table-header-bg: #4a90e2;
+        --table-header-bg: #0047b3; /* Digelapkan untuk kontras lebih baik pada dark mode */
         --table-header-color: #ffffff;
-        --error-color: #ff6b6b;
+        --error-color: #ff8080; /* Lebih terang untuk kontras di dark mode */
         --loader-border: #444;
         --progress-bg: #444;
+        --link-color: #5e9bff; /* Warna link dengan kontras lebih baik */
+        --link-hover-color: #80b5ff;
+        --theme-toggle-text: #ffffff; /* Warna teks untuk tombol tema */
     }
     
     /* Gaya dasar */
@@ -93,30 +99,49 @@
     }
     
     nav a {
-        color: var(--color-text);
+        color: var(--link-color); /* Gunakan warna link khusus */
         text-decoration: none;
-        font-weight: 500;
+        font-weight: 700; /* Pertebal untuk kontras lebih baik */
         transition: color 0.3s;
     }
     
     nav a:hover {
-        color: var(--color-primary);
+        color: var(--link-hover-color);
+        text-decoration: underline; /* Tambahkan underline untuk aksesibilitas */
+    }
+    
+    /* Link secara umum */
+    a {
+        color: var(--link-color);
+        font-weight: 500;
+        text-decoration: underline; /* Tambahkan underline untuk aksesibilitas */
+        transition: color 0.3s;
+    }
+    
+    a:hover {
+        color: var(--link-hover-color);
     }
     
     /* Tombol Tema */
     .theme-toggle {
         background-color: var(--color-primary);
-        color: #ffffff;
+        color: var(--theme-toggle-text);
         border: none;
         padding: 0.5rem 1rem;
         border-radius: 5px;
         cursor: pointer;
         font-size: 1rem;
+        font-weight: 700; /* Pertebal untuk kontras lebih baik */
         transition: background-color 0.3s;
     }
     
     .theme-toggle:hover {
         background-color: var(--color-primary-hover);
+    }
+    
+    .theme-toggle:focus {
+        outline: 3px solid #ffcc00;
+        outline-offset: 2px;
     }
     
     /* Konten Utama */
@@ -154,6 +179,7 @@
         align-items: center;
         text-align: center;
         transition: background-color 0.3s, color 0.3s;
+        color: var(--color-text); /* Pastikan warna teks konsisten */
     }
     
     .error-code {
@@ -194,6 +220,16 @@
     .suggestions th {
         background-color: var(--table-header-bg);
         color: var(--table-header-color);
+        font-weight: bold;
+    }
+    
+    /* Perbaikan khusus untuk header tabel yang bermasalah */
+    th#header-name,
+    th#header-desc,
+    th#header-link {
+        background-color: var(--table-header-bg);
+        color: var(--table-header-color);
+        font-weight: bold;
     }
     
     .dialog {
@@ -301,14 +337,15 @@
     
     .icon-link {
         cursor: pointer;
-        color: var(--color-primary);
+        color: var(--link-color);
         font-size: 1.2em;
         text-decoration: none;
         transition: color 0.3s;
     }
     
     .icon-link:hover {
-        color: var(--color-primary-hover);
+        color: var(--link-hover-color);
+        text-decoration: underline;
     }
     
     .dialog-header {
@@ -330,7 +367,7 @@
         padding: 20px;
         border-radius: 5px;
         box-shadow: 0 0 10px var(--shadow-color);
-        width: -webkit-fill-available;
+        width: 100%;
         transition: background-color 0.3s, color 0.3s;
     }
     
