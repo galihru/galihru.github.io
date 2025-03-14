@@ -162,6 +162,16 @@
     .icon-link:hover {
       color: #2980b9;
     }
+    .dialog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    .dialog-header h2 {
+      margin: 0;
+    }
   </style>
 </head>
 <body>
@@ -204,7 +214,12 @@
       <div class="dialog-progress">
         <div class="dialog-progress-inner" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="dialog-progress-label"></div>
       </div>
-      <h2 id="dialog-title">Preview Link</h2>
+      <div class="dialog-header">
+        <h2 id="dialog-title">Preview Link</h2>
+        <span id="dialog-link-icon" class="icon-link" role="button" aria-label="Open link in new tab">
+          <i class="fas fa-external-link-alt"></i>
+        </span>
+      </div>
       <iframe id="dialog-iframe" src="" title="Preview Link"></iframe>
       <button onclick="closeDialog()" accesskey="c" role="button" aria-label="Close dialog">Close</button>
     </div>
@@ -303,9 +318,13 @@
       const dialog = document.getElementById('dialog');
       const iframe = document.getElementById('dialog-iframe');
       const progressInner = document.querySelector('.dialog-progress-inner');
+      const dialogLinkIcon = document.getElementById('dialog-link-icon');
 
       // Update iframe src
       iframe.src = url;
+
+      // Set link icon untuk membuka link di tab baru
+      dialogLinkIcon.onclick = () => window.open(url, '_blank');
 
       // Tampilkan progress bar
       progressInner.style.width = '0%';
