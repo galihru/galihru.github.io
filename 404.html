@@ -135,7 +135,7 @@
       display: inline-block;
     }
     .tooltip .tooltiptext {
-      visibility: hidden;
+      display: block; /* Tooltip selalu ditampilkan */
       width: 120px;
       background-color: black;
       color: #fff;
@@ -147,12 +147,7 @@
       bottom: 125%;
       left: 50%;
       margin-left: -60px;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .tooltip:hover .tooltiptext {
-      visibility: visible;
-      opacity: 1;
+      opacity: 1; /* Selalu terlihat */
     }
     .icon-link {
       cursor: pointer;
@@ -286,31 +281,19 @@
         iconLink.setAttribute('role', 'button');
         iconLink.setAttribute('aria-label', `Preview ${suggestion.name}`);
         iconLink.addEventListener('click', () => showDialog(suggestion.url));
-        iconLink.addEventListener('mouseenter', () => showTooltip(suggestion.url));
-        iconLink.addEventListener('mouseleave', hideTooltip);
+
+        // Tambahkan tooltip secara permanen
+        const tooltip = document.createElement('span');
+        tooltip.className = 'tooltiptext';
+        tooltip.textContent = `Preview: ${suggestion.url}`;
+        tooltip.setAttribute('role', 'tooltip');
+        iconLink.appendChild(tooltip);
+
         linkCell.appendChild(iconLink);
         row.appendChild(linkCell);
 
         suggestionList.appendChild(row);
       });
-    }
-
-    // Fungsi untuk menampilkan tooltip
-    function showTooltip(url) {
-      const tooltip = document.createElement('span');
-      tooltip.className = 'tooltiptext';
-      tooltip.textContent = `Preview: ${url}`;
-      tooltip.setAttribute('role', 'tooltip');
-      tooltip.setAttribute('aria-hidden', 'true');
-      document.body.appendChild(tooltip);
-    }
-
-    // Fungsi untuk menyembunyikan tooltip
-    function hideTooltip() {
-      const tooltip = document.querySelector('.tooltiptext');
-      if (tooltip) {
-        tooltip.remove();
-      }
     }
 
     // Fungsi untuk menampilkan dialog preview link
