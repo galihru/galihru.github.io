@@ -1,7 +1,6 @@
 import fs from 'fs';
 import crypto from 'crypto';
 
-// Function to generate hash
 function generateHash(input) {
   return crypto.createHash('sha256').update(input).digest('hex').substr(0, 8);
 }
