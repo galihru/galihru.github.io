@@ -824,59 +824,57 @@
     }
     
     function handleTouchEnd() {
-        if (!isDragging || window.innerWidth > 768) return;
-      
-        isDragging = false;
-        modalElement.style.transition = 'transform 0.3s ease'; // Aktifkan transisi
-      
-        const diffY = touchEndY - touchStartY;
-        const windowHeight = window.innerHeight;
-      
-        // Tentukan posisi akhir berdasarkan arah swipe
-        let targetPosition;
-        if (diffY > 50) {
-          // Swipe ke bawah
-          targetPosition = windowHeight * 0.85; // Posisi peeking
-        } else if (diffY < -50) {
-          // Swipe ke atas
-          targetPosition = 0; // Posisi expanded
-        } else {
-          // Kembali ke posisi awal
-          targetPosition = initialPosition;
-        }
-      
-        // Terapkan posisi akhir dengan animasi
-        modalElement.style.transform = `translateY(${targetPosition}px)`;
-      
-        // Reset nilai awal
-        touchStartY = 0;
-        touchEndY = 0;
-        initialPosition = 0;
-      }
-      
-      function handleMouseUp() {
       if (!isDragging || window.innerWidth > 768) return;
     
       isDragging = false;
       modalElement.style.transition = 'transform 0.3s ease'; // Aktifkan transisi
     
-      const diffY = touchEndY - touchStartY;
       const windowHeight = window.innerHeight;
     
-      // Tentukan posisi akhir berdasarkan arah swipe
+      // Dapatkan posisi saat ini
+      const currentPosition = parseFloat(modalElement.style.transform.replace('translateY(', '').replace('px)', ''));
+    
+      // Tentukan posisi target terdekat
       let targetPosition;
-      if (diffY > 50) {
-        // Swipe ke bawah
-        targetPosition = windowHeight * 0.85; // Posisi peeking
-      } else if (diffY < -50) {
-        // Swipe ke atas
-        targetPosition = 0; // Posisi expanded
+      if (currentPosition < windowHeight * 0.25) {
+        targetPosition = 0; // Expanded
+      } else if (currentPosition < windowHeight * 0.75) {
+        targetPosition = windowHeight * 0.5; // Half-expanded
       } else {
-        // Kembali ke posisi awal
-        targetPosition = initialPosition;
+        targetPosition = windowHeight * 0.85; // Peeking
       }
     
-      // Terapkan posisi akhir dengan animasi
+      // Terapkan posisi target dengan animasi
+      modalElement.style.transform = `translateY(${targetPosition}px)`;
+    
+      // Reset nilai awal
+      touchStartY = 0;
+      touchEndY = 0;
+      initialPosition = 0;
+    }
+      
+    function handleMouseUp() {
+      if (!isDragging || window.innerWidth > 768) return;
+    
+      isDragging = false;
+      modalElement.style.transition = 'transform 0.3s ease'; // Aktifkan transisi
+    
+      const windowHeight = window.innerHeight;
+    
+      // Dapatkan posisi saat ini
+      const currentPosition = parseFloat(modalElement.style.transform.replace('translateY(', '').replace('px)', ''));
+    
+      // Tentukan posisi target terdekat
+      let targetPosition;
+      if (currentPosition < windowHeight * 0.25) {
+        targetPosition = 0; // Expanded
+      } else if (currentPosition < windowHeight * 0.75) {
+        targetPosition = windowHeight * 0.5; // Half-expanded
+      } else {
+        targetPosition = windowHeight * 0.85; // Peeking
+      }
+    
+      // Terapkan posisi target dengan animasi
       modalElement.style.transform = `translateY(${targetPosition}px)`;
     
       // Reset nilai awal
