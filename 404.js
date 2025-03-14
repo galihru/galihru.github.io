@@ -58,6 +58,7 @@ const htmlContent = `
   <meta name="twitter:description" content="Halaman 404 aplikasi kolasi yang dibuat oleh GALIH RIDHO UTOMO. Aplikasi ini membantu pengguna menemukan repositori yang dimaksud.">
   <meta name="twitter:image" content="http://4211421036.github.io/345677.png">
   <link rel="canonical" href="http://4211421036.github.io">
+  <link rel="icon" href="https://4211421036.github.io/g4lihru/987654567.png" type="image/x-icon">
   <title>Page Not Found - Redirecting...</title>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'nonce-${styleNonce}'; script-src 'nonce-${scriptNonce}' https://cdn.jsdelivr.net;">
   <style nonce="${styleNonce}">
