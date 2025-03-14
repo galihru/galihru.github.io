@@ -88,6 +88,31 @@
       background-color: #3498db;
       transition: width 0.5s ease;
     }
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      border-bottom: 1px dotted black;
+    }
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 120px;
+      background-color: black;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -60px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
@@ -99,10 +124,10 @@
     <div id="loading" role="status" aria-live="polite">
       <h1>Mencari repositori...</h1>
       <div class="loader" role="alert" aria-label="Loading"></div>
-      <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="progressbar-label">
         <div class="progress-bar-inner"></div>
       </div>
-      <p>Sedang mencoba menemukan repositori yang sesuai...</p>
+      <p id="progressbar-label">Sedang mencoba menemukan repositori yang sesuai...</p>
     </div>
     
     <div id="not-found" class="not-found" role="alert" aria-live="assertive">
@@ -121,43 +146,54 @@
             </tr>
           </thead>
           <tbody id="suggestion-list" role="list">
-            <!-- Suggestions will be dynamically added here -->
+            <!-- Suggestions akan ditambahkan di sini -->
           </tbody>
         </table>
       </div>
       
-      <p><a href="/" role="link">Kembali ke Halaman Utama</a></p>
+      <p><a href="/" role="link" accesskey="h">Kembali ke Halaman Utama</a></p>
+    </div>
+
+    <!-- Tooltip Example -->
+    <div class="tooltip" role="tooltip" aria-labelledby="tooltip-text">
+      Hover over me
+      <span id="tooltip-text" class="tooltiptext" role="tooltip">Ini adalah tooltip</span>
+    </div>
+
+    <!-- Meter Example -->
+    <div role="meter" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" aria-labelledby="meter-label">
+      <p id="meter-label">Progress: 50%</p>
+    </div>
+
+    <!-- Dialog Example -->
+    <div id="dialog" role="dialog" aria-labelledby="dialog-title" aria-modal="true" style="display: none;">
+      <h2 id="dialog-title">Dialog Title</h2>
+      <p>This is an example dialog.</p>
+      <button onclick="closeDialog()" accesskey="c">Close</button>
     </div>
   </div>
-  
+
   <script src="https://cdn.jsdelivr.net/npm/fuzzysort@2.0.4/fuzzysort.min.js"></script>
   <script>
     // Fungsi untuk mendapatkan slug dari URL
     function getSlug(path) {
-      // Hilangkan slash awal dan akhir
-      path = path.replace(/^\/|\/$/g, '');
-      // Ambil bagian pertama dari path sebagai slug
-      return path.split('/')[0];
+      return path.split('/').filter(segment => segment.trim() !== '')[0] || '';
     }
 
     // Fungsi untuk fuzzy matching
     async function findMatchingRepo(slug) {
       try {
-        // Ambil data repo dari JSON
         const response = await fetch('/repo-data.json');
         const repoData = await response.json();
         
-        // Buat array dari semua variasi nama repo
         const allRepoVariations = [];
         repoData.forEach(repo => {
-          // Tambahkan nama repo asli
           allRepoVariations.push({
             name: repo.name,
             description: repo.description || "Tidak ada deskripsi",
             url: repo.url
           });
           
-          // Tambahkan variasi nama repo
           repo.variations.forEach(variation => {
             allRepoVariations.push({
               name: variation,
@@ -167,10 +203,8 @@
           });
         });
         
-        // Lakukan fuzzy matching
         const results = fuzzysort.go(slug, allRepoVariations, { key: 'name', limit: 5 });
         
-        // Jika ada hasil yang cocok
         if (results.length > 0) {
           return results.map(r => r.obj);
         }
@@ -192,7 +226,7 @@
     // Fungsi untuk menampilkan saran dalam tabel
     function displaySuggestions(suggestions) {
       const suggestionList = document.getElementById('suggestion-list');
-      suggestionList.innerHTML = ''; // Kosongkan tabel sebelum menambahkan data baru
+      suggestionList.innerHTML = '';
 
       suggestions.forEach(suggestion => {
         const row = document.createElement('tr');
@@ -211,6 +245,7 @@
         link.href = suggestion.url;
         link.textContent = "Kunjungi";
         link.setAttribute('role', 'link');
+        link.setAttribute('accesskey', 'v'); // Access key untuk link
         linkCell.appendChild(link);
         row.appendChild(linkCell);
 
@@ -220,38 +255,29 @@
 
     // Fungsi utama untuk handling redirect
     async function handleRedirect() {
-      // Ambil path dari URL
       const path = window.location.pathname;
-      
-      // Dapatkan slug
       const slug = getSlug(path);
       
       if (!slug) {
-        // Jika tidak ada slug, redirect ke halaman utama
         window.location.href = '/';
         return;
       }
       
-      // Mulai progress bar
       updateProgressBar(10);
-      
-      // Cari repo yang cocok
       const suggestions = await findMatchingRepo(slug);
+      updateProgressBar(100);
       
-      // Update progress bar
-      updateProgressBar(50);
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('original-path').textContent = path;
+      document.getElementById('not-found').style.display = 'block';
       
       if (suggestions.length > 0) {
-        // Jika ditemukan, tampilkan saran dalam tabel
-        updateProgressBar(100);
-        document.getElementById('loading').style.display = 'none';
-        document.getElementById('original-path').textContent = path;
         displaySuggestions(suggestions);
-        document.getElementById('not-found').style.display = 'block';
       } else {
-        // Jika tidak ditemukan, redirect ke halaman utama
-        updateProgressBar(100);
-        window.location.href = '/';
+        document.getElementById('suggestions').style.display = 'none';
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 5000); // Redirect setelah 5 detik jika tidak ada saran
       }
     }
 
