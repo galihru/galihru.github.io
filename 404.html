@@ -867,12 +867,12 @@
 
        // Menambahkan event listener untuk mouse enter
       notFoundDiv.addEventListener('mouseenter', function() {
-        notFoundDiv.style.overflowY = 'auto'; // Menampilkan scrollbar
+        notFoundDiv.style.overflowY = 'hidden'; // Menampilkan scrollbar
       });
     
       // Menambahkan event listener untuk mouse leave
       notFoundDiv.addEventListener('mouseleave', function() {
-        notFoundDiv.style.overflow = 'hidden'; // Menyembunyikan scrollbar
+        notFoundDiv.style.overflowY = 'auto'; // Menyembunyikan scrollbar
       });
     
       // Cek apakah path valid atau tidak
