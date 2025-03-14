@@ -76,6 +76,7 @@
         color: var(--color-text);
         flex-direction: column;
         transition: background-color 0.3s, color 0.3s;
+        overflow: hidden;
     }
     
     /* Header */
@@ -187,7 +188,19 @@
         text-align: center;
         transition: background-color 0.3s, color 0.3s;
         color: var(--color-text); /* Pastikan warna teks konsisten */
-        width: 70%
+        width: 70%;
+        overflow-y: auto; /* Menampilkan scrollbar di elemen "Not Found" */
+        max-height: 100vh; /* Membatasi tinggi elemen "Not Found" */
+      }
+      
+    /* Menyembunyikan scrollbar di elemen "Not Found" secara default */
+    .not-found::-webkit-scrollbar {
+      display: none;
+    }
+    
+    /* Menampilkan scrollbar di elemen "Not Found" saat hover */
+    .not-found:hover::-webkit-scrollbar {
+      display: block;
     }
     
     .error-code {
@@ -851,6 +864,16 @@
     window.addEventListener('DOMContentLoaded', () => {
       const path = window.location.pathname; // Ambil path dari URL
       const notFoundDiv = document.getElementById('s-2');
+
+       // Menambahkan event listener untuk mouse enter
+      notFoundDiv.addEventListener('mouseenter', function() {
+        notFoundDiv.style.overflow = 'auto'; // Menampilkan scrollbar
+      });
+    
+      // Menambahkan event listener untuk mouse leave
+      notFoundDiv.addEventListener('mouseleave', function() {
+        notFoundDiv.style.overflow = 'hidden'; // Menyembunyikan scrollbar
+      });
     
       // Cek apakah path valid atau tidak
       if (!isValidPath(path)) {
