@@ -647,7 +647,255 @@
   <script src="https://cdn.jsdelivr.net/npm/fuzzysort@2.0.4/fuzzysort.min.js"></script>
   <script>
     // Fungsi untuk mengupdate progress bar
-    // Fungsi untuk mengupdate progress bar
+    // Add these functions to your existing JavaScript code
+
+    // Variables for touch tracking
+    let touchStartY = 0;
+    let touchEndY = 0;
+    let currentTranslateY = 0;
+    let isDragging = false;
+    let modalElement = null;
+    let modalContent = null;
+    let modalIndicator = null;
+    let initialModalHeight = 0;
+    let maxModalHeight = 0;
+    
+    // Function to initialize the swipeable modal
+    function initSwipeableModal() {
+      modalElement = document.getElementById('s-3');
+      if (!modalElement) return;
+      
+      // Create and append the modal indicator if it doesn't exist
+      if (!document.getElementById('modal-indicator')) {
+        modalIndicator = document.createElement('div');
+        modalIndicator.id = 'modal-indicator';
+        modalIndicator.className = 'modal-indicator';
+        modalIndicator.setAttribute('aria-hidden', 'true');
+        
+        // Add CSS for the indicator
+        const style = document.createElement('style');
+        style.textContent = `
+          .modal-indicator {
+            width: 40px;
+            height: 5px;
+            background-color: #ccc;
+            border-radius: 3px;
+            margin: 10px auto;
+            position: relative;
+          }
+          
+          #s-3 {
+            transition: transform 0.3s ease;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+            background-color: white;
+            overflow: hidden;
+            display: none;
+            z-index: 1000;
+          }
+          
+          @media (max-width: 768px) {
+            #s-3 {
+              min-height: 200px;
+              max-height: 90vh;
+            }
+            
+            #s-3.expanded {
+              transform: translateY(0) !important;
+            }
+            
+            #s-3.collapsed {
+              transform: translateY(80%) !important;
+            }
+            
+            #s-2 {
+              width: 100% !important;
+            }
+          }
+          
+          @media (min-width: 769px) {
+            #s-3 {
+              position: relative;
+              border-radius: 8px;
+              box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+              width: 30%;
+              height: auto;
+            }
+          }
+          
+          .modal-content {
+            padding: 0 20px 20px;
+            overflow-y: auto;
+          }
+        `;
+        document.head.appendChild(style);
+        
+        // Create a content wrapper for the modal
+        modalContent = document.createElement('div');
+        modalContent.className = 'modal-content';
+        
+        // Move all existing content to the wrapper
+        while (modalElement.firstChild) {
+          modalContent.appendChild(modalElement.firstChild);
+        }
+        
+        // Add the indicator and content wrapper back to the modal
+        modalElement.appendChild(modalIndicator);
+        modalElement.appendChild(modalContent);
+      } else {
+        modalIndicator = document.getElementById('modal-indicator');
+        modalContent = document.querySelector('#s-3 .modal-content');
+      }
+      
+      // Set event listeners for touch/mouse events
+      modalElement.addEventListener('touchstart', handleTouchStart, { passive: true });
+      modalElement.addEventListener('touchmove', handleTouchMove, { passive: false });
+      modalElement.addEventListener('touchend', handleTouchEnd, { passive: true });
+      
+      // Mouse events (for desktop testing)
+      modalElement.addEventListener('mousedown', handleMouseDown);
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      
+      // Set initial state
+      resetModalPosition();
+    }
+    
+    // Function to reset modal position
+    function resetModalPosition() {
+      const isMobile = window.innerWidth <= 768;
+      
+      if (isMobile) {
+        modalElement.classList.add('collapsed');
+        initialModalHeight = 120; // Initial peek height
+        maxModalHeight = window.innerHeight * 0.9;
+      } else {
+        modalElement.classList.remove('collapsed');
+        modalElement.classList.remove('expanded');
+        modalElement.style.transform = '';
+      }
+    }
+    
+    // Touch event handlers
+    function handleTouchStart(e) {
+      if (window.innerWidth > 768) return; // Only handle on mobile
+      
+      touchStartY = e.touches[0].clientY;
+      isDragging = true;
+      modalElement.style.transition = 'none';
+    }
+    
+    function handleTouchMove(e) {
+      if (!isDragging || window.innerWidth > 768) return;
+      
+      touchEndY = e.touches[0].clientY;
+      const diffY = touchEndY - touchStartY;
+      
+      // Calculate the current translate Y position
+      currentTranslateY = diffY;
+      
+      // Restrict movement within bounds
+      if (currentTranslateY < 0) {
+        currentTranslateY = Math.max(currentTranslateY, -maxModalHeight);
+      } else if (currentTranslateY > 0) {
+        currentTranslateY = Math.min(currentTranslateY, window.innerHeight * 0.8);
+      }
+      
+      modalElement.style.transform = `translateY(${currentTranslateY}px)`;
+      e.preventDefault();
+    }
+    
+    function handleTouchEnd() {
+      if (!isDragging || window.innerWidth > 768) return;
+      
+      isDragging = false;
+      modalElement.style.transition = 'transform 0.3s ease';
+      
+      const diffY = touchEndY - touchStartY;
+      
+      // Define the threshold for expand/collapse
+      const threshold = 100;
+      
+      if (diffY > threshold) {
+        // Collapse if dragged down past threshold
+        modalElement.classList.add('collapsed');
+        modalElement.classList.remove('expanded');
+      } else if (diffY < -threshold) {
+        // Expand if dragged up past threshold
+        modalElement.classList.add('expanded');
+        modalElement.classList.remove('collapsed');
+      } else {
+        // Return to previous state
+        if (modalElement.classList.contains('expanded')) {
+          modalElement.classList.add('expanded');
+          modalElement.classList.remove('collapsed');
+        } else {
+          modalElement.classList.add('collapsed');
+          modalElement.classList.remove('expanded');
+        }
+      }
+      
+      // Reset transform to use our CSS classes
+      modalElement.style.transform = '';
+    }
+
+    // Mouse event handlers for desktop testing
+    function handleMouseDown(e) {
+      if (window.innerWidth > 768) return;
+      touchStartY = e.clientY;
+      isDragging = true;
+      modalElement.style.transition = 'none';
+    }
+    
+    function handleMouseMove(e) {
+      if (!isDragging || window.innerWidth > 768) return;
+      touchEndY = e.clientY;
+      const diffY = touchEndY - touchStartY;
+      
+      currentTranslateY = diffY;
+      
+      if (currentTranslateY < 0) {
+        currentTranslateY = Math.max(currentTranslateY, -maxModalHeight);
+      } else if (currentTranslateY > 0) {
+        currentTranslateY = Math.min(currentTranslateY, window.innerHeight * 0.8);
+      }
+      
+      modalElement.style.transform = `translateY(${currentTranslateY}px)`;
+    }
+    
+    function handleMouseUp() {
+      if (!isDragging || window.innerWidth > 768) return;
+      
+      isDragging = false;
+      modalElement.style.transition = 'transform 0.3s ease';
+      
+      const diffY = touchEndY - touchStartY;
+      const threshold = 100;
+      
+      if (diffY > threshold) {
+        modalElement.classList.add('collapsed');
+        modalElement.classList.remove('expanded');
+      } else if (diffY < -threshold) {
+        modalElement.classList.add('expanded');
+        modalElement.classList.remove('collapsed');
+      } else {
+        if (modalElement.classList.contains('expanded')) {
+          modalElement.classList.add('expanded');
+          modalElement.classList.remove('collapsed');
+        } else {
+          modalElement.classList.add('collapsed');
+          modalElement.classList.remove('expanded');
+        }
+      }
+      
+      modalElement.style.transform = '';
+    }
+
     function updateProgressBar(percentage) {
       const progressBarInner = document.querySelector('.progress-bar-inner');
       if (progressBarInner) {
@@ -805,6 +1053,23 @@
       // Tampilkan dialog dan atur lebar s2
       document.getElementById('s-3').style.display = 'flex';
       document.getElementById('s-2').style.width = '70%';
+      // Handle responsively
+      if (window.innerWidth <= 768) {
+        // On mobile, show as bottom sheet
+        document.getElementById('s-2').style.width = '100%';
+        s3.classList.add('collapsed');
+        setTimeout(() => {
+          // Slight delay to allow display:flex to take effect before transition
+          s3.classList.remove('collapsed');
+          s3.classList.add('expanded');
+        }, 10);
+      } else {
+        // On desktop, show as side panel
+        document.getElementById('s-2').style.width = '70%';
+      }
+      
+      // Make sure swipeable 
+      initSwipeableModal();
     }
     
     // Fungsi untuk menutup dialog
@@ -812,6 +1077,19 @@
       const dialog = document.getElementById('s-3');
       dialog.style.display = 'none';
       document.getElementById('s-2').style.width = '100%'; // Kembalikan lebar s2 ke 100%
+      if (window.innerWidth <= 768) {
+        // On mobile, collapse first then hide
+        dialog.classList.remove('expanded');
+        dialog.classList.add('collapsed');
+        
+        // Wait for animation to complete before hiding
+        setTimeout(() => {
+          dialog.style.display = 'none';
+        }, 300);
+      } else {
+        // On desktop, hide immediately
+        dialog.style.display = 'none';
+      }
     }
     
     // Event listener untuk tombol Escape dan klik di luar dialog
@@ -857,6 +1135,33 @@
       } else {
         document.getElementById('suggestions').style.display = 'none';
       }
+    }
+
+    // Function to handle window resize
+    function handleResize() {
+      const s3 = document.getElementById('s-3');
+      if (!s3) return;
+      
+      resetModalPosition();
+      
+      if (window.innerWidth > 768) {
+        // On desktop
+        if (s3.style.display === 'flex') {
+          document.getElementById('s-2').style.width = '70%';
+        }
+      } else {
+        // On mobile
+        document.getElementById('s-2').style.width = '100%';
+      }
+    }
+    
+    // Add window resize event listener
+    window.addEventListener('resize', handleResize);
+    
+    // Initialize swipeable modal functionality when DOM is loaded
+    window.addEventListener('DOMContentLoaded', function() {
+      handleRedirect();
+      // Don't initialize modal immediately, wait until it's opened
     }
     
     // Jalankan fungsi redirect saat halaman dimuat
