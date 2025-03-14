@@ -36,8 +36,11 @@
         --loader-border: #ddd;
         --progress-bg: #ddd;
         --link-color: #0b3b81; /* Warna link dengan kontras lebih baik */
-        --link-hover-color: #092c61;
         --theme-toggle-text: #ffffff; /* Warna teks untuk tombol tema */
+        --link-hover-color: #004499;
+        --link-active: #002266;
+        --link-visited: #551a8b;
+        --link-focus-outline: #0066cc;
     }
     
     :root.dark-mode {
@@ -55,8 +58,11 @@
         --loader-border: #444;
         --progress-bg: #444;
         --link-color: #5e9bff; /* Warna link dengan kontras lebih baik */
-        --link-hover-color: #80b5ff;
         --theme-toggle-text: #000000; /* Warna teks untuk tombol tema */
+        --link-hover-color: #66aaff;
+        --link-active: #3399ff;
+        --link-visited: #bb86fc;
+        --link-focus-outline: #80cfff;
     }
     
     /* Gaya dasar */
@@ -123,6 +129,7 @@
     
     a:hover {
         color: var(--link-hover-color);
+        text-decoration: double underline; /* Garis bawah ganda saat hover */
     }
     
     /* Tombol Tema */
@@ -506,6 +513,31 @@
     /* Pastikan main content dapat menerima fokus */
     #main-content:focus {
       outline: none;
+    }
+
+    /* Styling untuk link yang sedang aktif */
+    a:active {
+      text-decoration: underline;
+      color: var(--link-active);
+    }
+    
+    /* Styling untuk link yang sudah dikunjungi */
+    a:visited {
+      color: var(--link-visited);
+    }
+    
+    /* Styling untuk focus state */
+    a:focus {
+      outline: 2px solid var(--link-focus-outline);
+      outline-offset: 2px;
+      text-decoration: underline;
+    }
+    
+    /* Menambahkan ikon pada link eksternal */
+    a[href^="http"]:not([href*="4211421036.github.io"])::after {
+      content: " ↗";
+      display: inline-block;
+      margin-left: 3px;
     }
   </style>
 </head>
