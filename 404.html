@@ -76,10 +76,11 @@
       flex: 1;
       padding: 20px;
       background-color: #f1f3f4;
-      display: none; /* Awalnya disembunyikan */
+      display: block; /* Defaultnya block */
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      position: relative;
     }
     .dialog iframe {
       width: 100%;
@@ -87,6 +88,20 @@
       border: none;
       background-color: white;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .dialog-progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background-color: #f3f3f3;
+    }
+    .dialog-progress-inner {
+      width: 0;
+      height: 100%;
+      background-color: #3498db;
+      transition: width 0.5s ease;
     }
     .loader {
       border: 5px solid #f3f3f3;
@@ -113,6 +128,30 @@
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
+    }
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 120px;
+      background-color: black;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -60px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
     }
   </style>
 </head>
@@ -153,6 +192,9 @@
 
     <!-- Dialog untuk Preview Link -->
     <div id="dialog" class="dialog" role="dialog" aria-labelledby="dialog-title" aria-modal="true">
+      <div class="dialog-progress">
+        <div class="dialog-progress-inner"></div>
+      </div>
       <h2 id="dialog-title">Preview Link</h2>
       <iframe id="dialog-iframe" src="" title="Preview Link"></iframe>
       <button onclick="closeDialog()" accesskey="c">Close</button>
@@ -220,7 +262,6 @@
         link.setAttribute('role', 'link');
         link.setAttribute('accesskey', 'v');
         link.addEventListener('mouseenter', () => showDialog(suggestion.url));
-        link.addEventListener('mouseleave', closeDialog);
         linkCell.appendChild(link);
         row.appendChild(linkCell);
 
@@ -232,14 +273,26 @@
     function showDialog(url) {
       const dialog = document.getElementById('dialog');
       const iframe = document.getElementById('dialog-iframe');
+      const progressInner = document.querySelector('.dialog-progress-inner');
+
+      // Update iframe src
       iframe.src = url;
-      dialog.style.display = 'flex';
+
+      // Tampilkan progress bar
+      progressInner.style.width = '0%';
+      iframe.onload = () => {
+        progressInner.style.width = '100%';
+        setTimeout(() => {
+          progressInner.style.width = '0%';
+        }, 500);
+      };
     }
 
     // Fungsi untuk menutup dialog
     function closeDialog() {
       const dialog = document.getElementById('dialog');
-      dialog.style.display = 'none';
+      const iframe = document.getElementById('dialog-iframe');
+      iframe.src = ''; // Kosongkan iframe
     }
 
     // Fungsi utama untuk handling redirect
