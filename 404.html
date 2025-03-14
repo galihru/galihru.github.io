@@ -274,7 +274,10 @@
         color: var(--color-text);
         transition: background-color 0.3s, color 0.3s;
         border-radius: 25px;
-        width: 30%
+        width: 30%;
+        height: -webkit-fill-available;
+        position: fixed;
+        right: 0;
     }
     
     .dialog iframe {
@@ -737,8 +740,14 @@
 
       window.addEventListener('keydown', function(e) {
           if (e.key === 'Escape') {
+              document.getElementById('s-2').style.width = '100%';
               closeDialog();
           }
+      });
+
+      document.addEventListener('click', function(event) {
+        document.getElementById('s-2').style.width = '100%';  
+        closeDialog();
       });
       
       // Tampilkan progress bar
@@ -804,7 +813,10 @@
       }
     
       // Tampilkan dialog
+      document.getElementById('s-2').style.height = '70%';
       document.getElementById('s-3').style.display = 'flex';
+      document.getElementById('s-3').style.height = '-webkit-fill-available';
+      document.getElementById('s-3').style.position = 'fixed';
     }
 
     // Fungsi untuk menutup dialog
