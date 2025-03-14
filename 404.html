@@ -722,6 +722,7 @@
     let modalIndicator = null;
     let initialModalHeight = 0;
     let maxModalHeight = 0;
+    let initialPosition = 0; // Untuk menyimpan posisi awal modal
     
     // Function to initialize the swipeable modal
     function initSwipeableModal() {
@@ -787,195 +788,135 @@
     
     // Touch event handlers
     function handleTouchStart(e) {
-      if (window.innerWidth > 768) return; // Only handle on mobile
-      
+      if (window.innerWidth > 768) return; // Hanya handle di mobile
+    
       touchStartY = e.touches[0].clientY;
       isDragging = true;
-      modalElement.style.transition = 'none'; // Remove transition during drag
+    
+      // Simpan posisi awal modal
+      const transform = window.getComputedStyle(modalElement).transform;
+      if (transform !== 'none') {
+        const matrix = new DOMMatrixReadOnly(transform);
+        initialPosition = matrix.m42; // Simpan nilai translateY awal
+      } else {
+        initialPosition = 0;
+      }
+    
+      modalElement.style.transition = 'none'; // Nonaktifkan transisi selama drag
     }
 
     
     function handleTouchMove(e) {
       if (!isDragging || window.innerWidth > 768) return;
-      
+    
       touchEndY = e.touches[0].clientY;
       const diffY = touchEndY - touchStartY;
-      
-      // Get current position from the transform
-      let currentPosition = 0;
-      const transform = window.getComputedStyle(modalElement).transform;
-      if (transform !== 'none') {
-        const matrix = new DOMMatrixReadOnly(transform);
-        currentPosition = matrix.m42; // This gets the Y translation value
-      }
-      
-      // Calculate the new position
-      let newPosition = currentPosition + diffY;
-      
-      // Restrict the range (0 is fully expanded, positive values move it down)
+    
+      // Hitung posisi baru berdasarkan pergerakan jari
+      let newPosition = initialPosition + diffY;
+    
+      // Batasi pergerakan modal agar tidak melebihi batas atas atau bawah
       newPosition = Math.max(0, Math.min(newPosition, window.innerHeight * 0.85));
-      
-      // Apply the new position
+    
+      // Terapkan posisi baru dengan translateY
       modalElement.style.transform = `translateY(${newPosition}px)`;
-      e.preventDefault(); // Prevent scrolling
+      e.preventDefault(); // Mencegah scrolling
     }
     
     function handleTouchEnd() {
         if (!isDragging || window.innerWidth > 768) return;
-        
+      
         isDragging = false;
-        modalElement.style.transition = 'transform 0.3s ease'; // Restore transition
-        
+        modalElement.style.transition = 'transform 0.3s ease'; // Aktifkan transisi
+      
         const diffY = touchEndY - touchStartY;
         const windowHeight = window.innerHeight;
-        
-        // Get current position from the transform
-        let currentPosition = 0;
-        const transform = window.getComputedStyle(modalElement).transform;
-        if (transform !== 'none') {
-          const matrix = new DOMMatrixReadOnly(transform);
-          currentPosition = matrix.m42;
-        }
-        
-        // Determine which state to snap to based on position and swipe direction
-        const positionRatio = currentPosition / windowHeight;
-        
-        // Remove all position classes first
-        modalElement.classList.remove('peeking');
-        modalElement.classList.remove('half-expanded');
-        modalElement.classList.remove('expanded');
-        
-        let targetClass = '';
+      
+        // Tentukan posisi akhir berdasarkan arah swipe
+        let targetPosition;
         if (diffY > 50) {
-          // Swiped down
-          if (positionRatio < 0.2) {
-            targetClass = 'half-expanded';
-          } else if (positionRatio < 0.5) {
-            targetClass = 'peeking';
-          } else {
-            targetClass = 'peeking';
-          }
+          // Swipe ke bawah
+          targetPosition = windowHeight * 0.85; // Posisi peeking
         } else if (diffY < -50) {
-          // Swiped up
-          if (positionRatio > 0.6) {
-            targetClass = 'peeking';
-          } else if (positionRatio > 0.3) {
-            targetClass = 'half-expanded';
-          } else {
-            targetClass = 'expanded';
-          }
+          // Swipe ke atas
+          targetPosition = 0; // Posisi expanded
         } else {
-          // Small movement, snap to nearest
-          if (positionRatio > 0.6) {
-            targetClass = 'peeking';
-          } else if (positionRatio > 0.3) {
-            targetClass = 'half-expanded';
-          } else {
-            targetClass = 'expanded';
-          }
+          // Kembali ke posisi awal
+          targetPosition = initialPosition;
         }
-        
-        // Add the target class
-        modalElement.classList.add(targetClass);
-        
-        // Reset inline transform to use our CSS classes
-        setTimeout(() => {
-          modalElement.style.transform = '';
-        }, 0);
+      
+        // Terapkan posisi akhir dengan animasi
+        modalElement.style.transform = `translateY(${targetPosition}px)`;
+      
+        // Reset nilai awal
+        touchStartY = 0;
+        touchEndY = 0;
+        initialPosition = 0;
       }
       
       function handleMouseUp() {
-        if (!isDragging || window.innerWidth > 768) return;
-        
-        isDragging = false;
-        modalElement.style.transition = 'transform 0.3s ease';
-        
-        const diffY = touchEndY - touchStartY;
-        const windowHeight = window.innerHeight;
-        
-        // Get current position from the transform
-        let currentPosition = 0;
-        const transform = window.getComputedStyle(modalElement).transform;
-        if (transform !== 'none') {
-          const matrix = new DOMMatrixReadOnly(transform);
-          currentPosition = matrix.m42;
-        }
-        
-        // Determine which state to snap to
-        const positionRatio = currentPosition / windowHeight;
-        
-        // Remove all position classes first
-        modalElement.classList.remove('peeking');
-        modalElement.classList.remove('half-expanded');
-        modalElement.classList.remove('expanded');
-        
-        let targetClass = '';
-        if (diffY > 50) {
-          // Swiped down
-          if (positionRatio < 0.2) {
-            targetClass = 'half-expanded';
-          } else if (positionRatio < 0.5) {
-            targetClass = 'peeking';
-          } else {
-            targetClass = 'peeking';
-          }
-        } else if (diffY < -50) {
-          // Swiped up
-          if (positionRatio > 0.6) {
-            targetClass = 'peeking';
-          } else if (positionRatio > 0.3) {
-            targetClass = 'half-expanded';
-          } else {
-            targetClass = 'expanded';
-          }
-        } else {
-          // Small movement, snap to nearest
-          if (positionRatio > 0.6) {
-            targetClass = 'peeking';
-          } else if (positionRatio > 0.3) {
-            targetClass = 'half-expanded';
-          } else {
-            targetClass = 'expanded';
-          }
-        }
-        
-        // Add the target class
-        modalElement.classList.add(targetClass);
-        
-        // Reset inline transform to use our CSS classes
-        setTimeout(() => {
-          modalElement.style.transform = '';
-        }, 0);
+      if (!isDragging || window.innerWidth > 768) return;
+    
+      isDragging = false;
+      modalElement.style.transition = 'transform 0.3s ease'; // Aktifkan transisi
+    
+      const diffY = touchEndY - touchStartY;
+      const windowHeight = window.innerHeight;
+    
+      // Tentukan posisi akhir berdasarkan arah swipe
+      let targetPosition;
+      if (diffY > 50) {
+        // Swipe ke bawah
+        targetPosition = windowHeight * 0.85; // Posisi peeking
+      } else if (diffY < -50) {
+        // Swipe ke atas
+        targetPosition = 0; // Posisi expanded
+      } else {
+        // Kembali ke posisi awal
+        targetPosition = initialPosition;
       }
+    
+      // Terapkan posisi akhir dengan animasi
+      modalElement.style.transform = `translateY(${targetPosition}px)`;
+    
+      // Reset nilai awal
+      touchStartY = 0;
+      touchEndY = 0;
+      initialPosition = 0;
+    }
 
     // Mouse event handlers for desktop testing
     function handleMouseDown(e) {
       if (window.innerWidth > 768) return;
+    
       touchStartY = e.clientY;
       isDragging = true;
-      modalElement.style.transition = 'none';
+    
+      // Simpan posisi awal modal
+      const transform = window.getComputedStyle(modalElement).transform;
+      if (transform !== 'none') {
+        const matrix = new DOMMatrixReadOnly(transform);
+        initialPosition = matrix.m42; // Simpan nilai translateY awal
+      } else {
+        initialPosition = 0;
+      }
+    
+      modalElement.style.transition = 'none'; // Nonaktifkan transisi selama drag
     }
     
     function handleMouseMove(e) {
       if (!isDragging || window.innerWidth > 768) return;
+    
       touchEndY = e.clientY;
       const diffY = touchEndY - touchStartY;
-      
-      // Get current position from the transform
-      let currentPosition = 0;
-      const transform = window.getComputedStyle(modalElement).transform;
-      if (transform !== 'none') {
-        const matrix = new DOMMatrixReadOnly(transform);
-        currentPosition = matrix.m42;
-      }
-      
-      // Calculate the new position
-      let newPosition = currentPosition + diffY;
-      
-      // Restrict the range
+    
+      // Hitung posisi baru berdasarkan pergerakan mouse
+      let newPosition = initialPosition + diffY;
+    
+      // Batasi pergerakan modal agar tidak melebihi batas atas atau bawah
       newPosition = Math.max(0, Math.min(newPosition, window.innerHeight * 0.85));
-      
-      // Apply the new position
+    
+      // Terapkan posisi baru dengan translateY
       modalElement.style.transform = `translateY(${newPosition}px)`;
     }
 
