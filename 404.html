@@ -676,10 +676,6 @@
 
     <!-- Dialog untuk Preview Link -->
     <section id="s-3" class="dialog" role="dialog" aria-labelledby="dialog-title" aria-modal="true" tabindex="-1">
-      <div class="dialog-progress" role="progressbar" aria-label="Progress indicator">
-        <div class="dialog-progress-inner" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="dialog-progress-label"></div>
-        <p id="dialog-progress-label" class="sr-only">Loading progress</p>
-      </div>
       <div class="dialog-header">
         <h2 id="dialog-title">Preview Link</h2>
         <div class="bt">
@@ -690,6 +686,10 @@
             <div class="esc-indicator"><kbd>Esc</kbd></div>
           </button>
         </div>
+      </div>
+      <div class="dialog-progress" role="progressbar" aria-label="Progress indicator">
+        <div class="dialog-progress-inner" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="dialog-progress-label"></div>
+        <p id="dialog-progress-label" class="sr-only">Loading progress</p>
       </div>
       <!-- Iframe container -->
       <div id="iframe-container" style="display: block; width: 100%; height: 100%;" aria-hidden="false">
