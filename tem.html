@@ -20,6 +20,7 @@
   <link rel="canonical" href="http://4211421036.github.io">
   <link rel="icon" href="https://4211421036.github.io/g4lihru/987654567.png" type="image/x-icon">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="/manifest.json" rel="manifest" crossorigin="use-credentials">
   <style>
     :root {
     /* Variabel tema terang (default) */
@@ -1293,5 +1294,18 @@ document.addEventListener('DOMContentLoaded', function() {
     applySavedTheme();
 });
   </script>
+  <script type="text/javascript">
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('Service Worker registered with scope: ', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>
