@@ -1,5 +1,5 @@
-const fs = require('fs');
-const crypto = require('crypto');
+import fs from 'fs';
+import crypto from 'crypto';
 
 // Function to generate hash
 function generateHash(input) {
