@@ -88,50 +88,9 @@
       background-color: #3498db;
       transition: width 0.5s ease;
     }
-    .tooltip {
-      position: relative;
-      display: inline-block;
-      border-bottom: 1px dotted black;
-    }
-    .tooltip .tooltiptext {
-      visibility: hidden;
-      width: 120px;
-      background-color: black;
-      color: #fff;
-      text-align: center;
-      border-radius: 6px;
-      padding: 5px;
-      position: absolute;
-      z-index: 1;
-      bottom: 125%;
-      left: 50%;
-      margin-left: -60px;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .tooltip:hover .tooltiptext {
-      visibility: visible;
-      opacity: 1;
-    }
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
-    }
-    .dialog {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: white;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      z-index: 1000;
-    }
-    .dialog iframe {
-      width: 100%;
-      height: 300px;
-      border: none;
     }
   </style>
 </head>
@@ -169,62 +128,48 @@
       
       <p><a href="/" role="link" accesskey="h">Kembali ke Halaman Utama</a></p>
     </div>
-
-    <!-- Tooltip Example -->
-    <div class="tooltip" role="tooltip" aria-labelledby="tooltip-text">
-      Hover over me
-      <span id="tooltip-text" class="tooltiptext" role="tooltip">Ini adalah tooltip</span>
-    </div>
-
-    <!-- Dialog Example -->
-    <div id="dialog" class="dialog" role="dialog" aria-labelledby="dialog-title" aria-modal="true">
-      <h2 id="dialog-title">Preview Link</h2>
-      <iframe id="dialog-iframe" src="" title="Preview Link"></iframe>
-      <button onclick="closeDialog()" accesskey="c">Close</button>
-    </div>
   </div>
 
+  <!-- TensorFlow.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.0.0/dist/tf.min.js"></script>
+  <!-- FuzzySort untuk pencocokan string -->
   <script src="https://cdn.jsdelivr.net/npm/fuzzysort@2.0.4/fuzzysort.min.js"></script>
   <script>
+    // Fungsi untuk mengupdate progress bar
+    function updateProgressBar(percentage) {
+      const progressBarInner = document.querySelector('.progress-bar-inner');
+      progressBarInner.style.width = `${percentage}%`;
+      progressBarInner.setAttribute('aria-valuenow', percentage);
+    }
+
     // Fungsi untuk mendapatkan slug dari URL
     function getSlug(path) {
       return path.split('/').filter(segment => segment.trim() !== '')[0] || '';
     }
 
-    // Fungsi untuk fuzzy matching dengan AI-based suggestion
-    async function findMatchingRepo(slug) {
+    // Fungsi untuk mengambil data repositori dari repo-data.json
+    async function fetchRepoData() {
       try {
         const response = await fetch('/repo-data.json');
         const repoData = await response.json();
-        
-        const allRepoVariations = [];
-        repoData.forEach(repo => {
-          allRepoVariations.push({
-            name: repo.name,
-            description: repo.description || "Tidak ada deskripsi",
-            url: repo.url
-          });
-          
-          repo.variations.forEach(variation => {
-            allRepoVariations.push({
-              name: variation,
-              description: repo.description || "Tidak ada deskripsi",
-              url: repo.url
-            });
-          });
-        });
-        
-        const results = fuzzysort.go(slug, allRepoVariations, { key: 'name', limit: 5 });
-        
-        if (results.length > 0) {
-          return results.map(r => r.obj);
-        }
-        
-        return [];
+        return repoData;
       } catch (error) {
-        console.error('Error finding matching repo:', error);
+        console.error('Error fetching repo data:', error);
         return [];
       }
+    }
+
+    // Fungsi untuk mencari saran menggunakan TensorFlow.js dan FuzzySort
+    async function findMatchingRepo(slug, repoData) {
+      // Gunakan FuzzySort untuk pencocokan string
+      const results = fuzzysort.go(slug, repoData, { key: 'name', limit: 5 });
+      
+      // Jika ada hasil yang cocok
+      if (results.length > 0) {
+        return results.map(r => r.obj);
+      }
+      
+      return [];
     }
 
     // Fungsi untuk menampilkan saran dalam tabel
@@ -241,7 +186,7 @@
         row.appendChild(nameCell);
 
         const descCell = document.createElement('td');
-        descCell.textContent = suggestion.description;
+        descCell.textContent = suggestion.description || "Tidak ada deskripsi";
         row.appendChild(descCell);
 
         const linkCell = document.createElement('td');
@@ -250,43 +195,11 @@
         link.textContent = "Kunjungi";
         link.setAttribute('role', 'link');
         link.setAttribute('accesskey', 'v');
-        link.addEventListener('mouseenter', () => showTooltip(suggestion.url));
-        link.addEventListener('mouseleave', hideTooltip);
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          showDialog(suggestion.url);
-        });
         linkCell.appendChild(link);
         row.appendChild(linkCell);
 
         suggestionList.appendChild(row);
       });
-    }
-
-    // Fungsi untuk menampilkan tooltip
-    function showTooltip(url) {
-      const tooltip = document.getElementById('tooltip-text');
-      tooltip.textContent = `Preview: ${url}`;
-    }
-
-    // Fungsi untuk menyembunyikan tooltip
-    function hideTooltip() {
-      const tooltip = document.getElementById('tooltip-text');
-      tooltip.textContent = '';
-    }
-
-    // Fungsi untuk menampilkan dialog
-    function showDialog(url) {
-      const dialog = document.getElementById('dialog');
-      const iframe = document.getElementById('dialog-iframe');
-      iframe.src = url;
-      dialog.style.display = 'block';
-    }
-
-    // Fungsi untuk menutup dialog
-    function closeDialog() {
-      const dialog = document.getElementById('dialog');
-      dialog.style.display = 'none';
     }
 
     // Fungsi utama untuk handling redirect
@@ -300,7 +213,10 @@
       }
       
       updateProgressBar(10);
-      const suggestions = await findMatchingRepo(slug);
+      const repoData = await fetchRepoData();
+      updateProgressBar(50);
+      
+      const suggestions = await findMatchingRepo(slug, repoData);
       updateProgressBar(100);
       
       document.getElementById('loading').style.display = 'none';
