@@ -557,13 +557,15 @@
         background-color: #ccc;
         border-radius: 3px;
         margin: 10px auto;
-        position: relative;
+        position: absolute;
+        top: 0;
       }
       
     .modal-content {
         padding: 0 20px 20px;
         overflow-y: auto;
-        max-height: 85vh;
+        height: -webkit-fill-available;
+        width: -webkit-fill-available;
       }
       
       @media (max-width: 768px) {
