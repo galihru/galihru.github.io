@@ -198,6 +198,31 @@
         margin: 0;
         transition: color 0.3s;
     }
+
+    nav ul {
+      list-style-type: none; /* Menghilangkan bullet/dot */
+      margin: 0;
+      padding: 0;
+      display: flex; /* Membuat list item berderet horizontal */
+    }
+    
+    nav li {
+      margin-right: 20px; /* Jarak antar menu */
+    }
+    
+    nav li:last-child {
+      margin-right: 0; /* Menghilangkan margin kanan pada item terakhir */
+    }
+    
+    nav a {
+      text-decoration: none; /* Opsional: menghilangkan garis bawah pada link */
+      color: #333; /* Opsional: warna teks */
+      padding: 8px 12px; /* Opsional: padding untuk area klik yang lebih besar */
+    }
+    
+    nav a:hover {
+      color: #4D90FE; /* Opsional: warna saat hover */
+    }
     
     .suggestions {
         margin-top: 20px;
@@ -352,6 +377,8 @@
         font-size: 1.2em;
         text-decoration: none;
         transition: color 0.3s;
+        border: none;
+        background: 0;
     }
     
     .icon-link:hover {
@@ -446,13 +473,16 @@
         align-self: center;
         border: 1px solid;
         border-radius: 15px;
-        width: 45px;
+        width: 65px;
         padding: 0 10px 0 10px;
         right: 25px;
         top: 20px;
         height: 28px;
         font-weight: 700;
         cursor: pointer;
+        background: 0;
+        border: 1px solid var(--border-color);
+        color: var(--color-primary);
     }
 
     kbd {
