@@ -189,19 +189,30 @@
         transition: background-color 0.3s, color 0.3s;
         color: var(--color-text); /* Pastikan warna teks konsisten */
         width: 70%;
-        overflow-y: auto; /* Menampilkan scrollbar di elemen "Not Found" */
-        max-height: 100vh; /* Membatasi tinggi elemen "Not Found" */
+        overflow-y: auto; /* Selalu aktifkan scrollbar jika diperlukan */
+        scrollbar-width: thin; /* Untuk Firefox */
+        scrollbar-color: transparent transparent; /* Untuk Firefox */
       }
       
-    /* Menyembunyikan scrollbar di elemen "Not Found" secara default */
-    .not-found::-webkit-scrollbar {
-      display: none;
-    }
-    
-    /* Menampilkan scrollbar di elemen "Not Found" saat hover */
-    .not-found:hover::-webkit-scrollbar {
-      display: block;
-    }
+      /* Untuk browser WebKit (Chrome, Safari) */
+      .not-found::-webkit-scrollbar {
+        width: 8px;
+        background: transparent;
+      }
+      
+      .not-found::-webkit-scrollbar-thumb {
+        background: transparent;
+        border-radius: 4px;
+        transition: background 0.3s;
+      }
+      
+      .not-found:hover::-webkit-scrollbar-thumb {
+        background: #888;
+      }
+      
+      .not-found:hover {
+        scrollbar-color: #888 transparent; /* Untuk Firefox saat hover */
+      }
     
     .error-code {
         font-size: 120px;
@@ -865,17 +876,6 @@
       const path = window.location.pathname; // Ambil path dari URL
       const notFoundDiv = document.getElementById('s-2');
 
-       // Menambahkan event listener untuk mouse enter
-      notFoundDiv.addEventListener('mouseenter', function() {
-        notFoundDiv.style.overflowY = 'hidden'; // Menampilkan scrollbar
-      });
-    
-      // Menambahkan event listener untuk mouse leave
-      notFoundDiv.addEventListener('mouseleave', function() {
-        notFoundDiv.style.overflowY = 'auto'; // Menyembunyikan scrollbar
-      });
-    
-      // Cek apakah path valid atau tidak
       if (!isValidPath(path)) {
         notFoundDiv.style.display = 'block'; // Tampilkan pesan 404
         document.title = 'Page Not Found - Redirecting...'; // Update title
