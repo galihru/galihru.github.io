@@ -330,7 +330,7 @@
         padding: 20px;
         border-radius: 5px;
         box-shadow: 0 0 10px var(--shadow-color);
-        width: 100%;
+        width: -webkit-fill-available;
         transition: background-color 0.3s, color 0.3s;
     }
     
@@ -461,7 +461,7 @@
       <div id="iframe-container" style="display: none; width: 100%; height: 80%;">
         <iframe id="repo-preview" src="" title="Repository Preview" width="100%" height="100%" style="border: none; background-color: white; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 5px;"></iframe>
       </div>
-      <div id="repo-info" class="repo-info">
+      <div id="repo-info" class="repo-info" aria-hidden="true">
         <!-- Informasi repositori akan ditampilkan di sini -->
       </div>
       <button onclick="closeDialog()" accesskey="c" role="button" aria-label="Close dialog">Close</button>
@@ -593,12 +593,14 @@
           // GitHub Pages exists, show in iframe
           iframeContainer.style.display = 'block';
           repoInfoDiv.style.display = 'none';
+          repoInfoDiv.setAttribute('aria-hidden', 'true');
           repoPreview.src = pagesUrl;
           repoPreview.title = `${repo} - GitHub Pages Preview`;
         } else {
           // GitHub Pages doesn't exist or is not accessible, show repo info instead
           iframeContainer.style.display = 'none';
           repoInfoDiv.style.display = 'block';
+          repoInfoDiv.setAttribute('aria-hidden', 'false');
           
           // Fetch informasi repositori dari API GitHub
           const response = await fetch(`https://api.github.com/repos/${repoPath}`);
