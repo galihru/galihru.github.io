@@ -19,6 +19,7 @@
   <meta name="twitter:image" content="http://4211421036.github.io/345677.png">
   <link rel="canonical" href="http://4211421036.github.io">
   <link rel="icon" href="https://4211421036.github.io/g4lihru/987654567.png" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -153,6 +154,14 @@
       visibility: visible;
       opacity: 1;
     }
+    .icon-link {
+      cursor: pointer;
+      color: #3498db;
+      font-size: 1.2em;
+    }
+    .icon-link:hover {
+      color: #2980b9;
+    }
   </style>
 </head>
 <body>
@@ -193,11 +202,11 @@
     <!-- Dialog untuk Preview Link -->
     <div id="dialog" class="dialog" role="dialog" aria-labelledby="dialog-title" aria-modal="true">
       <div class="dialog-progress">
-        <div class="dialog-progress-inner"></div>
+        <div class="dialog-progress-inner" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="dialog-progress-label"></div>
       </div>
       <h2 id="dialog-title">Preview Link</h2>
       <iframe id="dialog-iframe" src="" title="Preview Link"></iframe>
-      <button onclick="closeDialog()" accesskey="c">Close</button>
+      <button onclick="closeDialog()" accesskey="c" role="button" aria-label="Close dialog">Close</button>
     </div>
   </div>
 
@@ -256,13 +265,14 @@
         row.appendChild(descCell);
 
         const linkCell = document.createElement('td');
-        const link = document.createElement('a');
-        link.href = suggestion.url;
-        link.textContent = "Kunjungi";
-        link.setAttribute('role', 'link');
-        link.setAttribute('accesskey', 'v');
-        link.addEventListener('mouseenter', () => showDialog(suggestion.url));
-        linkCell.appendChild(link);
+        const iconLink = document.createElement('span');
+        iconLink.className = 'icon-link';
+        iconLink.innerHTML = '<i class="fas fa-external-link-alt"></i>';
+        iconLink.setAttribute('role', 'button');
+        iconLink.setAttribute('aria-label', `Kunjungi ${suggestion.name}`);
+        iconLink.addEventListener('click', () => window.open(suggestion.url, '_blank'));
+        iconLink.addEventListener('mouseenter', () => showDialog(suggestion.url));
+        linkCell.appendChild(iconLink);
         row.appendChild(linkCell);
 
         suggestionList.appendChild(row);
