@@ -109,13 +109,6 @@
         gap: 1.5rem;
     }
     
-    nav a {
-        color: var(--link-color); /* Gunakan warna link khusus */
-        text-decoration: none;
-        font-weight: 700; /* Pertebal untuk kontras lebih baik */
-        transition: color 0.3s;
-    }
-    
     nav a:hover {
         color: var(--link-hover-color);
         text-decoration: underline; /* Tambahkan underline untuk aksesibilitas */
@@ -215,13 +208,10 @@
     }
     
     nav a {
-      text-decoration: none; /* Opsional: menghilangkan garis bawah pada link */
-      color: #333; /* Opsional: warna teks */
-      padding: 8px 12px; /* Opsional: padding untuk area klik yang lebih besar */
-    }
-    
-    nav a:hover {
-      color: #4D90FE; /* Opsional: warna saat hover */
+      color: var(--link-color); /* Gunakan warna link khusus */
+      text-decoration: none;
+      font-weight: 700; /* Pertebal untuk kontras lebih baik */
+      transition: color 0.3s;
     }
     
     .suggestions {
