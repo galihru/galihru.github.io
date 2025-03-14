@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xml:lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -64,6 +64,19 @@
       animation: spin 1s linear infinite;
       margin: 20px auto;
     }
+    .progress-bar {
+      width: 100%;
+      background-color: #f3f3f3;
+      border-radius: 5px;
+      overflow: hidden;
+      margin: 20px auto;
+    }
+    .progress-bar-inner {
+      width: 0;
+      height: 10px;
+      background-color: #3498db;
+      transition: width 0.5s ease;
+    }
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
@@ -72,23 +85,28 @@
 </head>
 <body>
   <div class="container">
-    <div id="loading">
+    <div id="loading" role="status" aria-live="polite">
       <h1>Mencari repositori...</h1>
-      <div class="loader"></div>
+      <div class="loader" role="alert" aria-label="Loading"></div>
+      <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="progress-bar-inner"></div>
+      </div>
       <p>Sedang mencoba menemukan repositori yang sesuai...</p>
     </div>
     
-    <div id="not-found" class="not-found">
-      <p class="error-code">404</p>
+    <div id="not-found" class="not-found" role="alert" aria-live="assertive">
+      <p class="error-code" role="text">404</p>
       <h1>Halaman Tidak Ditemukan</h1>
-      <p>Maaf, halaman <strong id="original-path"></strong> tidak ditemukan.</p>
+      <p>Maaf, halaman <strong id="original-path" role="text"></strong> tidak ditemukan.</p>
       
-      <div id="suggestions" class="suggestions">
-        <h2>Mungkin maksud Anda:</h2>
-        <div id="suggestion-list"></div>
+      <div id="suggestions" class="suggestions" role="region" aria-labelledby="suggestions-heading">
+        <h2 id="suggestions-heading">Mungkin maksud Anda:</h2>
+        <ul id="suggestion-list" role="list">
+          <!-- Suggestions will be dynamically added here -->
+        </ul>
       </div>
       
-      <p><a href="/">Kembali ke Halaman Utama</a></p>
+      <p><a href="/" role="link">Kembali ke Halaman Utama</a></p>
     </div>
   </div>
   
@@ -159,6 +177,13 @@
       }
     }
 
+    // Fungsi untuk mengupdate progress bar
+    function updateProgressBar(percentage) {
+      const progressBarInner = document.querySelector('.progress-bar-inner');
+      progressBarInner.style.width = `${percentage}%`;
+      progressBarInner.setAttribute('aria-valuenow', percentage);
+    }
+
     // Fungsi utama untuk handling redirect
     async function handleRedirect() {
       // Ambil path dari URL
@@ -173,16 +198,26 @@
         return;
       }
       
+      // Mulai progress bar
+      updateProgressBar(10);
+      
       // Cari repo yang cocok
       const matchResult = await findMatchingRepo(slug);
       
+      // Update progress bar
+      updateProgressBar(50);
+      
       if (matchResult.found) {
         // Jika ditemukan, redirect ke URL yang benar
-        window.location.href = matchResult.url;
+        updateProgressBar(100);
+        setTimeout(() => {
+          window.location.href = matchResult.url;
+        }, 500);
         return;
       }
       
       // Jika tidak ditemukan, tampilkan halaman 404 dengan saran
+      updateProgressBar(100);
       document.getElementById('loading').style.display = 'none';
       document.getElementById('original-path').textContent = path;
       
@@ -190,12 +225,14 @@
       const suggestionList = document.getElementById('suggestion-list');
       if (matchResult.allMatches.length > 0) {
         matchResult.allMatches.forEach(match => {
-          const item = document.createElement('div');
+          const item = document.createElement('li');
           item.className = 'suggestion-item';
+          item.setAttribute('role', 'listitem');
           
           const link = document.createElement('a');
           link.href = match.url;
           link.textContent = match.original;
+          link.setAttribute('role', 'link');
           
           item.appendChild(link);
           suggestionList.appendChild(item);
