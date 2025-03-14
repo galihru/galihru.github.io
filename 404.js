@@ -238,6 +238,6 @@ const htmlContent = `
 `;
 
 // Menulis file HTML
-fs.writeFileSync('index.html', htmlContent);
+fs.writeFileSync('404.html', htmlContent);
 
-console.log('File index.html berhasil dibuat!');
+console.log('File 404.html berhasil dibuat!');
