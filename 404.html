@@ -40,7 +40,8 @@
         --link-visited: #551a8b;
         --link-focus-outline: #0066cc;
         --link-color: #0645AD; /* Biru yang lebih gelap untuk kontras lebih baik */
-        --link-hover-color: #003399; /* Biru lebih pekat untuk hover */
+        --link-hover-color: #002D5E; /* Biru lebih pekat untuk hover */
+        --link-bc: rgba(255, 255, 0, 0.2);
     }
     
     :root.dark-mode {
@@ -124,13 +125,14 @@
     a {
         color: var(--link-color);
         font-weight: 500;
-        text-decoration: underline; /* Tambahkan ini */
+        text-decoration: underline;
         transition: color 0.3s;
     }
-    
-    a:hover {
-        color: var(--link-hover-color);
-        text-decoration: double underline; /* Buat lebih jelas saat hover */
+      
+    a:hover, a:focus {
+          color: var(--link-hover-color) ; /* Warna lebih gelap saat hover */
+          text-decoration: double underline; /* Tambahkan garis bawah ganda untuk lebih jelas */
+          background-color: var(--link-bc); /* Highlight kuning transparan */
     }
 
     
