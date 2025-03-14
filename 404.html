@@ -21,335 +21,469 @@
   <link rel="icon" href="https://4211421036.github.io/g4lihru/987654567.png" type="image/x-icon">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
+    /* Gaya dasar */
     body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    height: 100vh;
-    background-color: #f8f9fa;
-    color: #333;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-.container {
-    display: flex;
-    width: 100%;
-    height: 100%;
-}
-
-.not-found {
-    flex: 1;
-    padding: 20px;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-.error-code {
-    font-size: 120px;
-    font-weight: bold;
-    color: #B22222; /* Warna merah lebih gelap untuk kontras lebih baik */
-    margin: 0;
-}
-
-.suggestions {
-    margin-top: 20px;
-    text-align: left;
-    padding: 20px;
-    background-color: #ffffff;
-    border-radius: 5px;
-    width: 80%;
-    border: 1px solid #ddd;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    color: #333; /* Warna teks lebih gelap untuk aksesibilitas */
-}
-
-.suggestions table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-.suggestions th, .suggestions td {
-    padding: 10px;
-    border: 1px solid #ddd;
-    text-align: left;
-}
-
-.suggestions th {
-    background-color: #1e5799; /* Warna biru lebih gelap */
-    color: #ffffff;
-}
-
-.dialog {
-    flex: 1;
-    padding: 20px;
-    background-color: #f1f3f4;
-    display: block;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    color: #333;
-}
-
-.dialog iframe {
-    width: 100%;
-    height: 80%;
-    border: none;
-    background-color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-}
-
-.dialog-progress {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 5px;
-    background-color: #ddd;
-}
-
-.dialog-progress-inner {
-    width: 0;
-    height: 100%;
-    background-color: #1e5799; /* Warna biru lebih gelap */
-    transition: width 0.5s ease;
-}
-
-.loader {
-    border: 5px solid #ddd;
-    border-top: 5px solid #1e5799;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-    margin: 20px auto;
-}
-
-.progress-bar {
-    width: 100%;
-    background-color: #ddd;
-    border-radius: 5px;
-    overflow: hidden;
-    margin: 20px auto;
-}
-
-.progress-bar-inner {
-    width: 0;
-    height: 10px;
-    background-color: #1e5799;
-    transition: width 0.5s ease;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.tooltip {
-    position: relative;
-    display: inline-block;
-}
-
-.tooltip .tooltiptext {
-    display: block;
-    width: 120px;
-    background-color: #444; /* Warna lebih terang untuk kontras */
-    color: #ffffff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px;
-    position: absolute;
-    z-index: 1;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -60px;
-    opacity: 1;
-}
-
-.icon-link {
-    cursor: pointer;
-    color: #1e5799;
-    font-size: 1.2em;
-    text-decoration: none;
-}
-
-.icon-link:hover {
-    color: #154b73;
-}
-
-.dialog-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 10px;
-}
-
-.dialog-header h2 {
-    margin: 0;
-}
-
-.repo-info {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.repo-info h3 {
-    margin-top: 0;
-}
-
-.repo-info p {
-    margin: 10px 0;
-}
-
-.repo-info strong {
-    color: #1e5799;
-}
-
-.skip-link-wrapper {
-    position: relative;
-    z-index: 1000;
-}
-
-.skip-link {
-    background: #1e5799;
-    color: #ffffff;
-    font-weight: 700;
-    left: 50%;
-    padding: 8px 16px;
-    position: absolute;
-    transform: translateX(-50%);
-    text-decoration: none;
-    transition: top 0.3s;
-    border-radius: 0 0 4px 4px;
-}
-
-/* Hide the skip link by default */
-.skip-link {
-    top: -130px;
-}
-
-/* Show the skip link when it receives focus */
-.skip-link:focus {
-    top: 0;
-    outline: 3px solid #ffcc00; /* Warna outline lebih terlihat */
-    outline-offset: 2px;
-}
-
-/* High contrast mode support */
-@media (forced-colors: active) {
-    .skip-link:focus {
-        outline: 3px solid CanvasText;
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background-color: #f8f9fa;
+        color: #333;
+        flex-direction: column;
+        transition: background-color 0.3s, color 0.3s;
     }
-}
-
+    
     body.dark-mode {
-            background-color: #121212;
-            color: #ffffff;
-        }
-
-        /* Header */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 2rem;
-            background-color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        header.dark-mode {
-            background-color: #1a1a1a;
-            color: #ffffff;
-        }
-
-        /* Logo */
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #1e5799;
-            text-decoration: none;
-        }
-
-        .logo.dark-mode {
-            color: #4a90e2;
-        }
-
-        /* Navigasi */
-        nav {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        nav a {
-            color: #333;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        nav a:hover {
-            color: #1e5799;
-        }
-
-        nav a.dark-mode {
-            color: #ffffff;
-        }
-
-        nav a.dark-mode:hover {
-            color: #4a90e2;
-        }
-
-        /* Tombol Tema */
-        .theme-toggle {
-            background-color: #1e5799;
-            color: #ffffff;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s;
-        }
-
-        .theme-toggle:hover {
-            background-color: #154b73;
-        }
-
-        .theme-toggle.dark-mode {
-            background-color: #4a90e2;
-        }
-
-        .theme-toggle.dark-mode:hover {
-            background-color: #357abd;
-        }
-
+        background-color: #121212;
+        color: #ffffff;
+    }
+    
+    /* Header */
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s, color 0.3s;
+    }
+    
+    header.dark-mode {
+        background-color: #1a1a1a;
+        color: #ffffff;
+    }
+    
+    /* Logo */
+    .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #1e5799;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+    
+    .logo.dark-mode {
+        color: #4a90e2;
+    }
+    
+    /* Navigasi */
+    nav {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    
+    nav a {
+        color: #333;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s;
+    }
+    
+    nav a:hover {
+        color: #1e5799;
+    }
+    
+    nav a.dark-mode {
+        color: #ffffff;
+    }
+    
+    nav a.dark-mode:hover {
+        color: #4a90e2;
+    }
+    
+    /* Tombol Tema */
+    .theme-toggle {
+        background-color: #1e5799;
+        color: #ffffff;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.3s;
+    }
+    
+    .theme-toggle:hover {
+        background-color: #154b73;
+    }
+    
+    .theme-toggle.dark-mode {
+        background-color: #4a90e2;
+    }
+    
+    .theme-toggle.dark-mode:hover {
+        background-color: #357abd;
+    }
+    
+    /* Konten Utama */
+    main {
+        padding: 2rem;
+        background-color: #ffffff;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    
+    main.dark-mode {
+        background-color: #1a1a1a;
+        color: #ffffff;
+    }
+    
     /* Footer */
-        footer {
-            text-align: center;
-            padding: 1rem;
-            background-color: #ffffff;
-            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s, color 0.3s;
+    footer {
+        text-align: center;
+        padding: 1rem;
+        background-color: #ffffff;
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s, color 0.3s;
+    }
+    
+    footer.dark-mode {
+        background-color: #1a1a1a;
+        color: #ffffff;
+    }
+    
+    /* Komponen Tambahan */
+    .container {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        background-color: #ffffff;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .container.dark-mode {
+        background-color: #1a1a1a;
+        color: #ffffff;
+    }
+    
+    .not-found {
+        flex: 1;
+        padding: 20px;
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .not-found.dark-mode {
+        background-color: #1a1a1a;
+        color: #ffffff;
+    }
+    
+    .error-code {
+        font-size: 120px;
+        font-weight: bold;
+        color: #b22222;
+        margin: 0;
+        transition: color 0.3s;
+    }
+    
+    .error-code.dark-mode {
+        color: #ff6b6b;
+    }
+    
+    .suggestions {
+        margin-top: 20px;
+        text-align: left;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 5px;
+        width: 80%;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        color: #333;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .suggestions.dark-mode {
+        background-color: #1a1a1a;
+        color: #ffffff;
+        border-color: #444;
+    }
+    
+    .suggestions table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+    
+    .suggestions th,
+    .suggestions td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: left;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .suggestions th {
+        background-color: #1e5799;
+        color: #ffffff;
+    }
+    
+    .suggestions th.dark-mode {
+        background-color: #4a90e2;
+    }
+    
+    .suggestions td.dark-mode {
+        background-color: #1a1a1a;
+        color: #ffffff;
+        border-color: #444;
+    }
+    
+    .dialog {
+        flex: 1;
+        padding: 20px;
+        background-color: #f1f3f4;
+        display: block;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        color: #333;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .dialog.dark-mode {
+        background-color: #1a1a1a;
+        color: #ffffff;
+    }
+    
+    .dialog iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        background-color: white;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+    
+    .dialog iframe.dark-mode {
+        background-color: #1a1a1a;
+    }
+    
+    .dialog-progress {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background-color: #ddd;
+        transition: background-color 0.3s;
+    }
+    
+    .dialog-progress.dark-mode {
+        background-color: #444;
+    }
+    
+    .dialog-progress-inner {
+        width: 0;
+        height: 100%;
+        background-color: #1e5799;
+        transition: width 0.5s ease, background-color 0.3s;
+    }
+    
+    .dialog-progress-inner.dark-mode {
+        background-color: #4a90e2;
+    }
+    
+    .loader {
+        border: 5px solid #ddd;
+        border-top: 5px solid #1e5799;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+        transition: border-color 0.3s;
+    }
+    
+    .loader.dark-mode {
+        border-color: #444;
+        border-top-color: #4a90e2;
+    }
+    
+    .progress-bar {
+        width: 100%;
+        background-color: #ddd;
+        border-radius: 5px;
+        overflow: hidden;
+        margin: 20px auto;
+        transition: background-color 0.3s;
+    }
+    
+    .progress-bar.dark-mode {
+        background-color: #444;
+    }
+    
+    .progress-bar-inner {
+        width: 0;
+        height: 10px;
+        background-color: #1e5799;
+        transition: width 0.5s ease, background-color 0.3s;
+    }
+    
+    .progress-bar-inner.dark-mode {
+        background-color: #4a90e2;
+    }
+    
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
         }
-
-        footer.dark-mode {
-            background-color: #1a1a1a;
-            color: #ffffff;
+        100% {
+            transform: rotate(360deg);
         }
-
+    }
+    
+    .tooltip {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .tooltip .tooltiptext {
+        display: block;
+        width: 120px;
+        background-color: #444;
+        color: #ffffff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -60px;
+        opacity: 1;
+        transition: background-color 0.3s;
+    }
+    
+    .tooltip .tooltiptext.dark-mode {
+        background-color: #666;
+    }
+    
+    .icon-link {
+        cursor: pointer;
+        color: #1e5799;
+        font-size: 1.2em;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+    
+    .icon-link:hover {
+        color: #154b73;
+    }
+    
+    .icon-link.dark-mode {
+        color: #4a90e2;
+    }
+    
+    .icon-link.dark-mode:hover {
+        color: #357abd;
+    }
+    
+    .dialog-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .dialog-header h2 {
+        margin: 0;
+        transition: color 0.3s;
+    }
+    
+    .dialog-header h2.dark-mode {
+        color: #ffffff;
+    }
+    
+    .repo-info {
+        background-color: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .repo-info.dark-mode {
+        background-color: #1a1a1a;
+        color: #ffffff;
+    }
+    
+    .repo-info h3 {
+        margin-top: 0;
+        transition: color 0.3s;
+    }
+    
+    .repo-info h3.dark-mode {
+        color: #ffffff;
+    }
+    
+    .repo-info p {
+        margin: 10px 0;
+        transition: color 0.3s;
+    }
+    
+    .repo-info p.dark-mode {
+        color: #ffffff;
+    }
+    
+    .repo-info strong {
+        color: #1e5799;
+        transition: color 0.3s;
+    }
+    
+    .repo-info strong.dark-mode {
+        color: #4a90e2;
+    }
+    
+    .skip-link-wrapper {
+        position: relative;
+        z-index: 1000;
+    }
+    
+    .skip-link {
+        background: #1e5799;
+        color: #ffffff;
+        font-weight: 700;
+        left: 50%;
+        padding: 8px 16px;
+        position: absolute;
+        transform: translateX(-50%);
+        text-decoration: none;
+        transition: top 0.3s, background-color 0.3s;
+        border-radius: 0 0 4px 4px;
+    }
+    
+    .skip-link.dark-mode {
+        background-color: #4a90e2;
+    }
+    
+    /* Hide the skip link by default */
+    .skip-link {
+        top: -130px;
+    }
+    
+    /* Show the skip link when it receives focus */
+    .skip-link:focus {
+        top: 0;
+        outline: 3px solid #ffcc00;
+        outline-offset: 2px;
+    }
+    
+    /* High contrast mode support */
+    @media (forced-colors: active) {
+        .skip-link:focus {
+            outline: 3px solid CanvasText;
+        }
+    }
   </style>
 </head>
 <body>
