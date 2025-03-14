@@ -29,7 +29,8 @@
     display: flex;
     height: 100vh;
     background-color: #f8f9fa;
-    color: #333; /* Warna teks default lebih gelap */
+    color: #333;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .container {
@@ -252,13 +253,126 @@
     }
 }
 
+    body.dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        header.dark-mode {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        /* Logo */
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e5799;
+            text-decoration: none;
+        }
+
+        .logo.dark-mode {
+            color: #4a90e2;
+        }
+
+        /* Navigasi */
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        nav a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #1e5799;
+        }
+
+        nav a.dark-mode {
+            color: #ffffff;
+        }
+
+        nav a.dark-mode:hover {
+            color: #4a90e2;
+        }
+
+        /* Tombol Tema */
+        .theme-toggle {
+            background-color: #1e5799;
+            color: #ffffff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .theme-toggle:hover {
+            background-color: #154b73;
+        }
+
+        .theme-toggle.dark-mode {
+            background-color: #4a90e2;
+        }
+
+        .theme-toggle.dark-mode:hover {
+            background-color: #357abd;
+        }
+
+    /* Footer */
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: #ffffff;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        footer.dark-mode {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
   </style>
 </head>
 <body>
   <!-- Skip Link -->
   <div class="skip-link-wrapper">
-        <a href="#main-content" class="skip-link">Skip to main content</a>
-    </div>
+      <a href="#main-content" class="skip-link">Skip to main content</a>
+  </div>
+
+  <header role="banner">
+      <!-- Logo -->
+      <a href="/" class="logo">Web App</a>
+
+      <!-- Navigasi -->
+      <nav role="navigation">
+          <a href="/">Home</a>
+          <a href="/about">About</a>
+          <a href="/contact">Contact</a>
+      </nav>
+
+      <!-- Tombol Tema -->
+      <button class="theme-toggle" aria-label="Toggle theme">Toggle Theme</button>
+  </header>
+  
   
   <!-- Add this id to your main content container -->
   <div id="main-content" class="container" role="main" tabindex="-1">
@@ -316,6 +430,10 @@
       <button onclick="closeDialog()" accesskey="c" role="button" aria-label="Close dialog">Close</button>
     </div>
   </div>
+  <!-- Footer -->
+    <footer role="contentinfo">
+        <p>&copy; 2023 MyWebsite. All rights reserved.</p>
+    </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/fuzzysort@2.0.4/fuzzysort.min.js"></script>
   <script>
@@ -539,6 +657,48 @@
             }
         });
     });
+  </script>
+  <script>
+     // Fungsi untuk mengubah tema
+        function toggleTheme() {
+            const body = document.body;
+            const header = document.querySelector('header');
+            const logo = document.querySelector('.logo');
+            const navLinks = document.querySelectorAll('nav a');
+            const themeToggle = document.querySelector('.theme-toggle');
+            const footer = document.querySelector('footer');
+
+            // Toggle dark mode class
+            body.classList.toggle('dark-mode');
+            header.classList.toggle('dark-mode');
+            logo.classList.toggle('dark-mode');
+            navLinks.forEach(link => link.classList.toggle('dark-mode'));
+            themeToggle.classList.toggle('dark-mode');
+            footer.classList.toggle('dark-mode');
+
+            // Simpan preferensi tema di localStorage
+            const isDarkMode = body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        }
+
+        // Fungsi untuk menerapkan tema yang disimpan
+        function applySavedTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.querySelector('header').classList.add('dark-mode');
+                document.querySelector('.logo').classList.add('dark-mode');
+                document.querySelectorAll('nav a').forEach(link => link.classList.add('dark-mode'));
+                document.querySelector('.theme-toggle').classList.add('dark-mode');
+                document.querySelector('footer').classList.add('dark-mode');
+            }
+        }
+
+        // Event listener untuk tombol tema
+        document.querySelector('.theme-toggle').addEventListener('click', toggleTheme);
+
+        // Terapkan tema yang disimpan saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', applySavedTheme);
   </script>
 </body>
 </html>
