@@ -739,15 +739,13 @@
       const repoPreview = document.getElementById('repo-preview');
 
       window.addEventListener('keydown', function(e) {
-          if (e.key === 'Escape') {
-              document.getElementById('s-2').style.width = '70%';
-              closeDialog();
-          }
+        if (e.key === 'Escape') {
+          closeDialog(); // Hanya panggil closeDialog tanpa ubah width
+        }
       });
-
+      
       document.addEventListener('click', function(event) {
-        document.getElementById('s-2').style.width = '70%';  
-        closeDialog();
+        closeDialog(); // Hanya panggil closeDialog tanpa ubah width
       });
       
       // Tampilkan progress bar
@@ -822,7 +820,7 @@
     // Fungsi untuk menutup dialog
     function closeDialog() {
       const dialog = document.getElementById('s-3');
-      document.getElementById('s-2').style.width = '70%';
+      document.getElementById('s-2').style.width = '100%'; // Ubah ke 100% saat ditutup
       dialog.style.display = 'none';
       repoInfoDiv.setAttribute('aria-hidden', 'true');
     }
@@ -833,10 +831,9 @@
       const slug = getSlug(path);
       
       if (!slug) {
-        // Tampilkan pesan 404 jika slug kosong
         document.getElementById('s-1').style.display = 'none';
         document.getElementById('s-2').style.display = 'flex';
-        document.getElementById('s-2').style.width = '70%';
+        document.getElementById('s-2').style.width = '100%'; // Ubah ke 100%
         document.getElementById('suggestions').style.display = 'none';
         return;
       }
@@ -851,7 +848,7 @@
       document.getElementById('s-1').style.display = 'none';
       document.getElementById('original-path').textContent = path;
       document.getElementById('s-2').style.display = 'flex';
-      document.getElementById('s-2').style.width = '70%';
+      document.getElementById('s-2').style.width = '100%'; // Ubah ke 100%
       
       if (suggestions.length > 0) {
         displaySuggestions(suggestions);
