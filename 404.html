@@ -76,7 +76,7 @@
         color: var(--color-text);
         flex-direction: column;
         transition: background-color 0.3s, color 0.3s;
-        overflow: hidden;
+        overflow: visible; /* Ganti dari hidden ke visible */
     }
     
     /* Header */
@@ -189,6 +189,7 @@
         transition: background-color 0.3s, color 0.3s;
         color: var(--color-text); /* Pastikan warna teks konsisten */
         width: 70%;
+        max-height: calc(100vh - 200px); /* Sesuaikan nilai sesuai kebutuhan */
         overflow-y: auto; /* Selalu aktifkan scrollbar jika diperlukan */
         scrollbar-width: thin; /* Untuk Firefox */
         scrollbar-color: transparent transparent; /* Untuk Firefox */
@@ -197,21 +198,19 @@
       /* Untuk browser WebKit (Chrome, Safari) */
       .not-found::-webkit-scrollbar {
         width: 8px;
+      }
+      
+      .not-found::-webkit-scrollbar-track {
         background: transparent;
       }
       
       .not-found::-webkit-scrollbar-thumb {
-        background: transparent;
-        border-radius: 4px;
-        transition: background 0.3s;
-      }
-      
-      .not-found:hover::-webkit-scrollbar-thumb {
         background: #888;
+        border-radius: 4px;
       }
       
-      .not-found:hover {
-        scrollbar-color: #888 transparent; /* Untuk Firefox saat hover */
+      .not-found::-webkit-scrollbar-thumb:hover {
+        background: #666;
       }
     
     .error-code {
