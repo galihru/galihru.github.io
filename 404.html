@@ -420,6 +420,42 @@
         outline: 3px solid #ffcc00;
         outline-offset: 2px;
     }
+
+    .close-preview {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 14px;
+        align-self: center;
+        border: 1px solid;
+        border-radius: 15px;
+        width: 70px;
+        padding: 0 10px 0 10px;
+        position: absolute;
+        right: 25px;
+        top: 20px;
+        height: 28px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    kbd {
+        background-color: #f7f7f7;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, .2);
+        padding: 2px 5px;
+        font-family: monospace;
+        font-size: .9em;
+    }
+    .esc-indicator {
+        font-size: .9em;
+        color: #666;
+        text-align: center;
+        position: absolute;
+        right: 35px;
+        top: 20px;
+    }
     
     /* High contrast mode support */
     @media (forced-colors: active) {
@@ -497,7 +533,9 @@
           <span tabindex="-1" id="dialog-link-icon" class="icon-link" role="button" aria-label="Open link in new tab">
             <i class="fas fa-external-link-alt"></i>
           </span>
-          <button onclick="closeDialog()" accesskey="c" role="button" aria-label="Close dialog">Close</button>
+          <div class="close-preview" onclick="closeDialog()" accesskey="c" role="button" aria-label="Close dialog" title="close">×
+            <div class="esc-indicator"><kbd>Esc</kbd></div>
+          </div>
         </div>
       </div>
       <!-- Added iframe container -->
