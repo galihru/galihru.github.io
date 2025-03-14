@@ -193,17 +193,22 @@
       padding: 8px;
       z-index: 1000;
       transition: top 0.3s;
+      font-size: 16px; /* Ensure font is large enough */
+      text-decoration: none;
     }
+    
     .skip-link:focus {
       top: 0;
+      outline: 3px solid #ffbf47; /* Add a focus indicator */
     }
   </style>
 </head>
 <body>
   <!-- Skip Link -->
   <a href="#main-content" class="skip-link" role="link" accesskey="s">Skip to main content</a>
-
-  <div class="container">
+  
+  <!-- Add this id to your main content container -->
+  <div id="main-content" class="container">
     <div id="loading" role="status" aria-live="polite">
       <h1>Mencari repositori...</h1>
       <div class="loader" role="alert" aria-label="Loading"></div>
