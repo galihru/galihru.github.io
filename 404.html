@@ -263,34 +263,20 @@
     }
     
     .dialog {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh; /* Menyesuaikan tinggi device */
-      display: flex;
-      flex-direction: column;
-      background: rgba(0, 0, 0, 0.5);
-      overflow: hidden; /* Mencegah scrolling */
-    }
-    
-    .dialog-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px;
-      background: white;
-    }
-    
-    #iframe-container {
-      flex-grow: 1; /* Biarkan iframe mengambil sisa tinggi */
-      display: flex;
-      width: 100%;
-      height: 100%; /* Pastikan iframe penuh dalam kontainer */
+        flex: 1;
+        padding: 20px;
+        background-color: var(--bg-color);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        color: var(--color-text);
+        transition: background-color 0.3s, color 0.3s;
+        border-radius: 25px;
     }
     
     .dialog iframe {
-        flex-grow: 1;
         width: 100%;
         height: 100%;
         border: none;
