@@ -202,7 +202,7 @@
     <!-- Dialog untuk Preview Link -->
     <div id="dialog" class="dialog" role="dialog" aria-labelledby="dialog-title" aria-modal="true">
       <div class="dialog-progress">
-        <div class="dialog-progress-inner" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="dialog-progress-label"></div>
+        <div class="dialog-progress-inner" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="dialog-progress-label"></div>
       </div>
       <h2 id="dialog-title">Preview Link</h2>
       <iframe id="dialog-iframe" src="" title="Preview Link"></iframe>
@@ -269,14 +269,33 @@
         iconLink.className = 'icon-link';
         iconLink.innerHTML = '<i class="fas fa-external-link-alt"></i>';
         iconLink.setAttribute('role', 'button');
-        iconLink.setAttribute('aria-label', `Kunjungi ${suggestion.name}`);
-        iconLink.addEventListener('click', () => window.open(suggestion.url, '_blank'));
-        iconLink.addEventListener('mouseenter', () => showDialog(suggestion.url));
+        iconLink.setAttribute('aria-label', `Preview ${suggestion.name}`);
+        iconLink.addEventListener('click', () => showDialog(suggestion.url));
+        iconLink.addEventListener('mouseenter', () => showTooltip(suggestion.url));
+        iconLink.addEventListener('mouseleave', hideTooltip);
         linkCell.appendChild(iconLink);
         row.appendChild(linkCell);
 
         suggestionList.appendChild(row);
       });
+    }
+
+    // Fungsi untuk menampilkan tooltip
+    function showTooltip(url) {
+      const tooltip = document.createElement('span');
+      tooltip.className = 'tooltiptext';
+      tooltip.textContent = `Preview: ${url}`;
+      tooltip.setAttribute('role', 'tooltip');
+      tooltip.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(tooltip);
+    }
+
+    // Fungsi untuk menyembunyikan tooltip
+    function hideTooltip() {
+      const tooltip = document.querySelector('.tooltiptext');
+      if (tooltip) {
+        tooltip.remove();
+      }
     }
 
     // Fungsi untuk menampilkan dialog preview link
