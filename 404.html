@@ -550,6 +550,61 @@
       display: inline-block;
       margin-left: 3px;
     }
+
+    .modal-indicator {
+      width: 40px;
+      height: 5px;
+      background-color: #ccc;
+      border-radius: 3px;
+      margin: 10px auto;
+      position: relative;
+    }
+        
+    @media (max-width: 768px) {
+      #s-3 {
+        min-height: 200px;
+        max-height: 90vh;
+        transition: transform 0.3s ease;
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+        background-color: white;
+        overflow: hidden;
+        display: none;
+        z-index: 1000;
+      }
+      
+      #s-3.expanded {
+        transform: translateY(0) !important;
+      }
+      
+      #s-3.collapsed {
+        transform: translateY(80%) !important;
+      }
+      
+      #s-2 {
+        width: 100% !important;
+      }
+    }
+    
+    @media (min-width: 769px) {
+      #s-3 {
+        position: relative;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        width: 30%;
+        height: auto;
+      }
+    }
+    
+    .modal-content {
+      padding: 0 20px 20px;
+      overflow-y: auto;
+    }
   </style>
 </head>
 <body>
@@ -672,68 +727,6 @@
         modalIndicator.className = 'modal-indicator';
         modalIndicator.setAttribute('aria-hidden', 'true');
         
-        // Add CSS for the indicator
-        const style = document.createElement('style');
-        style.textContent = `
-          .modal-indicator {
-            width: 40px;
-            height: 5px;
-            background-color: #ccc;
-            border-radius: 3px;
-            margin: 10px auto;
-            position: relative;
-          }
-          
-          #s-3 {
-            transition: transform 0.3s ease;
-            position: fixed;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
-            background-color: white;
-            overflow: hidden;
-            display: none;
-            z-index: 1000;
-          }
-          
-          @media (max-width: 768px) {
-            #s-3 {
-              min-height: 200px;
-              max-height: 90vh;
-            }
-            
-            #s-3.expanded {
-              transform: translateY(0) !important;
-            }
-            
-            #s-3.collapsed {
-              transform: translateY(80%) !important;
-            }
-            
-            #s-2 {
-              width: 100% !important;
-            }
-          }
-          
-          @media (min-width: 769px) {
-            #s-3 {
-              position: relative;
-              border-radius: 8px;
-              box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-              width: 30%;
-              height: auto;
-            }
-          }
-          
-          .modal-content {
-            padding: 0 20px 20px;
-            overflow-y: auto;
-          }
-        `;
-        document.head.appendChild(style);
         
         // Create a content wrapper for the modal
         modalContent = document.createElement('div');
