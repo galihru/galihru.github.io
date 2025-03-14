@@ -39,7 +39,7 @@
         --link-active: #002266;
         --link-visited: #551a8b;
         --link-focus-outline: #0066cc;
-        --link-color: #0047b3; /* Warna biru lebih gelap untuk kontras lebih baik */
+        --link-color: #0645AD; /* Biru yang lebih gelap untuk kontras lebih baik */
         --link-hover-color: #003399; /* Biru lebih pekat untuk hover */
     }
     
@@ -122,16 +122,17 @@
     
     /* Link secara umum */
     a {
-        color: var(--link-color) !important;
-        text-decoration: underline !important;
+        color: var(--link-color);
         font-weight: 500;
+        text-decoration: underline; /* Tambahkan ini */
         transition: color 0.3s;
     }
     
     a:hover {
         color: var(--link-hover-color);
-        text-decoration: double underline; /* Garis bawah ganda saat hover */
+        text-decoration: double underline; /* Buat lebih jelas saat hover */
     }
+
     
     /* Tombol Tema */
     .theme-toggle {
@@ -429,23 +430,6 @@
         z-index: 1000;
     }
     
-    .skip-link {
-        background: var(--color-primary);
-        color: #ffffff;
-        font-weight: 700;
-        left: 50%;
-        padding: 8px 16px;
-        position: absolute;
-        transform: translateX(-50%);
-        text-decoration: none;
-        transition: top 0.3s, background-color 0.3s;
-        border-radius: 0 0 4px 4px;
-    }
-    
-    /* Hide the skip link by default */
-    .skip-link {
-        top: -130px;
-    }
     .bt {
         display: flex;
         flex-direction: row;
@@ -457,10 +441,19 @@
     }
     
     /* Show the skip link when it receives focus */
+    .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 0;
+        background: #fff;
+        color: #000;
+        padding: 8px;
+        text-decoration: underline;
+        z-index: 100;
+    }
+    
     .skip-link:focus {
         top: 0;
-        outline: 3px solid #ffcc00;
-        outline-offset: 2px;
     }
 
     .close-preview {
@@ -529,10 +522,9 @@
     
     /* Styling untuk focus state */
     a:focus {
-      outline: 3px solid var(--link-focus-outline) !important;
-      outline-offset: 3px;
-      text-decoration: underline;
-      background-color: rgba(255, 255, 0, 0.3); /* Highlight dengan warna kuning transparan */
+        outline: 3px solid var(--link-focus-outline);
+        outline-offset: 2px;
+        background-color: rgba(255, 255, 0, 0.3); /* Warna kuning transparan */
     }
 
     
