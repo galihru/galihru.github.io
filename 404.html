@@ -4,18 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Page Not Found - Redirecting...</title>
-  <meta name="description" content="This is collation application created by GALIH RIDHO UTOMO ">
+  <meta name="description" content="This is collation application created by GALIH RIDHO UTOMO">
   <meta name="keywords" content="HTML, 404, CSS, JavaScript, Web Development, SEO">
   <meta name="author" content="GALIH RIDHO UTOMO">
   <meta name="robots" content="index, follow">
   <meta property="og:title" content="Page Not Found - Redirecting...">
-  <meta property="og:description" content="This is collation application created by GALIH RIDHO UTOMO ">
+  <meta property="og:description" content="This is collation application created by GALIH RIDHO UTOMO">
   <meta property="og:image" content="http://4211421036.github.io/345677.png">
   <meta property="og:url" content="http://4211421036.github.io">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Page Not Found - Redirecting...">
-  <meta name="twitter:description" content="This is collation application created by GALIH RIDHO UTOMO ">
+  <meta name="twitter:description" content="This is collation application created by GALIH RIDHO UTOMO">
   <meta name="twitter:image" content="http://4211421036.github.io/345677.png">
   <link rel="canonical" href="http://4211421036.github.io">
   <link rel="icon" href="https://4211421036.github.io/g4lihru/987654567.png" type="image/x-icon">
@@ -52,8 +52,19 @@
       background-color: #f8f9fa;
       border-radius: 5px;
     }
-    .suggestion-item {
-      margin-bottom: 10px;
+    .suggestions table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    .suggestions th, .suggestions td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    .suggestions th {
+      background-color: #3498db;
+      color: white;
     }
     .loader {
       border: 5px solid #f3f3f3;
@@ -101,9 +112,18 @@
       
       <div id="suggestions" class="suggestions" role="region" aria-labelledby="suggestions-heading">
         <h2 id="suggestions-heading">Mungkin maksud Anda:</h2>
-        <ul id="suggestion-list" role="list">
-          <!-- Suggestions will be dynamically added here -->
-        </ul>
+        <table aria-describedby="suggestions-heading">
+          <thead>
+            <tr>
+              <th scope="col">Nama Repositori</th>
+              <th scope="col">Deskripsi</th>
+              <th scope="col">Link</th>
+            </tr>
+          </thead>
+          <tbody id="suggestion-list" role="list">
+            <!-- Suggestions will be dynamically added here -->
+          </tbody>
+        </table>
       </div>
       
       <p><a href="/" role="link">Kembali ke Halaman Utama</a></p>
@@ -133,9 +153,7 @@
           // Tambahkan nama repo asli
           allRepoVariations.push({
             name: repo.name,
-            original: repo.name,
-            hasIndex: repo.hasIndex,
-            indexPath: repo.indexPath,
+            description: repo.description || "Tidak ada deskripsi",
             url: repo.url
           });
           
@@ -143,9 +161,7 @@
           repo.variations.forEach(variation => {
             allRepoVariations.push({
               name: variation,
-              original: repo.name,
-              hasIndex: repo.hasIndex,
-              indexPath: repo.indexPath,
+              description: repo.description || "Tidak ada deskripsi",
               url: repo.url
             });
           });
@@ -156,24 +172,13 @@
         
         // Jika ada hasil yang cocok
         if (results.length > 0) {
-          // Ambil hasil pertama
-          const bestMatch = results[0].obj;
-          
-          // Kembalikan informasi repo yang cocok
-          return {
-            found: true,
-            name: bestMatch.original,
-            hasIndex: bestMatch.hasIndex,
-            indexPath: bestMatch.indexPath,
-            url: bestMatch.url,
-            allMatches: results.map(r => r.obj)
-          };
+          return results.map(r => r.obj);
         }
         
-        return { found: false, allMatches: [] };
+        return [];
       } catch (error) {
         console.error('Error finding matching repo:', error);
-        return { found: false, allMatches: [] };
+        return [];
       }
     }
 
@@ -182,6 +187,35 @@
       const progressBarInner = document.querySelector('.progress-bar-inner');
       progressBarInner.style.width = `${percentage}%`;
       progressBarInner.setAttribute('aria-valuenow', percentage);
+    }
+
+    // Fungsi untuk menampilkan saran dalam tabel
+    function displaySuggestions(suggestions) {
+      const suggestionList = document.getElementById('suggestion-list');
+      suggestionList.innerHTML = ''; // Kosongkan tabel sebelum menambahkan data baru
+
+      suggestions.forEach(suggestion => {
+        const row = document.createElement('tr');
+        row.setAttribute('role', 'listitem');
+
+        const nameCell = document.createElement('td');
+        nameCell.textContent = suggestion.name;
+        row.appendChild(nameCell);
+
+        const descCell = document.createElement('td');
+        descCell.textContent = suggestion.description;
+        row.appendChild(descCell);
+
+        const linkCell = document.createElement('td');
+        const link = document.createElement('a');
+        link.href = suggestion.url;
+        link.textContent = "Kunjungi";
+        link.setAttribute('role', 'link');
+        linkCell.appendChild(link);
+        row.appendChild(linkCell);
+
+        suggestionList.appendChild(row);
+      });
     }
 
     // Fungsi utama untuk handling redirect
@@ -202,46 +236,23 @@
       updateProgressBar(10);
       
       // Cari repo yang cocok
-      const matchResult = await findMatchingRepo(slug);
+      const suggestions = await findMatchingRepo(slug);
       
       // Update progress bar
       updateProgressBar(50);
       
-      if (matchResult.found) {
-        // Jika ditemukan, redirect ke URL yang benar
+      if (suggestions.length > 0) {
+        // Jika ditemukan, tampilkan saran dalam tabel
         updateProgressBar(100);
-        setTimeout(() => {
-          window.location.href = matchResult.url;
-        }, 500);
-        return;
-      }
-      
-      // Jika tidak ditemukan, tampilkan halaman 404 dengan saran
-      updateProgressBar(100);
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('original-path').textContent = path;
-      
-      // Tampilkan saran
-      const suggestionList = document.getElementById('suggestion-list');
-      if (matchResult.allMatches.length > 0) {
-        matchResult.allMatches.forEach(match => {
-          const item = document.createElement('li');
-          item.className = 'suggestion-item';
-          item.setAttribute('role', 'listitem');
-          
-          const link = document.createElement('a');
-          link.href = match.url;
-          link.textContent = match.original;
-          link.setAttribute('role', 'link');
-          
-          item.appendChild(link);
-          suggestionList.appendChild(item);
-        });
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('original-path').textContent = path;
+        displaySuggestions(suggestions);
+        document.getElementById('not-found').style.display = 'block';
       } else {
-        document.getElementById('suggestions').style.display = 'none';
+        // Jika tidak ditemukan, redirect ke halaman utama
+        updateProgressBar(100);
+        window.location.href = '/';
       }
-      
-      document.getElementById('not-found').style.display = 'block';
     }
 
     // Jalankan fungsi redirect saat halaman dimuat
