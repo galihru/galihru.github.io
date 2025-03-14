@@ -190,7 +190,7 @@ const htmlContent = `
     </nav>
   </header>
 
-  <a href="#${componentHashes.mainContent}" class=".skipLink" id="skipLink">Skip Link</a>
+  <a href="#${componentHashes.mainContent}" class="skipLink" id="skipLink">Skip Link</a>
   
   <div class="${hashedCssClasses.container}">
     <main id="${componentHashes.mainContent}" tabindex="-1">
