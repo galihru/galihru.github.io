@@ -76,7 +76,7 @@
       flex: 1;
       padding: 20px;
       background-color: #f1f3f4;
-      display: flex;
+      display: none; /* Awalnya disembunyikan */
       flex-direction: column;
       justify-content: center;
       align-items: center;
@@ -118,6 +118,15 @@
 </head>
 <body>
   <div class="container">
+    <div id="loading" role="status" aria-live="polite">
+      <h1>Mencari repositori...</h1>
+      <div class="loader" role="alert" aria-label="Loading"></div>
+      <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="progressbar-label">
+        <div class="progress-bar-inner"></div>
+      </div>
+      <p id="progressbar-label">Sedang mencoba menemukan repositori yang sesuai...</p>
+    </div>
+    
     <div id="not-found" class="not-found" role="alert" aria-live="assertive">
       <p class="error-code" role="text">404</p>
       <h1>Halaman Tidak Ditemukan</h1>
@@ -155,8 +164,10 @@
     // Fungsi untuk mengupdate progress bar
     function updateProgressBar(percentage) {
       const progressBarInner = document.querySelector('.progress-bar-inner');
-      progressBarInner.style.width = `${percentage}%`;
-      progressBarInner.setAttribute('aria-valuenow', percentage);
+      if (progressBarInner) {
+        progressBarInner.style.width = `${percentage}%`;
+        progressBarInner.setAttribute('aria-valuenow', percentage);
+      }
     }
 
     // Fungsi untuk mendapatkan slug dari URL
@@ -208,10 +219,8 @@
         link.textContent = "Kunjungi";
         link.setAttribute('role', 'link');
         link.setAttribute('accesskey', 'v');
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          showDialog(suggestion.url);
-        });
+        link.addEventListener('mouseenter', () => showDialog(suggestion.url));
+        link.addEventListener('mouseleave', closeDialog);
         linkCell.appendChild(link);
         row.appendChild(linkCell);
 
