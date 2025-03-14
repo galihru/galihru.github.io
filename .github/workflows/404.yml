@@ -24,6 +24,15 @@ jobs:
     - name: Run 404.js
       run: node 404.js
 
+    - name: Stash changes
+      run: git stash
+
+    - name: Pull latest changes
+      run: git pull --rebase origin main
+
+    - name: Apply stashed changes
+      run: git stash pop
+
     - name: Commit changes
       run: |
         git config --global user.name "github-actions[bot]"
@@ -34,9 +43,6 @@ jobs:
         else
           git commit -m "Auto-generated HTML file"
         fi
-
-    - name: Pull latest changes
-      run: git pull --rebase origin main
 
     - name: Push changes
       run: git push origin main
