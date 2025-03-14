@@ -170,5 +170,8 @@ function processHTML(inputFilePath, outputFilePath) {
 
 const inputPath = path.resolve(process.env.GITHUB_WORKSPACE || '.', 'template.html');
 const outputPath = path.resolve(process.env.GITHUB_WORKSPACE || '.', 'index.html');
+const inputPaths = path.resolve(process.env.GITHUB_WORKSPACE || '.', 'tem.html');
+const outputPaths = path.resolve(process.env.GITHUB_WORKSPACE || '.', '404.html');
 
+processHTML(inputPaths, outputPaths);
 processHTML(inputPath, outputPath);
