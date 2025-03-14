@@ -81,6 +81,14 @@
         box-shadow: 0 2px 4px var(--shadow-color);
         transition: background-color 0.3s, color 0.3s;
     }
+
+    .loading {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9;
+    }
+    
     
     /* Logo */
     .logo {
@@ -497,17 +505,17 @@
   
   
   <!-- Add this id to your main content container -->
-  <div id="main-content" class="container" role="main" tabindex="-1">
-    <div id="loading" role="status" aria-live="polite">
+  <main id="main-content" class="container" role="main" tabindex="-1">
+    <section class="loading" id="loading" role="status" aria-live="polite">
         <h1 lang="id">Mencari repositori...</h1>
         <div class="loader" role="alert" aria-label="Loading"></div>
         <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="progressbar-label">
             <div class="progress-bar-inner"></div>
         </div>
         <p id="progressbar-label" lang="id">Sedang mencoba menemukan repositori yang sesuai...</p>
-    </div>
+    </section>
     
-    <div id="not-found" class="not-found" role="alert" aria-live="assertive">
+    <section id="not-found" class="not-found" role="alert" aria-live="assertive">
       <p class="error-code" role="text">404</p>
       <h1 lang="id">Halaman Tidak Ditemukan</h1>
       <p lang="id">Maaf, halaman <strong id="original-path" role="text"></strong> tidak ditemukan.</p>
@@ -529,10 +537,10 @@
       </div>
       
       <p><a title="To Home" lang="id" href="/" accesskey="h">Kembali ke Halaman Utama</a></p>
-    </div>
+    </section>
 
     <!-- Dialog untuk Preview Link -->
-    <div id="dialog" class="dialog" role="dialog" aria-labelledby="dialog-title" aria-modal="true" tabindex="-1">
+    <section id="dialog" class="dialog" role="dialog" aria-labelledby="dialog-title" aria-modal="true" tabindex="-1">
       <div class="dialog-progress" role="progressbar" title="progress bar">
         <div class="dialog-progress-inner" title="progress bar" role="meter" aria-valuemin="0" aria-valuemax="100" value="0" aria-valuenow="0" aria-labelledby="dialog-progress-label"></div>
       </div>
@@ -554,8 +562,8 @@
       <div id="repo-info" style="display: none;" class="repo-info" aria-hidden="true">
         <!-- Informasi repositori akan ditampilkan di sini -->
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
   <!-- Footer -->
     <footer role="contentinfo">
         <p>&copy; 2025 Web App. All rights reserved.</p>
