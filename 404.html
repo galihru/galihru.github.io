@@ -167,9 +167,35 @@
     .dialog-header h2 {
       margin: 0;
     }
+    .repo-info {
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+    }
+    .repo-info h3 {
+      margin-top: 0;
+    }
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: #3498db;
+      color: white;
+      padding: 8px;
+      z-index: 1000;
+      transition: top 0.3s;
+    }
+    .skip-link:focus {
+      top: 0;
+    }
   </style>
 </head>
 <body>
+  <!-- Skip Link -->
+  <a href="#main-content" class="skip-link" role="link" accesskey="s">Skip to main content</a>
+
   <div class="container">
     <div id="loading" role="status" aria-live="polite">
       <h1>Mencari repositori...</h1>
@@ -215,7 +241,9 @@
           <i class="fas fa-external-link-alt"></i>
         </span>
       </div>
-      <iframe id="dialog-iframe" src="" title="Preview Link"></iframe>
+      <div id="repo-info" class="repo-info">
+        <!-- Informasi repositori akan ditampilkan di sini -->
+      </div>
       <button onclick="closeDialog()" accesskey="c" role="button" aria-label="Close dialog">Close</button>
     </div>
   </div>
@@ -280,7 +308,7 @@
         iconLink.innerHTML = '<i class="fas fa-external-link-alt"></i>';
         iconLink.setAttribute('role', 'button');
         iconLink.setAttribute('aria-label', `Preview ${suggestion.name}`);
-        iconLink.addEventListener('click', () => showDialog(suggestion.url));
+        iconLink.addEventListener('click', () => showRepoInfo(suggestion.url));
 
         // Tambahkan tooltip secara permanen
         const tooltip = document.createElement('span');
@@ -296,34 +324,43 @@
       });
     }
 
-    // Fungsi untuk menampilkan dialog preview link
-    function showDialog(url) {
-      const dialog = document.getElementById('dialog');
-      const iframe = document.getElementById('dialog-iframe');
-      const progressInner = document.querySelector('.dialog-progress-inner');
+    // Fungsi untuk menampilkan informasi repositori menggunakan API GitHub
+    async function showRepoInfo(url) {
+      const repoInfoDiv = document.getElementById('repo-info');
       const dialogLinkIcon = document.getElementById('dialog-link-icon');
 
-      // Update iframe src
-      iframe.src = url;
+      // Ambil nama pemilik dan repositori dari URL
+      const repoPath = new URL(url).pathname.split('/').slice(1, 3).join('/');
 
-      // Set link icon untuk membuka link di tab baru
-      dialogLinkIcon.onclick = () => window.open(url, '_blank');
+      // Fetch informasi repositori dari API GitHub
+      try {
+        const response = await fetch(`https://api.github.com/repos/${repoPath}`);
+        const repoData = await response.json();
 
-      // Tampilkan progress bar
-      progressInner.style.width = '0%';
-      iframe.onload = () => {
-        progressInner.style.width = '100%';
-        setTimeout(() => {
-          progressInner.style.width = '0%';
-        }, 500);
-      };
+        // Tampilkan informasi repositori
+        repoInfoDiv.innerHTML = `
+          <h3>${repoData.full_name}</h3>
+          <p>${repoData.description || "Tidak ada deskripsi"}</p>
+          <p><strong>Bahasa:</strong> ${repoData.language}</p>
+          <p><strong>Stars:</strong> ${repoData.stargazers_count}</p>
+          <p><strong>Forks:</strong> ${repoData.forks_count}</p>
+        `;
+
+        // Set link icon untuk membuka link di tab baru
+        dialogLinkIcon.onclick = () => window.open(repoData.html_url, '_blank');
+      } catch (error) {
+        console.error('Error fetching repo info:', error);
+        repoInfoDiv.innerHTML = `<p>Gagal memuat informasi repositori.</p>`;
+      }
+
+      // Tampilkan dialog
+      document.getElementById('dialog').style.display = 'block';
     }
 
     // Fungsi untuk menutup dialog
     function closeDialog() {
       const dialog = document.getElementById('dialog');
-      const iframe = document.getElementById('dialog-iframe');
-      iframe.src = ''; // Kosongkan iframe
+      dialog.style.display = 'none';
     }
 
     // Fungsi utama untuk handling redirect
