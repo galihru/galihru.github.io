@@ -410,6 +410,9 @@
     .skip-link {
         top: -130px;
     }
+    .bt {
+      display: flex;
+    }
     
     /* Show the skip link when it receives focus */
     .skip-link:focus {
@@ -490,9 +493,12 @@
       </div>
       <div class="dialog-header">
         <h2 id="dialog-title">Preview Link</h2>
-        <span tabindex="-1" id="dialog-link-icon" class="icon-link" role="button" aria-label="Open link in new tab">
-          <i class="fas fa-external-link-alt"></i>
-        </span>
+        <div class="bt">
+          <span tabindex="-1" id="dialog-link-icon" class="icon-link" role="button" aria-label="Open link in new tab">
+            <i class="fas fa-external-link-alt"></i>
+          </span>
+          <button onclick="closeDialog()" accesskey="c" role="button" aria-label="Close dialog">Close</button>
+        </div>
       </div>
       <!-- Added iframe container -->
       <div id="iframe-container" style="display: block; width: 100%; height: 100%;" aria-hidden="true">
@@ -501,7 +507,6 @@
       <div id="repo-info" style="display: none;" class="repo-info" aria-hidden="true">
         <!-- Informasi repositori akan ditampilkan di sini -->
       </div>
-      <button onclick="closeDialog()" accesskey="c" role="button" aria-label="Close dialog">Close</button>
     </div>
   </div>
   <!-- Footer -->
