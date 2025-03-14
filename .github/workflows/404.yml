@@ -24,7 +24,7 @@ jobs:
     - name: Run 404.js
       run: node 404.js
 
-    - name: Commit and push changes
+    - name: Commit changes
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -33,6 +33,10 @@ jobs:
           echo "No changes to commit."
         else
           git commit -m "Auto-generated HTML file"
-          git pull --rebase origin main
-          git push origin main
         fi
+
+    - name: Pull latest changes
+      run: git pull --rebase origin main
+
+    - name: Push changes
+      run: git push origin main
