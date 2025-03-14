@@ -768,6 +768,33 @@
 
     // Jalankan fungsi redirect saat halaman dimuat
     window.addEventListener('DOMContentLoaded', handleRedirect);
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const path = window.location.pathname; // Ambil path dari URL
+      const notFoundDiv = document.getElementById('not-found');
+    
+      // Cek apakah path valid atau tidak
+      if (!isValidPath(path)) {
+        notFoundDiv.style.display = 'block'; // Tampilkan pesan 404
+        document.title = 'Page Not Found - Redirecting...'; // Update title
+        updateMetaTags(); // Update meta tags dinamis
+      }
+    });
+    
+    function isValidPath(path) {
+      // Logika untuk memeriksa apakah path valid
+      // Misalnya, Anda bisa memeriksa daftar path yang valid
+      const validPaths = ['/', '/about', '/contact'];
+      return validPaths.includes(path);
+    }
+    
+    function updateMetaTags() {
+      // Update meta tags dinamis
+      const metaDescription = document.createElement('meta');
+      metaDescription.name = 'description';
+      metaDescription.content = 'Page Not Found - Redirecting...';
+      document.head.appendChild(metaDescription);
+    }
   </script>
   <script>
     document.querySelectorAll('.skip-link').forEach(link => {
