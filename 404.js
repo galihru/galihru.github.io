@@ -40,6 +40,20 @@ const htmlContent = `
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="This is collation application created by GALIH RIDHO UTOMO ">
+  <meta name="keywords" content="HTML, 404, CSS, JavaScript, Web Development, SEO">
+  <meta name="author" content="GALIH RIDHO UTOMO">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="Page Not Found - Redirecting...">
+  <meta property="og:description" content="This is collation application created by GALIH RIDHO UTOMO ">
+  <meta property="og:image" content="http://4211421036.github.io/345677.png">
+  <meta property="og:url" content="http://4211421036.github.io">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Page Not Found - Redirecting...">
+  <meta name="twitter:description" content="This is collation application created by GALIH RIDHO UTOMO ">
+  <meta name="twitter:image" content="http://4211421036.github.io/345677.png">
+  <link rel="canonical" href="http://4211421036.github.io">
   <title>Page Not Found - Redirecting...</title>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'nonce-${styleNonce}'; script-src 'nonce-${scriptNonce}';">
   <style nonce="${styleNonce}">
