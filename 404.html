@@ -323,20 +323,23 @@
     function displaySuggestions(suggestions) {
       const suggestionList = document.getElementById('suggestion-list');
       suggestionList.innerHTML = '';
-
+    
       suggestions.forEach(suggestion => {
         const row = document.createElement('tr');
         row.setAttribute('role', 'listitem');
-
+    
         const nameCell = document.createElement('td');
+        nameCell.setAttribute('headers', 'col-name');
         nameCell.textContent = suggestion.name;
         row.appendChild(nameCell);
-
+    
         const descCell = document.createElement('td');
+        descCell.setAttribute('headers', 'col-desc');
         descCell.textContent = suggestion.description || "Tidak ada deskripsi";
         row.appendChild(descCell);
-
+    
         const linkCell = document.createElement('td');
+        linkCell.setAttribute('headers', 'col-link');
         const iconLink = document.createElement('span');
         iconLink.className = 'icon-link';
         iconLink.innerHTML = '<i class="fas fa-external-link-alt"></i>';
@@ -347,7 +350,6 @@
         // Tambahkan tooltip secara permanen
         const tooltip = document.createElement('span');
         tooltip.className = 'tooltiptext';
-        tooltip.textContent = `Preview: ${suggestion.url}`;
         tooltip.setAttribute('role', 'tooltip');
         iconLink.appendChild(tooltip);
 
