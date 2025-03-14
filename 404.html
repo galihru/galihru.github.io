@@ -476,10 +476,20 @@
             outline: 3px solid CanvasText;
         }
     }
+
+    /* CSS untuk focus states */
+    :focus {
+      outline: 2px solid #4D90FE;
+      outline-offset: 2px;
+    }
+    
+    /* Pastikan main content dapat menerima fokus */
+    #main-content:focus {
+      outline: none;
+    }
   </style>
 </head>
 <body>
-  <!-- Skip Link -->
   <div class="skip-link-wrapper">
       <a title="Skip Content" href="#main-content" class="skip-link">Skip to main content</a>
   </div>
@@ -487,15 +497,17 @@
   <header role="banner">
       <!-- Logo -->
       <a title="Logo" href="/" class="logo">
-        <img src="345677.png" alt="logo" width="60px">
+        <img src="345677.png" alt="logo" width="60" height="60">
         Web App
       </a>
       
       <!-- Navigasi -->
       <nav role="navigation">
-          <a title="Home" href="/">Home</a>
-          <a title="About" href="/about">About</a>
-          <a title="Contact" href="/contact">Contact</a>
+          <ul>
+              <li><a title="Home" href="/">Home</a></li>
+              <li><a title="About" href="/about">About</a></li>
+              <li><a title="Contact" href="/contact">Contact</a></li>
+          </ul>
       </nav>
 
       <!-- Tombol Tema -->
@@ -503,30 +515,30 @@
   </header>
   
   
-  <!-- Add this id to your main content container -->
+  <!-- Main content container with correct attributes -->
   <main id="main-content" class="container" role="main" tabindex="-1">
     <section class="loading" id="loading" role="status" aria-live="polite">
-        <h1 lang="id">Mencari repositori...</h1>
+        <h1>Mencari repositori...</h1>
         <div class="loader" role="alert" aria-label="Loading"></div>
         <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="progressbar-label">
             <div class="progress-bar-inner"></div>
         </div>
-        <p id="progressbar-label" lang="id">Sedang mencoba menemukan repositori yang sesuai...</p>
+        <p id="progressbar-label">Sedang mencoba menemukan repositori yang sesuai...</p>
     </section>
     
     <section id="not-found" class="not-found" role="alert" aria-live="assertive">
       <p class="error-code" role="text">404</p>
-      <h1 lang="id">Halaman Tidak Ditemukan</h1>
-      <p lang="id">Maaf, halaman <strong id="original-path" role="text"></strong> tidak ditemukan.</p>
+      <h1>Halaman Tidak Ditemukan</h1>
+      <p>Maaf, halaman <strong id="original-path" role="text"></strong> tidak ditemukan.</p>
       
       <div id="suggestions" class="suggestions" role="region" aria-labelledby="suggestions-heading">
-        <h2 lang="id" id="suggestions-heading">Mungkin maksud Anda:</h2>
+        <h2 id="suggestions-heading">Mungkin maksud Anda:</h2>
         <table aria-describedby="suggestions-heading">
           <thead>
             <tr>
-              <th lang="id" rol="columnheader" id="header-name" scope="col">Nama Repositori</th>
-              <th lang="id" role="columnheader" id="header-desc" scope="col">Deskripsi</th>
-              <th lang="id" role="columnheader" id="header-link" scope="col">Link</th>
+              <th role="columnheader" id="header-name" scope="col">Nama Repositori</th>
+              <th role="columnheader" id="header-desc" scope="col">Deskripsi</th>
+              <th role="columnheader" id="header-link" scope="col">Link</th>
             </tr>
           </thead>
           <tbody id="suggestion-list" role="list">
@@ -535,38 +547,40 @@
         </table>
       </div>
       
-      <p><a title="To Home" lang="id" href="/" accesskey="h">Kembali ke Halaman Utama</a></p>
+      <p><a title="To Home" href="/" accesskey="h">Kembali ke Halaman Utama</a></p>
     </section>
 
     <!-- Dialog untuk Preview Link -->
     <section id="dialog" class="dialog" role="dialog" aria-labelledby="dialog-title" aria-modal="true" tabindex="-1">
-      <div class="dialog-progress" role="progressbar" title="progress bar">
-        <div class="dialog-progress-inner" title="progress bar" role="meter" aria-valuemin="0" aria-valuemax="100" value="0" aria-valuenow="0" aria-labelledby="dialog-progress-label"></div>
+      <div class="dialog-progress" role="progressbar" aria-label="Progress indicator">
+        <div class="dialog-progress-inner" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="dialog-progress-label"></div>
+        <p id="dialog-progress-label" class="sr-only">Loading progress</p>
       </div>
       <div class="dialog-header">
         <h2 id="dialog-title">Preview Link</h2>
         <div class="bt">
-          <span tabindex="-1" id="dialog-link-icon" class="icon-link" role="button" aria-label="Open link in new tab">
+          <button id="dialog-link-icon" class="icon-link" aria-label="Open link in new tab">
             <i class="fas fa-external-link-alt"></i>
-          </span>
-          <div class="close-preview" onclick="closeDialog()" accesskey="c" role="button" aria-label="Close dialog" title="close">×
+          </button>
+          <button class="close-preview" aria-label="Close dialog" accesskey="c">×
             <div class="esc-indicator"><kbd>Esc</kbd></div>
-          </div>
+          </button>
         </div>
       </div>
-      <!-- Added iframe container -->
-      <div id="iframe-container" style="display: block; width: 100%; height: 100%;" aria-hidden="true">
+      <!-- Iframe container -->
+      <div id="iframe-container" style="display: block; width: 100%; height: 100%;">
         <iframe id="repo-preview" src="" title="Repository Preview" width="100%" height="100%" style="border: none; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);"></iframe>
       </div>
-      <div id="repo-info" style="display: none;" class="repo-info" aria-hidden="true">
+      <div id="repo-info" style="display: none;" class="repo-info">
         <!-- Informasi repositori akan ditampilkan di sini -->
       </div>
     </section>
   </main>
+  
   <!-- Footer -->
-    <footer role="contentinfo">
-        <p>&copy; 2025 Web App. All rights reserved.</p>
-    </footer>
+  <footer role="contentinfo">
+      <p>&copy; 2025 Web App. All rights reserved.</p>
+  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/fuzzysort@2.0.4/fuzzysort.min.js"></script>
   <script>
