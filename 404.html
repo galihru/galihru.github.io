@@ -581,6 +581,7 @@
           transform: translateY(85%);
           display: flex;
           flex-direction: column;
+          transition: transform 0.3s ease;
         }
 
         .dialog-progress {
@@ -820,64 +821,132 @@
     }
     
     function handleTouchEnd() {
-      if (!isDragging || window.innerWidth > 768) return;
-      
-      isDragging = false;
-      modalElement.style.transition = 'transform 0.3s ease'; // Restore transition
-      
-      const diffY = touchEndY - touchStartY;
-      const windowHeight = window.innerHeight;
-      
-      // Get current position from the transform
-      let currentPosition = 0;
-      const transform = window.getComputedStyle(modalElement).transform;
-      if (transform !== 'none') {
-        const matrix = new DOMMatrixReadOnly(transform);
-        currentPosition = matrix.m42;
+        if (!isDragging || window.innerWidth > 768) return;
+        
+        isDragging = false;
+        modalElement.style.transition = 'transform 0.3s ease'; // Restore transition
+        
+        const diffY = touchEndY - touchStartY;
+        const windowHeight = window.innerHeight;
+        
+        // Get current position from the transform
+        let currentPosition = 0;
+        const transform = window.getComputedStyle(modalElement).transform;
+        if (transform !== 'none') {
+          const matrix = new DOMMatrixReadOnly(transform);
+          currentPosition = matrix.m42;
+        }
+        
+        // Determine which state to snap to based on position and swipe direction
+        const positionRatio = currentPosition / windowHeight;
+        
+        // Remove all position classes first
+        modalElement.classList.remove('peeking');
+        modalElement.classList.remove('half-expanded');
+        modalElement.classList.remove('expanded');
+        
+        let targetClass = '';
+        if (diffY > 50) {
+          // Swiped down
+          if (positionRatio < 0.2) {
+            targetClass = 'half-expanded';
+          } else if (positionRatio < 0.5) {
+            targetClass = 'peeking';
+          } else {
+            targetClass = 'peeking';
+          }
+        } else if (diffY < -50) {
+          // Swiped up
+          if (positionRatio > 0.6) {
+            targetClass = 'peeking';
+          } else if (positionRatio > 0.3) {
+            targetClass = 'half-expanded';
+          } else {
+            targetClass = 'expanded';
+          }
+        } else {
+          // Small movement, snap to nearest
+          if (positionRatio > 0.6) {
+            targetClass = 'peeking';
+          } else if (positionRatio > 0.3) {
+            targetClass = 'half-expanded';
+          } else {
+            targetClass = 'expanded';
+          }
+        }
+        
+        // Add the target class
+        modalElement.classList.add(targetClass);
+        
+        // Reset inline transform to use our CSS classes
+        setTimeout(() => {
+          modalElement.style.transform = '';
+        }, 0);
       }
       
-      // Determine which state to snap to based on position and swipe direction
-      const positionRatio = currentPosition / windowHeight;
-      
-      // Remove all position classes first
-      modalElement.classList.remove('peeking');
-      modalElement.classList.remove('half-expanded');
-      modalElement.classList.remove('expanded');
-      
-      if (diffY > 50) {
-        // Swiped down
-        if (positionRatio < 0.2) {
-          modalElement.classList.add('half-expanded');
-        } else if (positionRatio < 0.5) {
-          modalElement.classList.add('peeking');
-        } else {
-          modalElement.classList.add('peeking');
+      function handleMouseUp() {
+        if (!isDragging || window.innerWidth > 768) return;
+        
+        isDragging = false;
+        modalElement.style.transition = 'transform 0.3s ease';
+        
+        const diffY = touchEndY - touchStartY;
+        const windowHeight = window.innerHeight;
+        
+        // Get current position from the transform
+        let currentPosition = 0;
+        const transform = window.getComputedStyle(modalElement).transform;
+        if (transform !== 'none') {
+          const matrix = new DOMMatrixReadOnly(transform);
+          currentPosition = matrix.m42;
         }
-      } else if (diffY < -50) {
-        // Swiped up
-        if (positionRatio > 0.6) {
-          modalElement.classList.add('peeking');
-        } else if (positionRatio > 0.3) {
-          modalElement.classList.add('half-expanded');
+        
+        // Determine which state to snap to
+        const positionRatio = currentPosition / windowHeight;
+        
+        // Remove all position classes first
+        modalElement.classList.remove('peeking');
+        modalElement.classList.remove('half-expanded');
+        modalElement.classList.remove('expanded');
+        
+        let targetClass = '';
+        if (diffY > 50) {
+          // Swiped down
+          if (positionRatio < 0.2) {
+            targetClass = 'half-expanded';
+          } else if (positionRatio < 0.5) {
+            targetClass = 'peeking';
+          } else {
+            targetClass = 'peeking';
+          }
+        } else if (diffY < -50) {
+          // Swiped up
+          if (positionRatio > 0.6) {
+            targetClass = 'peeking';
+          } else if (positionRatio > 0.3) {
+            targetClass = 'half-expanded';
+          } else {
+            targetClass = 'expanded';
+          }
         } else {
-          modalElement.classList.add('expanded');
+          // Small movement, snap to nearest
+          if (positionRatio > 0.6) {
+            targetClass = 'peeking';
+          } else if (positionRatio > 0.3) {
+            targetClass = 'half-expanded';
+          } else {
+            targetClass = 'expanded';
+          }
         }
-      } else {
-        // Small movement, snap to nearest
-        if (positionRatio > 0.6) {
-          modalElement.classList.add('peeking');
-        } else if (positionRatio > 0.3) {
-          modalElement.classList.add('half-expanded');
-        } else {
-          modalElement.classList.add('expanded');
-        }
+        
+        // Add the target class
+        modalElement.classList.add(targetClass);
+        
+        // Reset inline transform to use our CSS classes
+        setTimeout(() => {
+          modalElement.style.transform = '';
+        }, 0);
       }
-      
-      // Reset inline transform to use our CSS classes
-      setTimeout(() => {
-        modalElement.style.transform = '';
-      }, 0);
-    }
 
     // Mouse event handlers for desktop testing
     function handleMouseDown(e) {
@@ -909,65 +978,6 @@
       // Apply the new position
       modalElement.style.transform = `translateY(${newPosition}px)`;
     }
-    
-    function handleMouseUp() {
-        if (!isDragging || window.innerWidth > 768) return;
-        
-        isDragging = false;
-        modalElement.style.transition = 'transform 0.3s ease';
-        
-        const diffY = touchEndY - touchStartY;
-        const windowHeight = window.innerHeight;
-        
-        // Get current position from the transform
-        let currentPosition = 0;
-        const transform = window.getComputedStyle(modalElement).transform;
-        if (transform !== 'none') {
-          const matrix = new DOMMatrixReadOnly(transform);
-          currentPosition = matrix.m42;
-        }
-        
-        // Determine which state to snap to
-        const positionRatio = currentPosition / windowHeight;
-        
-        // Remove all position classes first
-        modalElement.classList.remove('peeking');
-        modalElement.classList.remove('half-expanded');
-        modalElement.classList.remove('expanded');
-        
-        if (diffY > 50) {
-          // Swiped down
-          if (positionRatio < 0.2) {
-            modalElement.classList.add('half-expanded');
-          } else if (positionRatio < 0.5) {
-            modalElement.classList.add('peeking');
-          } else {
-            modalElement.classList.add('peeking');
-          }
-        } else if (diffY < -50) {
-          // Swiped up
-          if (positionRatio > 0.6) {
-            modalElement.classList.add('peeking');
-          } else if (positionRatio > 0.3) {
-            modalElement.classList.add('half-expanded');
-          } else {
-            modalElement.classList.add('expanded');
-          }
-        } else {
-          // Small movement, snap to nearest
-          if (positionRatio > 0.6) {
-            modalElement.classList.add('peeking');
-          } else if (positionRatio > 0.3) {
-            modalElement.classList.add('half-expanded');
-          } else {
-            modalElement.classList.add('expanded');
-          }
-        }
-        
-        setTimeout(() => {
-          modalElement.style.transform = '';
-        }, 0);
-      }
 
     function updateProgressBar(percentage) {
       const progressBarInner = document.querySelector('.progress-bar-inner');
