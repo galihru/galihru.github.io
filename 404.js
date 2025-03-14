@@ -1,6 +1,7 @@
-import fs from 'fs';
-import crypto from 'crypto';
+const fs = require('fs');
+const crypto = require('crypto');
 
+// Function to generate hash
 function generateHash(input) {
   return crypto.createHash('sha256').update(input).digest('hex').substr(0, 8);
 }
@@ -19,6 +20,7 @@ const hashedIds = {
   suggestionList: generateHash('suggestion-list'),
   mainContent: generateHash('main-content'),
   skipLink: generateHash('skip-link'),
+  errorMessage: generateHash('error-message'),
 };
 
 const hashedCssClasses = {
@@ -57,7 +59,6 @@ const htmlContent = `
   <meta name="twitter:description" content="Halaman 404 aplikasi kolasi yang dibuat oleh GALIH RIDHO UTOMO. Aplikasi ini membantu pengguna menemukan repositori yang dimaksud.">
   <meta name="twitter:image" content="http://4211421036.github.io/345677.png">
   <link rel="canonical" href="http://4211421036.github.io">
-  <link rel="icon" href="https://4211421036.github.io/g4lihru/987654567.png" type="image/x-icon">
   <title>Page Not Found - Redirecting...</title>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'nonce-${styleNonce}'; script-src 'nonce-${scriptNonce}' https://cdn.jsdelivr.net;">
   <style nonce="${styleNonce}">
@@ -166,6 +167,8 @@ const htmlContent = `
           <ul id="${hashedIds.suggestionList}" role="list" aria-label="Daftar saran repositori"></ul>
         </div>
         
+        <p id="${hashedIds.errorMessage}"></p>
+        
         <p><a href="/" aria-label="Kembali ke Halaman Utama">Kembali ke Halaman Utama</a></p>
       </div>
     </main>
@@ -253,45 +256,56 @@ const htmlContent = `
       // Get slug
       const slug = getSlug(path);
       
-      if (!slug) {
-        // If no slug, redirect to home page
-        window.location.href = '/';
-        return;
-      }
-      
-      // Find matching repo
+      // Always show the 404 page for invalid URLs instead of redirecting to home
+      // Only direct to valid repos if found
       try {
-        const matchResult = await findMatchingRepo(slug);
+        // Show loading initially
+        document.getElementById('${hashedIds.loading}').style.display = 'block';
         
-        if (matchResult.found) {
-          // If found, redirect to correct URL
-          window.location.href = matchResult.url;
-          return;
-        }
-        
-        // If not found, show 404 page with suggestions
-        document.getElementById('${hashedIds.loading}').style.display = 'none';
+        // Set the original path text
         document.getElementById('${hashedIds.originalPath}').textContent = path;
         
-        // Show suggestions
-        const suggestionList = document.getElementById('${hashedIds.suggestionList}');
-        if (matchResult.allMatches && matchResult.allMatches.length > 0) {
-          matchResult.allMatches.forEach(match => {
-            const item = document.createElement('li');
-            item.className = '${hashedCssClasses.suggestionItem}';
-            
-            const link = document.createElement('a');
-            link.href = match.url;
-            link.textContent = match.original;
-            link.setAttribute('aria-label', 'Kunjungi repositori ' + match.original);
-            
-            item.appendChild(link);
-            suggestionList.appendChild(item);
-          });
+        // If slug exists, try to find matching repo
+        if (slug) {
+          const matchResult = await findMatchingRepo(slug);
+          
+          if (matchResult.found) {
+            // If found, redirect to correct URL
+            window.location.href = matchResult.url;
+            return;
+          }
+          
+          // Show suggestions if available
+          const suggestionList = document.getElementById('${hashedIds.suggestionList}');
+          if (matchResult.allMatches && matchResult.allMatches.length > 0) {
+            matchResult.allMatches.forEach(match => {
+              const item = document.createElement('li');
+              item.className = '${hashedCssClasses.suggestionItem}';
+              
+              const link = document.createElement('a');
+              link.href = match.url;
+              link.textContent = match.original;
+              link.setAttribute('aria-label', 'Kunjungi repositori ' + match.original);
+              
+              item.appendChild(link);
+              suggestionList.appendChild(item);
+            });
+          } else {
+            document.getElementById('${hashedIds.suggestions}').style.display = 'none';
+          }
+          
+          // If there was an error fetching the repo data
+          if (matchResult.error) {
+            document.getElementById('${hashedIds.errorMessage}').textContent = 
+              'Terjadi kesalahan saat mencoba menemukan repositori: ' + matchResult.error;
+          }
         } else {
+          // If no slug, still show 404 instead of redirecting
           document.getElementById('${hashedIds.suggestions}').style.display = 'none';
         }
         
+        // Hide loading and show not found
+        document.getElementById('${hashedIds.loading}').style.display = 'none';
         document.getElementById('${hashedIds.notFound}').style.display = 'block';
         
         // Set focus to the main content for screen readers
@@ -302,6 +316,8 @@ const htmlContent = `
         console.error('Error in redirect handling:', error);
         document.getElementById('${hashedIds.loading}').style.display = 'none';
         document.getElementById('${hashedIds.notFound}').style.display = 'block';
+        document.getElementById('${hashedIds.errorMessage}').textContent = 
+          'Terjadi kesalahan: ' + error.message;
       }
     }
 
@@ -321,4 +337,4 @@ const htmlContent = `
 // Write HTML file
 fs.writeFileSync('404.html', htmlContent);
 
-console.log('File 404.html berhasil dibuat dengan perbaikan aksesibilitas!');
+console.log('File 404.html berhasil dibuat dengan perbaikan aksesibilitas dan logika yang benar!');
