@@ -813,10 +813,10 @@
       }
     
       // Tampilkan dialog
-      document.getElementById('s-2').style.height = '70%';
       document.getElementById('s-3').style.display = 'flex';
       document.getElementById('s-3').style.height = '-webkit-fill-available';
       document.getElementById('s-3').style.position = 'fixed';
+      document.getElementById('s-2').style.height = '70%';
     }
 
     // Fungsi untuk menutup dialog
@@ -836,6 +836,7 @@
         // Tampilkan pesan 404 jika slug kosong
         document.getElementById('s-1').style.display = 'none';
         document.getElementById('s-2').style.display = 'flex';
+        document.getElementById('s-2').style.width = '70%';
         document.getElementById('suggestions').style.display = 'none';
         return;
       }
@@ -850,6 +851,7 @@
       document.getElementById('s-1').style.display = 'none';
       document.getElementById('original-path').textContent = path;
       document.getElementById('s-2').style.display = 'flex';
+      document.getElementById('s-2').style.width = '70%';
       
       if (suggestions.length > 0) {
         displaySuggestions(suggestions);
