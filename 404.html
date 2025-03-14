@@ -250,9 +250,9 @@
         <table aria-describedby="suggestions-heading">
           <thead>
             <tr>
-              <th scope="col">Nama Repositori</th>
-              <th scope="col">Deskripsi</th>
-              <th scope="col">Link</th>
+              <th id="header-name" scope="col">Nama Repositori</th>
+              <th id="header-desc" scope="col">Deskripsi</th>
+              <th id="header-link" scope="col">Link</th>
             </tr>
           </thead>
           <tbody id="suggestion-list" role="list">
@@ -324,38 +324,50 @@
       const suggestionList = document.getElementById('suggestion-list');
       suggestionList.innerHTML = '';
     
+      if (suggestions.length === 0) {
+        const emptyRow = document.createElement('tr');
+        const emptyCell = document.createElement('td');
+        emptyCell.setAttribute('colspan', '3');
+        emptyCell.textContent = 'Tidak ada saran tersedia.';
+        emptyRow.appendChild(emptyCell);
+        suggestionList.appendChild(emptyRow);
+        return;
+      }
+    
       suggestions.forEach(suggestion => {
         const row = document.createElement('tr');
         row.setAttribute('role', 'listitem');
     
         const nameCell = document.createElement('td');
-        nameCell.setAttribute('headers', 'col-name');
+        nameCell.setAttribute('headers', 'header-name');  // Match the ID from the th
         nameCell.textContent = suggestion.name;
         row.appendChild(nameCell);
     
         const descCell = document.createElement('td');
-        descCell.setAttribute('headers', 'col-desc');
+        descCell.setAttribute('headers', 'header-desc');  // Match the ID from the th
         descCell.textContent = suggestion.description || "Tidak ada deskripsi";
         row.appendChild(descCell);
     
         const linkCell = document.createElement('td');
-        linkCell.setAttribute('headers', 'col-link');
+        linkCell.setAttribute('headers', 'header-link');  // Match the ID from the th
+        
         const iconLink = document.createElement('span');
         iconLink.className = 'icon-link';
         iconLink.innerHTML = '<i class="fas fa-external-link-alt"></i>';
         iconLink.setAttribute('role', 'button');
         iconLink.setAttribute('aria-label', `Preview ${suggestion.name}`);
         iconLink.addEventListener('click', () => showRepoInfo(suggestion.url));
-
+    
         // Tambahkan tooltip secara permanen
         const tooltip = document.createElement('span');
         tooltip.className = 'tooltiptext';
+        tooltip.textContent = `\nPreview`;
         tooltip.setAttribute('role', 'tooltip');
         iconLink.appendChild(tooltip);
-
+    
         linkCell.appendChild(iconLink);
         row.appendChild(linkCell);
-
+    
         suggestionList.appendChild(row);
       });
     }
