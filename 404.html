@@ -230,14 +230,14 @@
     </div>
   
   <!-- Add this id to your main content container -->
-  <div id="main-content" class="container">
+  <div id="main-content" class="container" role="main" tabindex="-1">
     <div id="loading" role="status" aria-live="polite">
-      <h1>Mencari repositori...</h1>
-      <div class="loader" role="alert" aria-label="Loading"></div>
-      <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="progressbar-label">
-        <div class="progress-bar-inner"></div>
-      </div>
-      <p id="progressbar-label">Sedang mencoba menemukan repositori yang sesuai...</p>
+        <h1>Mencari repositori...</h1>
+        <div class="loader" role="alert" aria-label="Loading"></div>
+        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="progressbar-label">
+            <div class="progress-bar-inner"></div>
+        </div>
+        <p id="progressbar-label">Sedang mencoba menemukan repositori yang sesuai...</p>
     </div>
     
     <div id="not-found" class="not-found" role="alert" aria-live="assertive">
@@ -265,7 +265,7 @@
     </div>
 
     <!-- Dialog untuk Preview Link -->
-    <div id="dialog" class="dialog" role="dialog" aria-labelledby="dialog-title" aria-modal="true">
+    <div id="dialog" class="dialog" role="dialog" aria-labelledby="dialog-title" aria-modal="true" tabindex="-1">
       <div class="dialog-progress" role="progressbar" title="progress bar">
         <div class="dialog-progress-inner" title="progress bar" role="meter" aria-valuemin="0" aria-valuemax="100" value="0" aria-valuenow="0" aria-labelledby="dialog-progress-label"></div>
       </div>
@@ -488,27 +488,26 @@
     window.addEventListener('DOMContentLoaded', handleRedirect);
   </script>
   <script>
-        // Add smooth scrolling for skip links
-        document.querySelectorAll('.skip-link').forEach(link => {
-            link.addEventListener('click', function (e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href').substring(1);
-                const targetElement = document.getElementById(targetId);
-
-                if (targetElement) {
-                    targetElement.setAttribute('tabindex', '-1');
-                    targetElement.focus();
-
-                    // Remove tabindex after focus
-                    targetElement.addEventListener('blur', function () {
-                        this.removeAttribute('tabindex');
-                    }, { once: true });
-
-                    // Smooth scroll to the element
-                    targetElement.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
+    document.querySelectorAll('.skip-link').forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+    
+            if (targetElement) {
+                targetElement.setAttribute('tabindex', '-1');
+                targetElement.focus();
+    
+                // Remove tabindex after focus
+                targetElement.addEventListener('blur', function () {
+                    this.removeAttribute('tabindex');
+                }, { once: true });
+    
+                // Smooth scroll to the element
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+            }
         });
-    </script>
+    });
+  </script>
 </body>
 </html>
