@@ -741,7 +741,10 @@
       const slug = getSlug(path);
       
       if (!slug) {
-        window.location.href = '/';
+        // Tampilkan pesan 404 jika slug kosong
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('not-found').style.display = 'flex';
+        document.getElementById('suggestions').style.display = 'none';
         return;
       }
       
