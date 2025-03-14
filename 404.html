@@ -651,6 +651,12 @@
       // Show iframe element
       const iframeContainer = document.getElementById('iframe-container');
       const repoPreview = document.getElementById('repo-preview');
+
+      window.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+              closeDialog();
+          }
+      });
       
       // Tampilkan progress bar
       progressInner.style.width = '0%';
@@ -722,6 +728,7 @@
     function closeDialog() {
       const dialog = document.getElementById('dialog');
       dialog.style.display = 'none';
+      repoInfoDiv.setAttribute('aria-hidden', 'true');
     }
 
     // Fungsi utama untuk handling redirect
