@@ -1196,6 +1196,29 @@
           document.getElementById('suggestions').style.display = 'none';
         }
       }
+      function handleResize() {
+        const s3 = document.getElementById('s-3');
+        if (!s3 || s3.style.display !== 'flex') return;
+        
+        if (window.innerWidth > 768) {
+          // On desktop
+          document.getElementById('s-2').style.width = '70%';
+          s3.classList.remove('peeking');
+          s3.classList.remove('half-expanded');
+          s3.classList.remove('expanded');
+          s3.style.transform = '';
+        } else {
+          // On mobile
+          document.getElementById('s-2').style.width = '100%';
+          
+          // Make sure we're in one of our defined states
+          if (!s3.classList.contains('peeking') && 
+              !s3.classList.contains('half-expanded') && 
+              !s3.classList.contains('expanded')) {
+            s3.classList.add('peeking');
+          }
+        }
+      }
       
       // Add window resize event listener
       window.addEventListener('resize', handleResize);
