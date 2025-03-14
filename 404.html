@@ -428,7 +428,6 @@
     }
     
     .skip-link-wrapper {
-        position: absolute;
         z-index: 1000;
     }
     
@@ -445,21 +444,19 @@
     /* Show the skip link when it receives focus */
     .skip-link {
         position: absolute;
-        top: -40px; /* Awalnya tersembunyi */
+        top: 0;
         left: 0;
-        width: max-content;
         background: #fff;
         color: #000;
-        padding: 10px 15px;
-        font-weight: bold;
+        padding: 10px;
         text-decoration: underline;
         border: 2px solid #000;
         z-index: 100;
-        transition: top 0.3s;
+        transform: translateY(-100%);
     }
     
     .skip-link:focus {
-        top: 0; /* Muncul saat fokus */
+        transform: translateY(0);
     }
 
 
