@@ -33,6 +33,6 @@ jobs:
           echo "No changes to commit."
         else
           git commit -m "Auto-generated HTML file"
-          git pull origin main
+          git pull --rebase origin main
           git push origin main
         fi
