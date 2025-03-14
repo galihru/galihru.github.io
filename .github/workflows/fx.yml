@@ -1,12 +1,8 @@
 name: Generate Repository Data
 on:
-  schedule:
-    - cron: '0 */12 * * *'
   workflow_dispatch:
   # Jalankan ketika ada push ke branch main
-  push:
-    branches:
-      - main
+  
 jobs:
   generate-repo-data:
     runs-on: ubuntu-latest
