@@ -641,6 +641,7 @@
   <script src="https://cdn.jsdelivr.net/npm/fuzzysort@2.0.4/fuzzysort.min.js"></script>
   <script>
     // Fungsi untuk mengupdate progress bar
+    // Fungsi untuk mengupdate progress bar
     function updateProgressBar(percentage) {
       const progressBarInner = document.querySelector('.progress-bar-inner');
       if (progressBarInner) {
@@ -648,12 +649,12 @@
         progressBarInner.setAttribute('aria-valuenow', percentage);
       }
     }
-
+    
     // Fungsi untuk mendapatkan slug dari URL
     function getSlug(path) {
       return path.split('/').filter(segment => segment.trim() !== '')[0] || '';
     }
-
+    
     // Fungsi untuk mengambil data repositori dari repo-data.json
     async function fetchRepoData() {
       try {
@@ -665,7 +666,7 @@
         return [];
       }
     }
-
+    
     // Fungsi untuk mencari saran menggunakan FuzzySort
     async function findMatchingRepo(slug, repoData) {
       const results = fuzzysort.go(slug, repoData, { key: 'name', limit: 5 });
@@ -674,7 +675,7 @@
       }
       return [];
     }
-
+    
     // Fungsi untuk menampilkan saran dalam tabel
     function displaySuggestions(suggestions) {
       const suggestionList = document.getElementById('suggestion-list');
@@ -695,18 +696,18 @@
         row.setAttribute('role', 'listitem');
     
         const nameCell = document.createElement('td');
-        nameCell.setAttribute('headers', 'header-name');  // Match the ID from the th
+        nameCell.setAttribute('headers', 'header-name');
         nameCell.textContent = suggestion.name;
         row.appendChild(nameCell);
     
         const descCell = document.createElement('td');
-        descCell.setAttribute('headers', 'header-desc');  // Match the ID from the th
+        descCell.setAttribute('headers', 'header-desc');
         descCell.textContent = suggestion.description || "Tidak ada deskripsi";
         row.appendChild(descCell);
     
         const linkCell = document.createElement('td');
-        linkCell.setAttribute('headers', 'header-link');  // Match the ID from the th
-        
+        linkCell.setAttribute('headers', 'header-link');
+    
         const iconLink = document.createElement('span');
         iconLink.className = 'icon-link';
         iconLink.innerHTML = '<i class="fas fa-external-link-alt"></i>';
@@ -714,7 +715,6 @@
         iconLink.setAttribute('aria-label', `Preview ${suggestion.name}`);
         iconLink.addEventListener('click', () => showRepoInfo(suggestion.url));
     
-        // Tambahkan tooltip secara permanen
         const tooltip = document.createElement('span');
         tooltip.className = 'tooltiptext';
         tooltip.textContent = `\nPreview`;
@@ -727,27 +727,15 @@
         suggestionList.appendChild(row);
       });
     }
-
+    
     // Fungsi untuk menampilkan informasi repositori menggunakan API GitHub
     async function showRepoInfo(url) {
       const repoInfoDiv = document.getElementById('repo-info');
       const dialogLinkIcon = document.getElementById('dialog-link-icon');
       const progressInner = document.querySelector('.dialog-progress-inner');
-      
-      // Show iframe element
       const iframeContainer = document.getElementById('iframe-container');
       const repoPreview = document.getElementById('repo-preview');
-
-      window.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-          closeDialog(); // Hanya panggil closeDialog tanpa ubah width
-        }
-      });
-      
-      document.addEventListener('click', function(event) {
-        closeDialog(); // Hanya panggil closeDialog tanpa ubah width
-      });
-      
+    
       // Tampilkan progress bar
       progressInner.style.width = '0%';
     
@@ -756,15 +744,13 @@
       const owner = urlParts[0];
       const repo = urlParts[1];
       const repoPath = `${owner}/${repo}`;
-      
+    
       try {
         // Check if GitHub Pages exists for this repo
         const pagesUrl = `https://${owner}.github.io/${repo}/`;
-        
-        // Try to fetch the GitHub Pages URL to see if it exists
         const pageCheckResponse = await fetch(pagesUrl, { method: 'HEAD' })
-          .catch(e => ({ ok: false })); // Handle network errors
-        
+          .catch(e => ({ ok: false }));
+    
         if (pageCheckResponse.ok) {
           // GitHub Pages exists, show in iframe
           iframeContainer.style.display = 'block';
@@ -777,7 +763,7 @@
           iframeContainer.style.display = 'none';
           repoInfoDiv.style.display = 'block';
           repoInfoDiv.setAttribute('aria-hidden', 'false');
-          
+    
           // Fetch informasi repositori dari API GitHub
           const response = await fetch(`https://api.github.com/repos/${repoPath}`);
           const repoData = await response.json();
@@ -793,8 +779,8 @@
         }
     
         // Set link icon untuk membuka link di tab baru
-        const pageOrRepoUrl = pageCheckResponse.ok ? 
-          `https://${owner}.github.io/${repo}/` : 
+        const pageOrRepoUrl = pageCheckResponse.ok ?
+          `https://${owner}.github.io/${repo}/` :
           `https://github.com/${repoPath}`;
         dialogLinkIcon.onclick = () => window.open(pageOrRepoUrl, '_blank');
     
@@ -810,81 +796,66 @@
         repoInfoDiv.innerHTML = `<p>Gagal memuat informasi repositori.</p>`;
       }
     
-      // Tampilkan dialog
+      // Tampilkan dialog dan atur lebar s2
       document.getElementById('s-3').style.display = 'flex';
-      document.getElementById('s-3').style.height = '-webkit-fill-available';
-      document.getElementById('s-3').style.position = 'fixed';
-      document.getElementById('s-2').style.height = '70%';
+      document.getElementById('s-2').style.width = '70%';
     }
-
+    
     // Fungsi untuk menutup dialog
     function closeDialog() {
       const dialog = document.getElementById('s-3');
-      document.getElementById('s-2').style.width = '100%'; // Ubah ke 100% saat ditutup
       dialog.style.display = 'none';
-      repoInfoDiv.setAttribute('aria-hidden', 'true');
+      document.getElementById('s-2').style.width = '100%'; // Kembalikan lebar s2 ke 100%
     }
-
+    
+    // Event listener untuk tombol Escape dan klik di luar dialog
+    window.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        closeDialog();
+      }
+    });
+    
+    document.addEventListener('click', function (event) {
+      if (!event.target.closest('#s-3')) {
+        closeDialog();
+      }
+    });
+    
     // Fungsi utama untuk handling redirect
     async function handleRedirect() {
       const path = window.location.pathname;
       const slug = getSlug(path);
-      
+    
       if (!slug) {
+        // Tampilkan pesan 404 jika slug kosong
         document.getElementById('s-1').style.display = 'none';
         document.getElementById('s-2').style.display = 'flex';
-        document.getElementById('s-2').style.width = '100%'; // Ubah ke 100%
+        document.getElementById('s-2').style.width = '100%'; // Atur lebar s2 ke 100%
         document.getElementById('suggestions').style.display = 'none';
         return;
       }
-      
+    
       updateProgressBar(10);
       const repoData = await fetchRepoData();
       updateProgressBar(50);
-      
+    
       const suggestions = await findMatchingRepo(slug, repoData);
       updateProgressBar(100);
-      
+    
       document.getElementById('s-1').style.display = 'none';
       document.getElementById('original-path').textContent = path;
       document.getElementById('s-2').style.display = 'flex';
-      document.getElementById('s-2').style.width = '100%'; // Ubah ke 100%
-      
+      document.getElementById('s-2').style.width = '100%'; // Atur lebar s2 ke 100%
+    
       if (suggestions.length > 0) {
         displaySuggestions(suggestions);
       } else {
         document.getElementById('suggestions').style.display = 'none';
       }
     }
-
+    
     // Jalankan fungsi redirect saat halaman dimuat
     window.addEventListener('DOMContentLoaded', handleRedirect);
-
-    window.addEventListener('DOMContentLoaded', () => {
-      const path = window.location.pathname; // Ambil path dari URL
-      const notFoundDiv = document.getElementById('s-2');
-
-      if (!isValidPath(path)) {
-        notFoundDiv.style.display = 'block'; // Tampilkan pesan 404
-        document.title = 'Page Not Found - Redirecting...'; // Update title
-        updateMetaTags(); // Update meta tags dinamis
-      }
-    });
-    
-    function isValidPath(path) {
-      // Logika untuk memeriksa apakah path valid
-      // Misalnya, Anda bisa memeriksa daftar path yang valid
-      const validPaths = ['/', '/about', '/contact'];
-      return validPaths.includes(path);
-    }
-    
-    function updateMetaTags() {
-      // Update meta tags dinamis
-      const metaDescription = document.createElement('meta');
-      metaDescription.name = 'description';
-      metaDescription.content = 'Page Not Found - Redirecting...';
-      document.head.appendChild(metaDescription);
-    }
   </script>
   <script>
     document.querySelectorAll('.skip-link').forEach(link => {
