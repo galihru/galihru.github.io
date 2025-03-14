@@ -58,6 +58,7 @@ const htmlContent = `
   <meta name="keywords" content="HTML, 404, CSS, JavaScript, Web Development, SEO">
   <meta name="author" content="GALIH RIDHO UTOMO">
   <meta name="robots" content="index, follow">
+  <base href="https://4211421036.github.io">
   <meta property="og:title" content="Page Not Found - Redirecting...">
   <meta property="og:description" content="Halaman 404 aplikasi kolasi yang dibuat oleh GALIH RIDHO UTOMO. Aplikasi ini membantu pengguna menemukan repositori yang dimaksud.">
   <meta property="og:image" content="http://4211421036.github.io/345677.png">
