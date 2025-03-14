@@ -266,12 +266,12 @@
 
     <!-- Dialog untuk Preview Link -->
     <div id="dialog" class="dialog" role="dialog" aria-labelledby="dialog-title" aria-modal="true">
-      <div class="dialog-progress">
-        <div class="dialog-progress-inner" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="dialog-progress-label"></div>
+      <div class="dialog-progress" role="progressbar" title="progress bar">
+        <div class="dialog-progress-inner" title="progress bar" role="meter" aria-valuemin="0" aria-valuemax="100" value="0" aria-valuenow="0" aria-labelledby="dialog-progress-label"></div>
       </div>
       <div class="dialog-header">
         <h2 id="dialog-title">Preview Link</h2>
-        <span id="dialog-link-icon" class="icon-link" role="button" aria-label="Open link in new tab">
+        <span tabindex="-1" id="dialog-link-icon" class="icon-link" role="button" aria-label="Open link in new tab">
           <i class="fas fa-external-link-alt"></i>
         </span>
       </div>
