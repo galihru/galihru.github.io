@@ -26,7 +26,7 @@
         --bg-color: #f8f9fa;
         --bg-element: #ffffff;
         --color-text: #333333;
-        --color-primary: #0b3b81; /* Digelapkan dari #1e5799 untuk kontras lebih baik */
+        --color-primary: #0047b3; /* Digelapkan dari #1e5799 untuk kontras lebih baik */
         --color-primary-hover: #092c61;
         --border-color: #ddd;
         --shadow-color: rgba(0, 0, 0, 0.1);
@@ -367,7 +367,7 @@
         padding: 20px;
         border-radius: 5px;
         box-shadow: 0 0 10px var(--shadow-color);
-        width: 100%;
+        width: -webkit-fill-available;
         transition: background-color 0.3s, color 0.3s;
     }
     
@@ -495,10 +495,10 @@
         </span>
       </div>
       <!-- Added iframe container -->
-      <div id="iframe-container" style="display: none; width: 100%; height: 80%;">
+      <div id="iframe-container" style="display: block; width: 100%; height: 100%;" aria-hidden="true">
         <iframe id="repo-preview" src="" title="Repository Preview" width="100%" height="100%" style="border: none; background-color: white; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 5px;"></iframe>
       </div>
-      <div id="repo-info" class="repo-info" aria-hidden="true">
+      <div id="repo-info" style="display: none;" class="repo-info" aria-hidden="true">
         <!-- Informasi repositori akan ditampilkan di sini -->
       </div>
       <button onclick="closeDialog()" accesskey="c" role="button" aria-label="Close dialog">Close</button>
