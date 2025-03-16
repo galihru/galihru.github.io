@@ -172,6 +172,9 @@ const inputPath = path.resolve(process.env.GITHUB_WORKSPACE || '.', 'template.ht
 const outputPath = path.resolve(process.env.GITHUB_WORKSPACE || '.', 'index.html');
 const inputPaths = path.resolve(process.env.GITHUB_WORKSPACE || '.', 'tem.html');
 const outputPaths = path.resolve(process.env.GITHUB_WORKSPACE || '.', '404.html');
+const inputPathss = path.resolve(process.env.GITHUB_WORKSPACE || '.', 'mobile/temp.html');
+const outputPathss = path.resolve(process.env.GITHUB_WORKSPACE || '.', 'mobile/index.html');
 
 processHTML(inputPaths, outputPaths);
 processHTML(inputPath, outputPath);
+processHTML(inputPathss, outputPathss);
