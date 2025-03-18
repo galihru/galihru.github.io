@@ -335,27 +335,27 @@
 `,document.head.appendChild(styleElement),{python:"🐍",javascript:"📜",typescript:"📘",html:"🌐",css:"🎨",php:"🐘",java:"☕",kotlin:"📱",swift:"🍎","c#":"♯","c++":"⚙️",c:"🔧",ruby:"💎",go:"🐹",rust:"🦀",dart:"🎯",other:"📦"});function detectLanguages(e){var t,a,r=[],o=e.name.toLowerCase(),s=(e.description||"").toLowerCase();e.language&&"null"!==e.language.toLowerCase()&&r.push(e.language.toLowerCase());for([t,a]of Object.entries({python:["python","django","flask","py"],javascript:["javascript","js","node","react","vue","angular"],typescript:["typescript","ts"],html:["html","web"],css:["css","style","scss","sass"],php:["php","laravel","symfony","wordpress","wp"],java:["java","spring","android"],kotlin:["kotlin","android"],swift:["swift","ios"],"c#":["c#","csharp",".net","dotnet"],"c++":["c++","cpp"],c:["c language"],ruby:["ruby","rails"],go:["golang","go"],rust:["rust","rs"],dart:["dart","flutter"]}))for(var n of a)!o.includes(n)&&!s.includes(n)||r.includes(t)||r.push(t);return 0===r.length&&r.push("other"),r}function calculateLanguagePercentages(e){e=detectLanguages(e);let t=e.length,a={};return e.forEach(e=>{a[e]=(100/t).toFixed(1)}),a}function createClipElement(e,t){var a=document.createElement("div");return a.className=classNames.clip,a.textContent=e+` ${t}%`,a.addEventListener("click",()=>{showCategoryRepos(e)}),a}function categorizeRepositoriesByLanguage(e){let a={};return e.forEach(t=>{detectLanguages(t).forEach(e=>{a[e]||(a[e]=[]),a[e].some(e=>e.id===t.id)||a[e].push(t)})}),a}function formatRelativeTime(e){var e=new Date(e),t=new Date,t=Math.floor((t-e)/1e3),e=Math.floor(t/60),t=Math.floor(e/60),a=Math.floor(t/24);return 0<a?a+" hari lalu":0<t?t+" jam lalu":0<e?e+" menit lalu":"baru saja"}function capitalizeFirstLetter(e){return e.charAt(0).toUpperCase()+e.slice(1)}function createRepoCard(e){var t=document.createElement("div"),a=(t.className=classNames.card,document.createElement("img")),r=(a.className=classNames.cardImage,a.src=e.owner.avatar_url,a.alt=e.name,document.createElement("div")),o=(r.className=classNames.cardContent,document.createElement("div")),s=(o.className=classNames.cardTitle,o.textContent=e.name,document.createElement("div")),n=(s.className=classNames.cardDescription,s.textContent=e.description||"No description available",document.createElement("div")),i=(n.className=classNames.cardMeta,document.createElement("div"));return i.className=classNames.cardDate,i.textContent=formatRelativeTime(e.created_at),n.appendChild(i),r.appendChild(o),r.appendChild(s),r.appendChild(n),t.appendChild(a),t.appendChild(r),t.addEventListener("click",()=>{window.open(e.html_url,"_blank")}),t}function createModal(){let t=document.createElement("div");t.className=classNames.modal,t.id="repoModal";var e=document.createElement("div"),a=(e.className=classNames.modalContent,document.createElement("div")),r=(a.className=classNames.modalHeader,document.createElement("div")),o=(r.className=classNames.modalBack,r.id="modalBack",r.innerHTML="&larr; Back to Categories",r.addEventListener("click",()=>{showAllCategories()}),document.createElement("div")),s=(o.className=classNames.modalTitle,o.id="modalTitle",document.createElement("div")),n=(s.className=classNames.modalClose,s.innerHTML="&times;",s.addEventListener("click",()=>{t.style.display="none",resetModal()}),document.createElement("div"));return n.className=classNames.modalBody,n.id="modalBody",a.appendChild(r),a.appendChild(o),a.appendChild(s),e.appendChild(a),e.appendChild(n),t.appendChild(e),t.addEventListener("click",e=>{e.target===t&&(t.style.display="none",resetModal())}),t}function resetModal(){var e=document.getElementById("modalBack");e&&(e.style.display="none")}function showAllCategories(){var e=document.getElementById("modalBack"),t=document.getElementById("modalTitle"),a=document.getElementById("modalBody");e.style.display="none",t.textContent="All Programming Languages",a.innerHTML="";let n=document.createElement("div");n.className=classNames.categoriesGrid,Object.keys(window.categorizedRepos).sort((e,t)=>"other"===e?1:"other"===t?-1:e.localeCompare(t)).forEach(e=>{var t,a,r,o,s=window.categorizedRepos[e];s&&0!==s.length&&((t=document.createElement("div")).className=classNames.categoryCard,(a=document.createElement("div")).className=classNames.categoryCardIcon,a.textContent=languageIcons[e]||"📦",(r=document.createElement("div")).className=classNames.categoryCardTitle,r.textContent=capitalizeFirstLetter(e),(o=document.createElement("div")).className=classNames.categoryCardCount,o.textContent=s.length+" repositories",t.appendChild(a),t.appendChild(r),t.appendChild(o),t.addEventListener("click",()=>{showCategoryRepos(e)}),n.appendChild(t))}),a.appendChild(n),document.getElementById("repoModal").style.display="block"}function showCategoryRepos(e){var t=document.getElementById("modalBack"),a=document.getElementById("modalTitle");let r=document.getElementById("modalBody");t.style.display="flex",a.textContent=capitalizeFirstLetter(e)+" Repositories",r.innerHTML="";t=window.categorizedRepos[e];t.sort((e,t)=>new Date(t.updated_at)-new Date(e.updated_at)),t.forEach(e=>{var t=createRepoCard(e),t=(r.appendChild(t),t.querySelector("."+classNames.cardContent)),e=calculateLanguagePercentages(e);let a=document.createElement("div");a.className=classNames.clipContainer,Object.entries(e).forEach(([e,t])=>{e=createClipElement(e,t);a.appendChild(e)}),t&&t.appendChild(a)})}function createRepoCards(n){window.categorizedRepos=n;let i=document.createElement("div");i.className=classNames.container;var e=createModal(),e=(document.body.appendChild(e),document.createElement("div")),t=(e.className=classNames.allCategoriesLink,e.textContent="All Programming Languages ",document.createElement("span"));return t.textContent="❯",e.appendChild(t),e.addEventListener("click",()=>{showAllCategories()}),i.appendChild(e),Object.keys(n).sort((e,t)=>"other"===e?1:"other"===t?-1:n[t].length-n[e].length).slice(0,3).forEach(e=>{var a=n[e];if(a&&0!==a.length){a.sort((e,t)=>new Date(t.updated_at)-new Date(e.updated_at));var r=document.createElement("div"),o=(r.className=classNames.categorySection,document.createElement("div")),s=(o.className=classNames.categoryTitle,o.textContent=capitalizeFirstLetter(e)+" ",document.createElement("span"));s.className=classNames.categoryIcon,s.textContent="❯",o.appendChild(s),s.addEventListener("click",()=>{showCategoryRepos(e),document.getElementById("repoModal").style.display="block"}),r.appendChild(o);let t=document.createElement("div");t.className=classNames.cardsContainer,a.slice(0,3).forEach(e=>{e=createRepoCard(e);t.appendChild(e)}),r.appendChild(t),i.appendChild(r)}}),i}async function fetchGitHubRepos(e){e=await fetch(`https://api.github.com/users/${e}/repos?per_page=100`);if(e.ok)return e.json();throw new Error("Failed to fetch GitHub repositories")}async function initializeUI(e){try{var t=document.querySelector(".carousel-track").parentElement,a=createRepoCards(categorizeRepositoriesByLanguage(await fetchGitHubRepos(e)));t.nextElementSibling?t.parentElement.insertBefore(a,t.nextElementSibling):t.parentElement.appendChild(a)}catch(e){console.error("Error initializing repository cards:",e)}}document.addEventListener("DOMContentLoaded",()=>{initializeUI("4211421036")});let existingTrack=document.querySelector(".carousel-track"),existingItems=Array.from(existingTrack.children),existingNextButton=document.querySelector(".carousel-next"),existingPrevButton=document.querySelector(".carousel-prev"),existingCurrentIndex=0;function createGitHubRepoShowcase(t="4211421036"){var e=document.createElement("div"),a=(e.className="repo-showcase-container",document.createElement("div"));a.className="repo-showcase-header",a.innerHTML=`
     <h2>Essential GitHub Repositories</h2>
     <p>Check out these featured repositories from ${t}</p>
-  `,e.appendChild(a);let r=document.createElement("div");r.className="repo-grid-container";a=document.createElement("div"),a.className="repo-nav",a.innerHTML=`
-    <button class="repo-nav-prev">←</button>
-    <div class="repo-nav-indicator">
+  `,e.appendChild(a);let r=document.createElement("div");r.className="repo-grid-container";a=document.createElement("div"),a.className="repo-carousel-nav",a.innerHTML=`
+    <button class="repo-carousel-prev">←</button>
+    <div class="repo-carousel-indicator">
       <span class="repo-active-page">1</span>/<span class="repo-total-pages">1</span>
     </div>
-    <button class="repo-nav-next">→</button>
+    <button class="repo-carousel-next">→</button>
   `,e.appendChild(r),e.appendChild(a),a=document.createElement("style");a.textContent=`
     .repo-showcase-container {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #1b1b1b;
+      background-color: #000;
       color: #fff;
       border-radius: 8px;
       padding: 20px;
-      margin: 20px 0;
-      max-width: 100%;
+      margin: 0 auto;
+      border-radius: 25px;
     }
     
     .repo-showcase-header {
       margin-bottom: 20px;
       padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgb(255 255 255);
     }
     
     .repo-showcase-header h2 {
@@ -376,34 +376,28 @@
       margin-bottom: 20px;
     }
     
-    @media (max-width: 1200px) {
-      .repo-grid-container {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-    
-    @media (max-width: 900px) {
+    @media (max-width: 1024px) {
       .repo-grid-container {
         grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(4, 1fr);
       }
     }
     
-    @media (max-width: 600px) {
+    @media (max-width: 640px) {
       .repo-grid-container {
         grid-template-columns: 1fr;
       }
     }
     
     .repo-card {
-      background-color: #2d2d2d;
-      border-radius: 8px;
+      background-color: #1a1a1a;
+      border-radius: 21px;
       overflow: hidden;
       transition: transform 0.2s, box-shadow 0.2s;
       position: relative;
       display: flex;
       flex-direction: column;
       height: 100%;
-      cursor: pointer;
     }
     
     .repo-card:hover {
@@ -418,18 +412,17 @@
     }
     
     .repo-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 8px;
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
       margin-right: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
+      background-color: #4a4a4a;
       color: #fff;
       font-weight: bold;
-      font-size: 24px;
-      background-position: center;
-      background-size: cover;
+      font-size: 20px;
     }
     
     .repo-title {
@@ -478,25 +471,25 @@
     }
     
     .repo-button {
-      background-color: #0077b5;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      padding: 8px 16px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 14px;
-      text-align: center;
-      text-decoration: none;
-      transition: background-color 0.2s;
-      width: 100%;
+        background-color: #0077b5;
+        color: white;
+        border: none;
+        border-radius: 23px;
+        padding: 8px 16px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        text-align: center;
+        text-decoration: none;
+        transition: background-color 0.2s;
+        width: -webkit-fill-available;
     }
     
     .repo-button:hover {
       background-color: #005fa3;
     }
     
-    .repo-nav {
+    .repo-carousel-nav {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -504,8 +497,8 @@
       margin-top: 16px;
     }
     
-    .repo-nav-prev,
-    .repo-nav-next {
+    .repo-carousel-prev,
+    .repo-carousel-next {
       background-color: #444;
       border: none;
       border-radius: 50%;
@@ -520,12 +513,12 @@
       transition: background-color 0.2s;
     }
     
-    .repo-nav-prev:hover,
-    .repo-nav-next:hover {
+    .repo-carousel-prev:hover,
+    .repo-carousel-next:hover {
       background-color: #555;
     }
     
-    .repo-nav-indicator {
+    .repo-carousel-indicator {
       font-size: 14px;
       color: rgba(255, 255, 255, 0.7);
     }
@@ -539,7 +532,7 @@
     }
     
     .repo-tag {
-      display: inline-flex;
+      flex-direction: row;
       align-items: center;
       font-size: 11px;
       padding: 2px 6px;
@@ -554,65 +547,7 @@
       display: flex;
       flex-wrap: wrap;
     }
-    
-    .repo-preview-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s;
-    }
-    
-    .repo-preview-modal.active {
-      opacity: 1;
-      pointer-events: all;
-    }
-    
-    .repo-preview-content {
-      width: 90%;
-      height: 80%;
-      background-color: white;
-      border-radius: 8px;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .repo-preview-close {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background-color: rgba(0, 0, 0, 0.5);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 18px;
-      z-index: 10;
-    }
-    
-    .repo-preview-iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-  `,document.head.appendChild(a);let i=document.createElement("div"),l=(i.className="repo-preview-modal",i.innerHTML=`
-    <div class="repo-preview-content">
-      <div class="repo-preview-close">×</div>
-      <iframe class="repo-preview-iframe" src="about:blank"></iframe>
-    </div>
-  `,document.body.appendChild(i),i.querySelector(".repo-preview-close").addEventListener("click",()=>{i.classList.remove("active"),document.body.style.overflow=""}),i.addEventListener("click",e=>{e.target===i&&(i.classList.remove("active"),document.body.style.overflow="")}),{javascript:"#f1e05a",typescript:"#2b7489",html:"#e34c26",css:"#563d7c",python:"#3572A5",java:"#b07219",csharp:"#178600",php:"#4F5D95",ruby:"#701516",go:"#00ADD8",rust:"#dea584",dart:"#00B4AB",kotlin:"#F18E33",swift:"#ffac45",c:"#555555","c++":"#f34b7d",shell:"#89e051",other:"#8257e5"});function c(e){return!(!e.homepage||""===e.homepage.trim())||!!e.has_pages}function o(t){var e,a=document.createElement("div"),r=(a.className="repo-card",t.language||"Other"),o=(o=(o=r)?o.toLowerCase():"other",l[o]||l.other),s=c(t);let n=(e=t).homepage&&""!==e.homepage.trim()?e.homepage:e.has_pages?`https://${e.owner.login}.github.io/`+e.name:e.html_url;return a.innerHTML=`
+  `,document.head.appendChild(a);let s={javascript:"#837503",typescript:"#2b7489",html:"#e34c26",css:"#563d7c",python:"#3572A5",java:"#b07219",csharp:"#178600",php:"#4F5D95",ruby:"#701516",go:"#00ADD8",rust:"#dea584",dart:"#00B4AB",kotlin:"#F18E33",swift:"#ffac45",c:"#555555","c++":"#f34b7d",shell:"#89e051",other:"#8257e5"};function o(t){var e=t.homepage&&""!==t.homepage.trim(),a=document.createElement("div"),r=(a.className="repo-card",t.language||"Other"),o=(o=(o=r)?o.toLowerCase():"other",s[o]||s.other);return a.innerHTML=`
       <div class="repo-card-header">
         <div class="repo-icon" style="background-color: ${o}">
           ${t.name.charAt(0).toUpperCase()}
@@ -632,13 +567,13 @@
           <span class="repo-meta-item"><i>⑂</i> ${t.forks_count}</span>
           <span class="repo-meta-item"><i>⊙</i> ${t.watchers_count}</span>
         </div>
-        <a href="${t.html_url}" target="_blank" class="repo-button">
-          ${s?"View Demo":"View Repository"}
+        <a href="${e?t.homepage:t.html_url}" target="_blank" class="repo-button">
+          ${e?"View Demo":"View Repository"}
         </a>
       </div>
-    `,s?(a.querySelector(".repo-button").href=n,a.addEventListener("click",e=>{e.target.closest(".repo-button")||(document.querySelector(".repo-preview-iframe").src=n,i.classList.add("active"),document.body.style.overflow="hidden")})):a.addEventListener("click",e=>{e.target.closest(".repo-button")||window.open(t.html_url,"_blank")}),a}let s=0,n=1,d=8,p=[];function m(){var e=s*d,t=e+d,e=p.slice(e,t),t=(r.innerHTML="",e.forEach(e=>{r.appendChild(o(e))}),document.querySelector(".repo-active-page").textContent=s+1,document.querySelector(".repo-total-pages").textContent=n,document.querySelector(".repo-nav-prev")),e=document.querySelector(".repo-nav-next");t.disabled=0===s,t.style.opacity=0===s?"0.5":"1",e.disabled=s===n-1,e.style.opacity=s===n-1?"0.5":"1"}return(async()=>{try{var e=await fetch(`https://api.github.com/users/${t}/repos?per_page=100&sort=updated`);if(!e.ok)throw new Error("Failed to fetch repositories");(p=await e.json()).sort((e,t)=>{var a=c(e),r=c(t);return a&&!r?-1:!a&&r?1:t.stargazers_count-e.stargazers_count}),n=Math.ceil(p.length/d),m(),document.querySelector(".repo-nav-prev").addEventListener("click",()=>{0<s&&(s--,m())}),document.querySelector(".repo-nav-next").addEventListener("click",()=>{s<n-1&&(s++,m())})}catch(e){console.error("Error fetching repositories:",e),r.innerHTML=`
+    `,e?a.addEventListener("click",e=>{e.target.closest(".repo-button")||window.open(t.homepage,"_blank")}):a.addEventListener("click",e=>{e.target.closest(".repo-button")||window.open(t.html_url,"_blank")}),a}let n=0,i=1,l=8,c=[];function d(){var e=n*l,t=e+l,e=c.slice(e,t),t=(r.innerHTML="",e.forEach(e=>{r.appendChild(o(e))}),document.querySelector(".repo-active-page").textContent=n+1,document.querySelector(".repo-total-pages").textContent=i,document.querySelector(".repo-carousel-prev")),e=document.querySelector(".repo-carousel-next");t.disabled=0===n,t.style.opacity=0===n?"0.5":"1",e.disabled=n===i-1,e.style.opacity=n===i-1?"0.5":"1"}return(async()=>{try{var e=await fetch(`https://api.github.com/users/${t}/repos?per_page=100&sort=updated`);if(!e.ok)throw new Error("Failed to fetch repositories");c=await e.json(),i=Math.ceil(c.length/l),d(),document.querySelector(".repo-carousel-prev").addEventListener("click",()=>{0<n&&(n--,d())}),document.querySelector(".repo-carousel-next").addEventListener("click",()=>{n<i-1&&(n++,d())})}catch(e){console.error("Error fetching repositories:",e),r.innerHTML=`
         <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
           <h3>Failed to load repositories</h3>
           <p>Please try again later or check your connection.</p>
         </div>
-      `}})(),e}function integrateGitHubRepoShowcase(){var e=document.querySelector(".carousel")?document.querySelector(".carousel").closest("div").parentElement:document.body,t=createGitHubRepoShowcase("4211421036");e.appendChild(t)}document.addEventListener("DOMContentLoaded",()=>{integrateGitHubRepoShowcase()})</script><script nonce="XVSpHeSZAqWDTyju">"serviceWorker"in navigator&&window.addEventListener("load",()=>{navigator.serviceWorker.register("./sw.js").then(e=>{console.log("Service Worker registered with scope: ",e.scope)}).catch(e=>{console.error("Service Worker registration failed:",e)})})</script><script nonce="5zUziZBlYX5QZ27XtiapPw==" type="text/javascript">function loadThirdParty(e){var r,a=e.dataset.src,t=e.dataset.type;"script"===t?((r=document.createElement("script")).src=a,r.async=!0,e.parentNode.replaceChild(r,e)):"iframe"===t&&((r=document.createElement("iframe")).src=a,Object.assign(r,{width:e.dataset.width||"100%",height:e.dataset.height||"100%",frameborder:"0"}),e.parentNode.replaceChild(r,e)),performance.mark("third-party-load-"+a),performance.measure("third-party-loading","app-init-start","third-party-load-"+a)}performance.mark("app-init-start");let observer=new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting&&(loadThirdParty(e.target),observer.unobserve(e.target))})},{rootMargin:"50px"});function sendPerformanceMetrics(){var e=performance.getEntriesByType("measure");console.log("Performance metrics:",e)}window.addEventListener("pageshow",function(e){performance.mark("pageshow-start"),e.persisted&&(console.log("Page restored from bfcache"),performance.measure("bfcache-restoration","pageshow-start"))}),window.addEventListener("load",function(){performance.mark("page-load-complete"),performance.measure("total-page-load","app-init-start","page-load-complete"),document.querySelectorAll("[data-lazy]").forEach(e=>{observer.observe(e)})}),window.addEventListener("pagehide",function(e){console.log("Page is being unloaded")}),document.addEventListener("visibilitychange",function(){"hidden"===document.visibilityState&&(performance.mark("page-hide"),performance.measure("page-visible-duration","app-init-start","page-hide"),sendPerformanceMetrics(),console.log("Page hidden, prepare for restoration"))})</script></body></html>
+      `}})(),e}function integrateGitHubRepoShowcase(){var e=document.querySelector(".carousel").closest("div").parentElement,t=createGitHubRepoShowcase("4211421036");e.appendChild(t)}document.addEventListener("DOMContentLoaded",()=>{integrateGitHubRepoShowcase()})</script><script>"serviceWorker"in navigator&&window.addEventListener("load",()=>{navigator.serviceWorker.register("./sw.js").then(e=>{console.log("Service Worker registered with scope: ",e.scope)}).catch(e=>{console.error("Service Worker registration failed:",e)})})</script><script type=text/javascript nonce="49qWMxKgi8WFEF4QXyvJ8w==">function loadThirdParty(e){var r,a=e.dataset.src,t=e.dataset.type;"script"===t?((r=document.createElement("script")).src=a,r.async=!0,e.parentNode.replaceChild(r,e)):"iframe"===t&&((r=document.createElement("iframe")).src=a,Object.assign(r,{width:e.dataset.width||"100%",height:e.dataset.height||"100%",frameborder:"0"}),e.parentNode.replaceChild(r,e)),performance.mark("third-party-load-"+a),performance.measure("third-party-loading","app-init-start","third-party-load-"+a)}performance.mark("app-init-start");let observer=new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting&&(loadThirdParty(e.target),observer.unobserve(e.target))})},{rootMargin:"50px"});function sendPerformanceMetrics(){var e=performance.getEntriesByType("measure");console.log("Performance metrics:",e)}window.addEventListener("pageshow",function(e){performance.mark("pageshow-start"),e.persisted&&(console.log("Page restored from bfcache"),performance.measure("bfcache-restoration","pageshow-start"))}),window.addEventListener("load",function(){performance.mark("page-load-complete"),performance.measure("total-page-load","app-init-start","page-load-complete"),document.querySelectorAll("[data-lazy]").forEach(e=>{observer.observe(e)})}),window.addEventListener("pagehide",function(e){console.log("Page is being unloaded")}),document.addEventListener("visibilitychange",function(){"hidden"===document.visibilityState&&(performance.mark("page-hide"),performance.measure("page-visible-duration","app-init-start","page-hide"),sendPerformanceMetrics(),console.log("Page hidden, prepare for restoration"))})</script></body></html>
