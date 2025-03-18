@@ -78,6 +78,24 @@ func detectSQLInjectionVulnerabilities(content string) []string {
 	return vulnerabilities
 }
 
+func addMissingHeaders(content string) string {
+	headers := []string{
+		`<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'">`,
+		`<meta http-equiv="X-XSS-Protection" content="1; mode=block">`,
+		`<meta http-equiv="X-Content-Type-Options" content="nosniff">`,
+		`<meta http-equiv="X-Frame-Options" content="DENY">`,
+		`<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">`,
+	}
+
+	for _, header := range headers {
+		if !strings.Contains(content, header) {
+			content = strings.Replace(content, "</head>", header+"\n</head>", 1)
+		}
+	}
+
+	return content
+}
+
 // Fungsi untuk memeriksa kerentanan CSRF
 func detectCSRFVulnerabilities(content string) []string {
 	patterns := []string{
@@ -188,6 +206,8 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 	}
 	
 	contentStr := string(content)
+
+	contentStr = addMissingHeaders(contentStr)
 	
 	// 1. Tambahkan headers keamanan jika tidak ada
 	if !strings.Contains(contentStr, "<meta http-equiv=\"Content-Security-Policy\"") {
