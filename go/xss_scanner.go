@@ -320,7 +320,7 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 
 	// Hapus script yang berpotensi berbahaya
 	for _, xss := range report.XSSVulns {
-		contentStr = strings.Replace(contentStr, xss, "<!-- Removed potentially unsafe script -->", 1)
+		contentStr = strings.Replace(contentStr, xss, "", 1)
 	}
 
 	// Tambahkan CSRF token ke semua form
