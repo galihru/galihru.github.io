@@ -7,6 +7,7 @@ end
 
 # Deteksi potensi serangan SQL Injection
 def detect_sql_injection(log_file)
+  puts "Membaca file: #{log_file}"  # Debugging
   File.readlines(log_file).each_with_index do |line, index|
     if line.downcase.match(/select|insert|update|delete|union|drop|alter/i)
       puts "Potensi SQL Injection ditemukan di baris #{index + 1}: #{line.strip}"
