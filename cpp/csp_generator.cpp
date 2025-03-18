@@ -32,7 +32,7 @@ std::string calculate_sha256(const std::string &filename) {
 }
 
 int main() {
-    std::string hash = calculate_sha256("index.html");
+    std::string hash = calculate_sha256("../index.html");
     std::cout << "SHA-256 Hash: " << hash << std::endl;
 
     // Generate CSP
