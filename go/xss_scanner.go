@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"math/rand"
 )
 
 // SecurityReport struktur untuk menyimpan hasil pemeriksaan keamanan
