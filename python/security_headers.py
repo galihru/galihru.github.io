@@ -2,14 +2,16 @@ from bs4 import BeautifulSoup
 import os
 
 def add_security_headers(html_file):
+    print(f"Memproses file: {html_file}")  # Debugging
     with open(html_file, 'r+', encoding='utf-8') as f:
         soup = BeautifulSoup(f, 'html.parser')
+        print(f"Struktur HTML sebelum modifikasi:\n{soup.prettify()}")  # Debugging
 
         # Pastikan tag <head> ada
         if not soup.head:
-            # Jika tidak ada <head>, buat tag <head> baru
+            print("Tag <head> tidak ditemukan, membuat tag <head> baru...")  # Debugging
             head_tag = soup.new_tag('head')
-            soup.html.insert(0, head_tag)  # Tambahkan <head> di awal <html>
+            soup.html.insert(0, head_tag)
 
         # Tambahkan meta tag untuk Content Security Policy
         meta = soup.new_tag('meta')
@@ -33,6 +35,7 @@ def add_security_headers(html_file):
         f.seek(0)
         f.write(str(soup))
         f.truncate()
+        print(f"Struktur HTML setelah modifikasi:\n{soup.prettify()}")  # Debugging
 
 # Jalankan fungsi untuk semua file HTML
 for root, dirs, files in os.walk('.'):
