@@ -75,9 +75,15 @@ func addSRIToScripts(content string) string {
             return match
         }
         src := srcMatch[1]
+
+	hrefMatch := regexp.MustCompile(`href=["']([^"']+)["']`).FindStringSubmatch(match)
+        if len(srcMatch) < 2 {
+            return match
+        }
+        href := hrefMatch[1]
         
         // Hanya tambahkan SRI untuk URL eksternal
-        if strings.HasPrefix(src, "http://") || strings.HasPrefix(src, "https://") {
+        if strings.HasPrefix(src, "http://") || strings.HasPrefix(src, "https://") || strings.HasPrefix(src, "/") || strings.HasPrefix(href, "/") {
             hash, err := calculateExternalSRIHash(src)
             if err != nil {
                 log.Printf("Gagal menghitung hash SRI untuk %s: %v\n", src, err)
