@@ -146,37 +146,37 @@ func analyzeContentSecurity(content string) map[string]bool {
 		"No Inline JavaScript":        false,
 		"No Eval Usage":               true,
 	}
-	
+
 	// Cek SRI (Subresource Integrity)
 	sriPattern := regexp.MustCompile(`<(?:script|link)[^>]*integrity\s*=\s*["'][^"']*["'][^>]*>`)
 	if sriPattern.MatchString(content) {
 		securityFeatures["SRI (Subresource Integrity)"] = true
 	}
-	
+
 	// Cek CORS
 	corsPattern := regexp.MustCompile(`<(?:script|link|img)[^>]*crossorigin\s*=\s*["'][^"']*["'][^>]*>`)
 	if corsPattern.MatchString(content) {
 		securityFeatures["CORS Restrictions"] = true
 	}
-	
+
 	// Cek sumber HTTP
 	httpPattern := regexp.MustCompile(`<(?:script|link|img|iframe)[^>]*(?:src|href)\s*=\s*["']http://[^"']*["'][^>]*>`)
 	if httpPattern.MatchString(content) {
 		securityFeatures["HTTPS Resources Only"] = false
 	}
-	
+
 	// Cek JavaScript inline
-	inlineJSPattern := regexp.MustCompile(`<script\b[^>]*>(?:(?!<\/script>).)*<\/script>`)
+	inlineJSPattern := regexp.MustCompile(`<script\b[^>]*>(.*?)<\/script>`)
 	if inlineJSPattern.MatchString(content) {
 		securityFeatures["No Inline JavaScript"] = false
 	}
-	
+
 	// Cek penggunaan eval
 	evalPattern := regexp.MustCompile(`eval\s*\(`)
 	if evalPattern.MatchString(content) {
 		securityFeatures["No Eval Usage"] = false
 	}
-	
+
 	return securityFeatures
 }
 
