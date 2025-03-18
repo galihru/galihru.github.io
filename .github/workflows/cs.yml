@@ -79,7 +79,7 @@ jobs:
     - name: Run Ruby Log Analyzer
       run: |
         cd ruby
-        ruby log_analyzer.rb ../access.log
+        ruby log_analyzer.rb ./access.log
 
     # Node.js
     - name: Setup Node.js
