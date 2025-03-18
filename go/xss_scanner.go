@@ -355,14 +355,30 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 		contentStr = strings.Replace(contentStr, "http://", "https://", -1)
 	}
 
-	// Tambahkan SRI untuk script eksternal jika belum ada
 	if !report.ContentSecurity["SRI (Subresource Integrity)"] {
 		scriptPattern := regexp.MustCompile(`<script\s+src="([^"]+)"([^>]*)>`)
 		contentStr = scriptPattern.ReplaceAllStringFunc(contentStr, func(match string) string {
 			if strings.Contains(match, "integrity=") {
 				return match
 			}
-			return strings.Replace(match, ">", ` integrity="sha384-placeholder" crossorigin="anonymous">`, 1)
+	
+			// Ambil URL src
+			srcPattern := regexp.MustCompile(`src="([^"]+)"`)
+			srcMatch := srcPattern.FindStringSubmatch(match)
+			if len(srcMatch) < 2 {
+				return match
+			}
+			src := srcMatch[1]
+	
+			// Hitung hash SRI dari file eksternal
+			hash, err := calculateExternalSRIHash(src)
+			if err != nil {
+				log.Printf("Gagal menghitung hash SRI untuk %s: %v\n", src, err)
+				return match
+			}
+	
+			// Tambahkan integrity dan crossorigin
+			return strings.Replace(match, ">", ` integrity="`+hash+`" crossorigin="anonymous">`, 1)
 		})
 	}
 
