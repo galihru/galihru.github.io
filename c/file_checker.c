@@ -25,7 +25,7 @@ void calculate_sha256(const char *filename, unsigned char *output) {
 
 int main() {
     unsigned char hash[SHA256_DIGEST_LENGTH];
-    calculate_sha256("index.html", hash);
+    calculate_sha256("../index.html", hash);
 
     printf("SHA-256 Hash: ");
     for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
