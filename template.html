@@ -1170,13 +1170,13 @@ function createGitHubRepoShowcase(username = '4211421036') {
   
   // Create carousel navigation
   const carouselNav = document.createElement('div');
-  carouselNav.className = 'repo-nav';
+  carouselNav.className = 'repo-carousel-nav';
   carouselNav.innerHTML = `
-    <button class="repo-nav-prev">←</button>
-    <div class="repo-nav-indicator">
+    <button class="repo-carousel-prev">←</button>
+    <div class="repo-carousel-indicator">
       <span class="repo-active-page">1</span>/<span class="repo-total-pages">1</span>
     </div>
-    <button class="repo-nav-next">→</button>
+    <button class="repo-carousel-next">→</button>
   `;
   
   // Append to showcase container
@@ -1188,18 +1188,18 @@ function createGitHubRepoShowcase(username = '4211421036') {
   style.textContent = `
     .repo-showcase-container {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #1b1b1b;
+      background-color: #000;
       color: #fff;
       border-radius: 8px;
       padding: 20px;
-      margin: 20px 0;
-      max-width: 100%;
+      margin: 0 auto;
+      border-radius: 25px;
     }
     
     .repo-showcase-header {
       margin-bottom: 20px;
       padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgb(255 255 255);
     }
     
     .repo-showcase-header h2 {
@@ -1220,34 +1220,28 @@ function createGitHubRepoShowcase(username = '4211421036') {
       margin-bottom: 20px;
     }
     
-    @media (max-width: 1200px) {
-      .repo-grid-container {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-    
-    @media (max-width: 900px) {
+    @media (max-width: 1024px) {
       .repo-grid-container {
         grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(4, 1fr);
       }
     }
     
-    @media (max-width: 600px) {
+    @media (max-width: 640px) {
       .repo-grid-container {
         grid-template-columns: 1fr;
       }
     }
     
     .repo-card {
-      background-color: #2d2d2d;
-      border-radius: 8px;
+      background-color: #1a1a1a;
+      border-radius: 21px;
       overflow: hidden;
       transition: transform 0.2s, box-shadow 0.2s;
       position: relative;
       display: flex;
       flex-direction: column;
       height: 100%;
-      cursor: pointer;
     }
     
     .repo-card:hover {
@@ -1262,18 +1256,17 @@ function createGitHubRepoShowcase(username = '4211421036') {
     }
     
     .repo-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 8px;
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
       margin-right: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
+      background-color: #4a4a4a;
       color: #fff;
       font-weight: bold;
-      font-size: 24px;
-      background-position: center;
-      background-size: cover;
+      font-size: 20px;
     }
     
     .repo-title {
@@ -1322,25 +1315,25 @@ function createGitHubRepoShowcase(username = '4211421036') {
     }
     
     .repo-button {
-      background-color: #0077b5;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      padding: 8px 16px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 14px;
-      text-align: center;
-      text-decoration: none;
-      transition: background-color 0.2s;
-      width: 100%;
+        background-color: #0077b5;
+        color: white;
+        border: none;
+        border-radius: 23px;
+        padding: 8px 16px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        text-align: center;
+        text-decoration: none;
+        transition: background-color 0.2s;
+        width: -webkit-fill-available;
     }
     
     .repo-button:hover {
       background-color: #005fa3;
     }
     
-    .repo-nav {
+    .repo-carousel-nav {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -1348,8 +1341,8 @@ function createGitHubRepoShowcase(username = '4211421036') {
       margin-top: 16px;
     }
     
-    .repo-nav-prev,
-    .repo-nav-next {
+    .repo-carousel-prev,
+    .repo-carousel-next {
       background-color: #444;
       border: none;
       border-radius: 50%;
@@ -1364,12 +1357,12 @@ function createGitHubRepoShowcase(username = '4211421036') {
       transition: background-color 0.2s;
     }
     
-    .repo-nav-prev:hover,
-    .repo-nav-next:hover {
+    .repo-carousel-prev:hover,
+    .repo-carousel-next:hover {
       background-color: #555;
     }
     
-    .repo-nav-indicator {
+    .repo-carousel-indicator {
       font-size: 14px;
       color: rgba(255, 255, 255, 0.7);
     }
@@ -1383,7 +1376,7 @@ function createGitHubRepoShowcase(username = '4211421036') {
     }
     
     .repo-tag {
-      display: inline-flex;
+      flex-direction: row;
       align-items: center;
       font-size: 11px;
       padding: 2px 6px;
@@ -1398,90 +1391,12 @@ function createGitHubRepoShowcase(username = '4211421036') {
       display: flex;
       flex-wrap: wrap;
     }
-    
-    .repo-preview-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s;
-    }
-    
-    .repo-preview-modal.active {
-      opacity: 1;
-      pointer-events: all;
-    }
-    
-    .repo-preview-content {
-      width: 90%;
-      height: 80%;
-      background-color: white;
-      border-radius: 8px;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .repo-preview-close {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background-color: rgba(0, 0, 0, 0.5);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 18px;
-      z-index: 10;
-    }
-    
-    .repo-preview-iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
   `;
   document.head.appendChild(style);
   
-  // Create preview modal
-  const previewModal = document.createElement('div');
-  previewModal.className = 'repo-preview-modal';
-  previewModal.innerHTML = `
-    <div class="repo-preview-content">
-      <div class="repo-preview-close">×</div>
-      <iframe class="repo-preview-iframe" src="about:blank"></iframe>
-    </div>
-  `;
-  document.body.appendChild(previewModal);
-  
-  // Close modal when clicking close button or outside the content
-  const closeBtn = previewModal.querySelector('.repo-preview-close');
-  closeBtn.addEventListener('click', () => {
-    previewModal.classList.remove('active');
-    document.body.style.overflow = '';
-  });
-  
-  previewModal.addEventListener('click', (e) => {
-    if (e.target === previewModal) {
-      previewModal.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  });
-  
   // Language colors mapping
   const languageColors = {
-    javascript: '#f1e05a',
+    javascript: '#837503',
     typescript: '#2b7489',
     html: '#e34c26',
     css: '#563d7c',
@@ -1512,46 +1427,14 @@ function createGitHubRepoShowcase(username = '4211421036') {
     return repoName.charAt(0).toUpperCase();
   }
   
-  // Function to check if repo has a demo
-  function hasDemo(repo) {
-    // Check if repo has a homepage
-    if (repo.homepage && repo.homepage.trim() !== '') {
-      return true;
-    }
-    
-    // Check if repo has GitHub Pages
-    if (repo.has_pages) {
-      return true;
-    }
-    
-    return false;
-  }
-  
-  // Function to get demo URL
-  function getDemoUrl(repo) {
-    // If homepage is set, use it
-    if (repo.homepage && repo.homepage.trim() !== '') {
-      return repo.homepage;
-    }
-    
-    // If GitHub Pages is enabled, use GitHub Pages URL
-    if (repo.has_pages) {
-      return `https://${repo.owner.login}.github.io/${repo.name}`;
-    }
-    
-    // Fallback to repo URL
-    return repo.html_url;
-  }
-  
   // Function to create repository card
   function createRepoCard(repo) {
+    const hasHomepage = repo.homepage && repo.homepage.trim() !== '';
     const card = document.createElement('div');
     card.className = 'repo-card';
     
     const language = repo.language || 'Other';
     const languageColor = getLanguageColor(language);
-    const demoAvailable = hasDemo(repo);
-    const demoUrl = getDemoUrl(repo);
     
     card.innerHTML = `
       <div class="repo-card-header">
@@ -1573,30 +1456,24 @@ function createGitHubRepoShowcase(username = '4211421036') {
           <span class="repo-meta-item"><i>⑂</i> ${repo.forks_count}</span>
           <span class="repo-meta-item"><i>⊙</i> ${repo.watchers_count}</span>
         </div>
-        <a href="${repo.html_url}" target="_blank" class="repo-button">
-          ${demoAvailable ? 'View Demo' : 'View Repository'}
+        <a href="${hasHomepage ? repo.homepage : repo.html_url}" target="_blank" class="repo-button">
+          ${hasHomepage ? 'View Demo' : 'View Repository'}
         </a>
       </div>
     `;
     
-    // If demo is available, handle preview
-    if (demoAvailable) {
-      const button = card.querySelector('.repo-button');
-      button.href = demoUrl;
-      
-      // Handle card click (excluding button)
+    // If the repo has a homepage, make the card open the demo page when clicked
+    // otherwise, go to the GitHub repo page
+    if (hasHomepage) {
       card.addEventListener('click', (e) => {
+        // Don't trigger if clicking on the button (it has its own link)
         if (!e.target.closest('.repo-button')) {
-          const iframe = document.querySelector('.repo-preview-iframe');
-          iframe.src = demoUrl;
-          
-          previewModal.classList.add('active');
-          document.body.style.overflow = 'hidden';
+          window.open(repo.homepage, '_blank');
         }
       });
     } else {
-      // Handle card click (excluding button)
       card.addEventListener('click', (e) => {
+        // Don't trigger if clicking on the button (it has its own link)
         if (!e.target.closest('.repo-button')) {
           window.open(repo.html_url, '_blank');
         }
@@ -1631,8 +1508,8 @@ function createGitHubRepoShowcase(username = '4211421036') {
     document.querySelector('.repo-total-pages').textContent = totalPages;
     
     // Update button states
-    const prevButton = document.querySelector('.repo-nav-prev');
-    const nextButton = document.querySelector('.repo-nav-next');
+    const prevButton = document.querySelector('.repo-carousel-prev');
+    const nextButton = document.querySelector('.repo-carousel-next');
     
     prevButton.disabled = currentPage === 0;
     prevButton.style.opacity = currentPage === 0 ? '0.5' : '1';
@@ -1648,34 +1525,20 @@ function createGitHubRepoShowcase(username = '4211421036') {
       if (!response.ok) throw new Error('Failed to fetch repositories');
       
       allRepos = await response.json();
-      
-      // Sort repos: first those with demos, then by stars
-      allRepos.sort((a, b) => {
-        const aHasDemo = hasDemo(a);
-        const bHasDemo = hasDemo(b);
-        
-        // First sort by demo availability
-        if (aHasDemo && !bHasDemo) return -1;
-        if (!aHasDemo && bHasDemo) return 1;
-        
-        // Then sort by stars
-        return b.stargazers_count - a.stargazers_count;
-      });
-      
       totalPages = Math.ceil(allRepos.length / reposPerPage);
       
       // Update the grid with first page
       updateGrid();
       
       // Add event listeners to navigation buttons
-      document.querySelector('.repo-nav-prev').addEventListener('click', () => {
+      document.querySelector('.repo-carousel-prev').addEventListener('click', () => {
         if (currentPage > 0) {
           currentPage--;
           updateGrid();
         }
       });
       
-      document.querySelector('.repo-nav-next').addEventListener('click', () => {
+      document.querySelector('.repo-carousel-next').addEventListener('click', () => {
         if (currentPage < totalPages - 1) {
           currentPage++;
           updateGrid();
@@ -1701,14 +1564,12 @@ function createGitHubRepoShowcase(username = '4211421036') {
 // Function to integrate GitHub repo showcase with existing page
 function integrateGitHubRepoShowcase() {
   // Find a suitable container to append our showcase
-  const container = document.querySelector('.carousel') ? 
-    document.querySelector('.carousel').closest('div').parentElement : 
-    document.body;
+  const container = document.querySelector('.carousel').closest('div').parentElement;
   
   // Create the showcase
   const showcase = createGitHubRepoShowcase('4211421036'); // Replace with your GitHub username
   
-  // Insert showcase after the existing carousel or at the beginning of the body
+  // Insert showcase after the existing carousel
   container.appendChild(showcase);
 }
 
