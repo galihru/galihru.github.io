@@ -33,4 +33,4 @@ function generateSRI(file) {
 // Main
 const url = 'https://4211421036.github.io';
 checkHeaders(url);
-generateSRI('sc.js');
+generateSRI('../sc.js');
