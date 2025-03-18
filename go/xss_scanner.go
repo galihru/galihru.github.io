@@ -159,7 +159,6 @@ func detectSQLInjectionVulnerabilities(content string) []string {
 // Fungsi untuk menambahkan header yang hilang
 func addMissingHeaders(content string, nonce string) string {
 	headers := []string{
-		`<meta http-equiv="Content-Security-Policy" content="default-src 'self' nonce-` + nonce + `' script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline 'nonce-` + nonce + `'; img-src 'self' data: https://storage.googleapis.com https://4211421036.github.io; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.github.com https://www.google-analytics.com; frame-src 'self' https://www.googletagmanager.com;">`,
 		`<meta http-equiv="X-XSS-Protection" content="1; mode=block">`,
 		`<meta http-equiv="X-Content-Type-Options" content="nosniff">`,
 		`<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">`,
@@ -177,7 +176,6 @@ func addMissingHeaders(content string, nonce string) string {
 // Fungsi untuk menambahkan nonce ke elemen-elemen HTML
 func addNonceToElements(content string) (string, string) {
     nonce := generateNonce()
-    cspHeader := `<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'nonce-` + nonce + `' https://cdnjs.cloudflare.com https://www.googletagmanager.com; style-src 'self' 'nonce-` + nonce + `' https://fonts.googleapis.com; img-src 'self' data: https://storage.googleapis.com https://4211421036.github.io; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.github.com https://www.google-analytics.com; frame-src 'self' https://www.googletagmanager.com;">`
 
     // Tambahkan nonce ke script tags
     scriptPattern := regexp.MustCompile(`<script([^>]*)>`)
@@ -211,7 +209,7 @@ func addNonceToElements(content string) (string, string) {
         }
     })
 
-    return content, cspHeader
+    return content
 }
 
 // Fungsi untuk memeriksa kerentanan CSRF
@@ -326,23 +324,7 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
     contentStr := string(content)
 
     // Tambahkan nonce ke elemen-elemen dan dapatkan CSP header
-    contentStr, cspHeader := addNonceToElements(contentStr)
-
-    // Hapus CSP header yang ada
-    oldCSPPattern := regexp.MustCompile(`<meta\s+http-equiv\s*=\s*["']Content-Security-Policy["'][^>]*>`)
-    contentStr = oldCSPPattern.ReplaceAllString(contentStr, "")
-
-    // Tambahkan CSP header baru
-    contentStr = strings.Replace(contentStr, "</head>", cspHeader+"\n</head>", 1)
-
-    // Tambahkan SRI untuk script eksternal
-    contentStr = addSRIToScripts(contentStr)
-
-    // Tambahkan header keamanan lainnya
-    if !strings.Contains(contentStr, `<meta http-equiv="X-XSS-Protection"`) {
-        xssHeader := `<meta http-equiv="X-XSS-Protection" content="1; mode=block">`
-        contentStr = strings.Replace(contentStr, "</head>", xssHeader+"\n</head>", 1)
-    }
+    contentStr := addNonceToElements(contentStr)
 
     // Tulis kembali ke file
     return ioutil.WriteFile(filePath, []byte(contentStr), 0644)
