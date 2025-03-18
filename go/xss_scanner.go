@@ -59,47 +59,61 @@ func calculateFileHash(filePath string) (string, error) {
 	return hex.EncodeToString(hashBytes[:]), nil
 }
 
-// Fungsi yang benar untuk menambahkan SRI ke script tags
-func addSRIToScripts(content string) string {
-    // Pattern untuk script dengan src attribute
-    scriptPattern := regexp.MustCompile(`<script([^>]*)src=["']([^"']+)["']([^>]*)>`)
-    
-    return scriptPattern.ReplaceAllStringFunc(content, func(match string) string {
-        if strings.Contains(match, "integrity=") {
-            return match
-        }
-        
-        // Ambil URL src
-        srcMatch := regexp.MustCompile(`src=["']([^"']+)["']`).FindStringSubmatch(match)
-        if len(srcMatch) < 2 {
-            return match
-        }
-        src := srcMatch[1]
+// Fungsi untuk menambahkan SRI ke tag <script> dan <link>
+func addSRIToResources(content string) string {
+	// Tambahkan SRI ke tag <script>
+	scriptPattern := regexp.MustCompile(`<script\s+src="([^"]+)"([^>]*)>`)
+	content = scriptPattern.ReplaceAllStringFunc(content, func(match string) string {
+		if strings.Contains(match, "integrity=") {
+			return match
+		}
 
-	hrefMatch := regexp.MustCompile(`href=["']([^"']+)["']`).FindStringSubmatch(match)
-        if len(hrefMatch) < 2 {
-            return match
-        }
-        href := hrefMatch[1]
-        
-        // Hanya tambahkan SRI untuk URL eksternal
-        if strings.HasPrefix(src, "http://") || strings.HasPrefix(src, "https://") || strings.HasPrefix(src, "/") || strings.HasPrefix(href, "/") {
-            hash, err := calculateExternalSRIHash(src)
-            if err != nil {
-                log.Printf("Gagal menghitung hash SRI untuk %s: %v\n", src, err)
-                return match
-            }
-            
-            // Tambahkan integrity dan crossorigin
-            if strings.HasSuffix(match, "/>") {
-                return strings.Replace(match, "/>", fmt.Sprintf(` integrity="%s" crossorigin="anonymous"/>`, hash), 1)
-            } else {
-                return strings.Replace(match, ">", fmt.Sprintf(` integrity="%s" crossorigin="anonymous">`, hash), 1)
-            }
-        }
-        
-        return match
-    })
+		// Ambil URL src
+		srcPattern := regexp.MustCompile(`src="([^"]+)"`)
+		srcMatch := srcPattern.FindStringSubmatch(match)
+		if len(srcMatch) < 2 {
+			return match
+		}
+		src := srcMatch[1]
+
+		// Hitung hash SRI dari file eksternal
+		hash, err := calculateExternalSRIHash(src)
+		if err != nil {
+			log.Printf("Gagal menghitung hash SRI untuk %s: %v\n", src, err)
+			return match
+		}
+
+		// Tambahkan integrity dan crossorigin
+		return strings.Replace(match, ">", ` integrity="`+hash+`" crossorigin="anonymous">`, 1)
+	})
+
+	// Tambahkan SRI ke tag <link> (stylesheet)
+	linkPattern := regexp.MustCompile(`<link\s+rel="stylesheet"\s+href="([^"]+)"([^>]*)>`)
+	content = linkPattern.ReplaceAllStringFunc(content, func(match string) string {
+		if strings.Contains(match, "integrity=") {
+			return match
+		}
+
+		// Ambil URL href
+		hrefPattern := regexp.MustCompile(`href="([^"]+)"`)
+		hrefMatch := hrefPattern.FindStringSubmatch(match)
+		if len(hrefMatch) < 2 {
+			return match
+		}
+		href := hrefMatch[1]
+
+		// Hitung hash SRI dari file eksternal
+		hash, err := calculateExternalSRIHash(href)
+		if err != nil {
+			log.Printf("Gagal menghitung hash SRI untuk %s: %v\n", href, err)
+			return match
+		}
+
+		// Tambahkan integrity dan crossorigin
+		return strings.Replace(match, ">", ` integrity="`+hash+`" crossorigin="anonymous">`, 1)
+	})
+
+	return content
 }
 
 // Fungsi untuk memeriksa kerentanan XSS
@@ -159,6 +173,7 @@ func detectSQLInjectionVulnerabilities(content string) []string {
 // Fungsi untuk menambahkan header yang hilang
 func addMissingHeaders(content string, nonce string) string {
 	headers := []string{
+		`<meta http-equiv="Content-Security-Policy" content="default-src 'self' nonce-` + nonce + `' script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline 'nonce-` + nonce + `'; img-src 'self' data: https://storage.googleapis.com https://4211421036.github.io; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.github.com https://www.google-analytics.com; frame-src 'self' https://www.googletagmanager.com;">`,
 		`<meta http-equiv="X-XSS-Protection" content="1; mode=block">`,
 		`<meta http-equiv="X-Content-Type-Options" content="nosniff">`,
 		`<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">`,
@@ -175,41 +190,34 @@ func addMissingHeaders(content string, nonce string) string {
 
 // Fungsi untuk menambahkan nonce ke elemen-elemen HTML
 func addNonceToElements(content string) (string, string) {
-    nonce := generateNonce()
+	nonce := generateNonce()
+	cspHeader := `<meta http-equiv="Content-Security-Policy" content="default-src 'self' nonce-` + nonce + `' script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline 'nonce-` + nonce + `'; img-src 'self' data: https://storage.googleapis.com https://4211421036.github.io; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.github.com https://www.google-analytics.com; frame-src 'self' https://www.googletagmanager.com;">`
 
-    // Tambahkan nonce ke script tags
-    scriptPattern := regexp.MustCompile(`<script([^>]*)>`)
-    content = scriptPattern.ReplaceAllStringFunc(content, func(match string) string {
-        if strings.Contains(match, "nonce=") {
-            return match
-        }
-        return strings.Replace(match, ">", fmt.Sprintf(` nonce="%s">`, nonce), 1)
-    })
+	scriptPattern := regexp.MustCompile(`<script([^>]*)>`)
+	content = scriptPattern.ReplaceAllStringFunc(content, func(match string) string {
+		if strings.Contains(match, "nonce=") {
+			return match
+		}
+		return strings.Replace(match, ">", ` nonce="`+nonce+`">`, 1)
+	})
 
-    // Tambahkan nonce ke style tags
-    stylePattern := regexp.MustCompile(`<style([^>]*)>`)
-    content = stylePattern.ReplaceAllStringFunc(content, func(match string) string {
-        if strings.Contains(match, "nonce=") {
-            return match
-        }
-        return strings.Replace(match, ">", fmt.Sprintf(` nonce="%s">`, nonce), 1)
-    })
+	stylePattern := regexp.MustCompile(`<style([^>]*)>`)
+	content = stylePattern.ReplaceAllStringFunc(content, func(match string) string {
+		if strings.Contains(match, "nonce=") {
+			return match
+		}
+		return strings.Replace(match, ">", ` nonce="`+nonce+`">`, 1)
+	})
 
-    // Tambahkan nonce ke link stylesheet
-    linkPattern := regexp.MustCompile(`<link([^>]*rel=["']stylesheet["'][^>]*)(/?)>`)
-    content = linkPattern.ReplaceAllStringFunc(content, func(match string) string {
-        if strings.Contains(match, "nonce=") {
-            return match
-        }
-        
-        if strings.HasSuffix(match, "/>") {
-            return strings.Replace(match, "/>", fmt.Sprintf(` nonce="%s"/>`, nonce), 1)
-        } else {
-            return strings.Replace(match, ">", fmt.Sprintf(` nonce="%s">`, nonce), 1)
-        }
-    })
+	linkPattern := regexp.MustCompile(`<link([^>]*rel=['"]stylesheet['"][^>]*)>`)
+	content = linkPattern.ReplaceAllStringFunc(content, func(match string) string {
+		if strings.Contains(match, "nonce=") {
+			return match
+		}
+		return strings.Replace(match, ">", ` nonce="`+nonce+`">`, 1)
+	})
 
-    return content
+	return content, cspHeader
 }
 
 // Fungsi untuk memeriksa kerentanan CSRF
@@ -314,20 +322,85 @@ func analyzeContentSecurity(content string) map[string]bool {
 	return securityFeatures
 }
 
-// Fungsi untuk memperbaiki masalah keamanan yang perlu ditulis ulang
+// Fungsi untuk memperbaiki isu keamanan yang ditemukan
 func fixSecurityIssues(filePath string, report SecurityReport) error {
-    content, err := ioutil.ReadFile(filePath)
-    if err != nil {
-        return err
-    }
+	content, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return err
+	}
 
-    contentStr := string(content)
+	contentStr := string(content)
 
-    // Tambahkan nonce ke elemen-elemen dan dapatkan CSP header
-    contentStr := addNonceToElements(contentStr)
+	// Tambahkan nonce ke semua elemen dan dapatkan CSP header yang diperbarui
+	contentStr, cspHeader := addNonceToElements(contentStr)
 
-    // Tulis kembali ke file
-    return ioutil.WriteFile(filePath, []byte(contentStr), 0644)
+	// Hapus CSP header yang lama jika ada
+	oldCSPPattern := regexp.MustCompile(`<meta\s+http-equiv\s*=\s*["']Content-Security-Policy["'][^>]*>`)
+	contentStr = oldCSPPattern.ReplaceAllString(contentStr, "")
+
+	// Tambahkan CSP header baru
+	contentStr = strings.Replace(contentStr, "</head>", cspHeader+"\n</head>", 1)
+
+	// Tambahkan header keamanan lainnya
+	if !strings.Contains(contentStr, `<meta http-equiv="X-XSS-Protection"`) {
+		xssHeader := `<meta http-equiv="X-XSS-Protection" content="1; mode=block">`
+		contentStr = strings.Replace(contentStr, "</head>", xssHeader+"\n</head>", 1)
+	}
+
+	if !strings.Contains(contentStr, `<meta http-equiv="X-Content-Type-Options"`) {
+		ctHeader := `<meta http-equiv="X-Content-Type-Options" content="nosniff">`
+		contentStr = strings.Replace(contentStr, "</head>", ctHeader+"\n</head>", 1)
+	}
+
+	if !strings.Contains(contentStr, `<meta http-equiv="Strict-Transport-Security"`) {
+		hstsHeader := `<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">`
+		contentStr = strings.Replace(contentStr, "</head>", hstsHeader+"\n</head>", 1)
+	}
+
+	// Hapus script yang berpotensi berbahaya
+	for _, xss := range report.XSSVulns {
+		contentStr = strings.Replace(contentStr, xss, "<!-- Removed potentially unsafe script -->", 1)
+	}
+
+	// Tambahkan CSRF token ke semua form
+	csrfTokenScript := `
+<script nonce="__NONCE__">
+  function generateCSRFToken() {
+    return Array(32).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    const csrfToken = generateCSRFToken();
+    document.querySelectorAll('form').forEach(form => {
+      if (!form.querySelector('input[name="csrf_token"]')) {
+        const tokenInput = document.createElement('input');
+        tokenInput.type = 'hidden';
+        tokenInput.name = 'csrf_token';
+        tokenInput.value = csrfToken;
+        form.appendChild(tokenInput);
+      }
+    });
+  });
+</script>
+`
+	// Gunakan nonce yang sama untuk script ini
+	csrfTokenScript = strings.Replace(csrfTokenScript, "__NONCE__", generateNonce(), 1)
+
+	if len(report.CSRFIssues) > 0 && !strings.Contains(contentStr, "csrf_token") {
+		contentStr = strings.Replace(contentStr, "</head>", csrfTokenScript+"\n</head>", 1)
+	}
+
+	// HTTP -> HTTPS
+	if !report.ContentSecurity["HTTPS Resources Only"] {
+		contentStr = strings.Replace(contentStr, "http://", "https://", -1)
+	}
+
+	// Tambahkan SRI untuk script dan link eksternal jika belum ada
+	if !report.ContentSecurity["SRI (Subresource Integrity)"] {
+		contentStr = addSRIToResources(contentStr)
+	}
+
+	// Tulis kembali ke file
+	return ioutil.WriteFile(filePath, []byte(contentStr), 0644)
 }
 
 // Fungsi untuk menampilkan formulasi matematis keamanan
