@@ -320,6 +320,34 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 		contentStr = strings.Replace(contentStr, "</head>", xssHeader+"\n</head>", 1)
 	}
 
+	// Tambahkan SRI untuk script eksternal jika belum ada
+	if !report.ContentSecurity["SRI (Subresource Integrity)"] {
+		scriptPattern := regexp.MustCompile(`<script\s+src="([^"]+)"([^>]*)>`)
+		contentStr = scriptPattern.ReplaceAllStringFunc(contentStr, func(match string) string {
+			if strings.Contains(match, "integrity=") {
+				return match
+			}
+
+			// Ambil URL src
+			srcPattern := regexp.MustCompile(`src="([^"]+)"`)
+			srcMatch := srcPattern.FindStringSubmatch(match)
+			if len(srcMatch) < 2 {
+				return match
+			}
+			src := srcMatch[1]
+
+			// Hitung hash SRI dari file eksternal
+			hash, err := calculateExternalSRIHash(src)
+			if err != nil {
+				log.Printf("Gagal menghitung hash SRI untuk %s: %v\n", src, err)
+				return match
+			}
+
+			// Tambahkan integrity dan crossorigin
+			return strings.Replace(match, ">", ` integrity="`+hash+`" crossorigin="anonymous">`, 1)
+		})
+	}
+
 	if !strings.Contains(contentStr, `<meta http-equiv="X-Content-Type-Options"`) {
 		ctHeader := `<meta http-equiv="X-Content-Type-Options" content="nosniff">`
 		contentStr = strings.Replace(contentStr, "</head>", ctHeader+"\n</head>", 1)
@@ -328,11 +356,6 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 	if !strings.Contains(contentStr, `<meta http-equiv="Strict-Transport-Security"`) {
 		hstsHeader := `<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">`
 		contentStr = strings.Replace(contentStr, "</head>", hstsHeader+"\n</head>", 1)
-	}
-
-	// Hapus script yang berpotensi berbahaya
-	for _, xss := range report.XSSVulns {
-		contentStr = strings.Replace(contentStr, xss, "<!-- Removed potentially unsafe script -->", 1)
 	}
 
 	// Tambahkan CSRF token ke semua form
@@ -365,34 +388,6 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 	// HTTP -> HTTPS
 	if !report.ContentSecurity["HTTPS Resources Only"] {
 		contentStr = strings.Replace(contentStr, "http://", "https://", -1)
-	}
-
-	// Tambahkan SRI untuk script eksternal jika belum ada
-	if !report.ContentSecurity["SRI (Subresource Integrity)"] {
-		scriptPattern := regexp.MustCompile(`<script\s+src="([^"]+)"([^>]*)>`)
-		contentStr = scriptPattern.ReplaceAllStringFunc(contentStr, func(match string) string {
-			if strings.Contains(match, "integrity=") {
-				return match
-			}
-
-			// Ambil URL src
-			srcPattern := regexp.MustCompile(`src="([^"]+)"`)
-			srcMatch := srcPattern.FindStringSubmatch(match)
-			if len(srcMatch) < 2 {
-				return match
-			}
-			src := srcMatch[1]
-
-			// Hitung hash SRI dari file eksternal
-			hash, err := calculateExternalSRIHash(src)
-			if err != nil {
-				log.Printf("Gagal menghitung hash SRI untuk %s: %v\n", src, err)
-				return match
-			}
-
-			// Tambahkan integrity dan crossorigin
-			return strings.Replace(match, ">", ` integrity="`+hash+`" crossorigin="anonymous">`, 1)
-		})
 	}
 
 	// Tulis kembali ke file
