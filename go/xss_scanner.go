@@ -6,9 +6,11 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"math/rand"
+	"net/http"
 	"os"
 	"regexp"
 	"strings"
@@ -26,13 +28,22 @@ type SecurityReport struct {
 	FileHash        string
 }
 
-// Fungsi untuk menghitung hash SRI (SHA-384)
-func calculateSRIHash(filePath string) (string, error) {
-	content, err := ioutil.ReadFile(filePath)
+// Fungsi untuk menghitung hash SRI (SHA-384) dari file eksternal
+func calculateExternalSRIHash(url string) (string, error) {
+	// Unduh file eksternal
+	resp, err := http.Get(url)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("gagal mengunduh file: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Baca konten file
+	content, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("gagal membaca konten file: %v", err)
 	}
 
+	// Hitung hash SHA-384
 	hash := sha512.Sum384(content)
 	return "sha384-" + base64.StdEncoding.EncodeToString(hash[:]), nil
 }
@@ -64,9 +75,10 @@ func addSRIToScripts(content string) string {
 		}
 		src := srcMatch[1]
 
-		// Hitung hash SRI
-		hash, err := calculateSRIHash(src)
+		// Hitung hash SRI dari file eksternal
+		hash, err := calculateExternalSRIHash(src)
 		if err != nil {
+			log.Printf("Gagal menghitung hash SRI untuk %s: %v\n", src, err)
 			return match
 		}
 
@@ -320,7 +332,7 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 
 	// Hapus script yang berpotensi berbahaya
 	for _, xss := range report.XSSVulns {
-		contentStr = strings.Replace(contentStr, xss, "", 1)
+		contentStr = strings.Replace(contentStr, xss, "<!-- Removed potentially unsafe script -->", 1)
 	}
 
 	// Tambahkan CSRF token ke semua form
@@ -355,13 +367,14 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 		contentStr = strings.Replace(contentStr, "http://", "https://", -1)
 	}
 
+	// Tambahkan SRI untuk script eksternal jika belum ada
 	if !report.ContentSecurity["SRI (Subresource Integrity)"] {
 		scriptPattern := regexp.MustCompile(`<script\s+src="([^"]+)"([^>]*)>`)
 		contentStr = scriptPattern.ReplaceAllStringFunc(contentStr, func(match string) string {
 			if strings.Contains(match, "integrity=") {
 				return match
 			}
-	
+
 			// Ambil URL src
 			srcPattern := regexp.MustCompile(`src="([^"]+)"`)
 			srcMatch := srcPattern.FindStringSubmatch(match)
@@ -369,14 +382,14 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 				return match
 			}
 			src := srcMatch[1]
-	
+
 			// Hitung hash SRI dari file eksternal
 			hash, err := calculateExternalSRIHash(src)
 			if err != nil {
 				log.Printf("Gagal menghitung hash SRI untuk %s: %v\n", src, err)
 				return match
 			}
-	
+
 			// Tambahkan integrity dan crossorigin
 			return strings.Replace(match, ">", ` integrity="`+hash+`" crossorigin="anonymous">`, 1)
 		})
