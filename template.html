@@ -16,8 +16,8 @@
     <meta property="og:description" content="This is collation application created by GALIH RIDHO UTOMO ">
     <meta property="og:type" content="website">
     <meta property="og:url" content="http://4211421036.github.io">
-    <meta name="twitter:title" content="Web Page">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Web Page">
     <meta name="twitter:image" content="http://4211421036.github.io/345677.png">
     <meta name="twitter:description" content="This is collation application created by GALIH RIDHO UTOMO ">
     <link href="/style.css" rel="stylesheet">
@@ -482,9 +482,9 @@
 }
 
 .${classNames.cardImage} {
-    width: 100px;
-    height: 100px;
-    border-radius: 15px;
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
     object-fit: cover;
     margin-right: 15px;
 }
@@ -801,7 +801,6 @@
             // Create card content
             const content = document.createElement('div');
             content.className = classNames.cardContent;
-            content.id = 'cardContent';
 
             // Create card title
             const title = document.createElement('div');
@@ -975,7 +974,6 @@
             const modalBack = document.getElementById('modalBack');
             const modalTitle = document.getElementById('modalTitle');
             const modalBody = document.getElementById('modalBody');
-            const desk = document.getElementById('cardContent');
 
             // Show back button
             modalBack.style.display = 'flex';
@@ -997,6 +995,9 @@
                 const card = createRepoCard(repo);
                 modalBody.appendChild(card);
 
+                // Perbaikan: Cari elemen cardContent di dalam card yang baru dibuat
+                const cardContent = card.querySelector(`.${classNames.cardContent}`);
+
                 // Calculate language percentages
                 const percentages = calculateLanguagePercentages(repo);
 
@@ -1009,7 +1010,10 @@
                     clipsContainer.appendChild(clip);
                 });
 
-                desk.appendChild(clipsContainer);
+                // Append clipsContainer ke cardContent
+                if (cardContent) {
+                    cardContent.appendChild(clipsContainer);
+                }
             });
         }
 
