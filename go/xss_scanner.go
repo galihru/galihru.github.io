@@ -88,67 +88,53 @@ func detectSQLInjectionVulnerabilities(content string) []string {
 	return vulnerabilities
 }
 
-func addMissingHeaders(content string) string {
-	headers := []string{
-		`<meta http-equiv="Content-Security-Policy" content="default-src 'self'nonce-` + nonce + `' script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline 'nonce-` + nonce + `'; img-src 'self' data: https://storage.googleapis.com https://4211421036.github.io; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.github.com https://www.google-analytics.com; frame-src 'self' https://www.googletagmanager.com;">`,
-		`<meta http-equiv="X-XSS-Protection" content="1; mode=block">`,
-		`<meta http-equiv="X-Content-Type-Options" content="nosniff">`,
-		`<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">`,
-	}
+func addMissingHeaders(content string, nonce string) string {
+    nonce := generateNonce()
+    headers := []string{
+        `<meta http-equiv="Content-Security-Policy" content="default-src 'self' nonce-` + nonce + `' script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline 'nonce-` + nonce + `'; img-src 'self' data: https://storage.googleapis.com https://4211421036.github.io; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.github.com https://www.google-analytics.com; frame-src 'self' https://www.googletagmanager.com;">`,
+        `<meta http-equiv="X-XSS-Protection" content="1; mode=block">`,
+        `<meta http-equiv="X-Content-Type-Options" content="nosniff">`,
+        `<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">`,
+    }
 
-	for _, header := range headers {
-		if !strings.Contains(content, header) {
-			content = strings.Replace(content, "</head>", header+"\n</head>", 1)
-		}
-	}
+    for _, header := range headers {
+        if !strings.Contains(content, header) {
+            content = strings.Replace(content, "</head>", header+"\n</head>", 1)
+        }
+    }
 
-	return content
+    return content
 }
 
 func addNonceToElements(content string) (string, string) {
-	// Tambahkan import yang diperlukan di bagian atas file
-	// import "math/rand"
-	// import "strings"
-	// import "time"
-	
-	// Inisialisasi random seed
-	// rand.Seed(time.Now().UnixNano()) // Untuk Go versi < 1.20
-	// Untuk Go versi 1.20+, rand.Seed tidak diperlukan lagi
-	
-	// Hasilkan nonce untuk digunakan di seluruh halaman
-	nonce := generateNonce()
-	
-	// Menambahkan nonce ke CSP header
-	cspHeader := `<meta http-equiv="Content-Security-Policy" content="default-src 'self'nonce-` + nonce + `' script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline 'nonce-` + nonce + `'; img-src 'self' data: https://storage.googleapis.com https://4211421036.github.io; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.github.com https://www.google-analytics.com; frame-src 'self' https://www.googletagmanager.com;">``
-	
-	// Tambahkan nonce ke semua script tag
-	scriptPattern := regexp.MustCompile(`<script([^>]*)>`)
-	content = scriptPattern.ReplaceAllStringFunc(content, func(match string) string {
-		if strings.Contains(match, "nonce=") {
-			return match
-		}
-		return strings.Replace(match, ">", ` nonce="` + nonce + `">`, 1)
-	})
-	
-	// Tambahkan nonce ke semua style tag
-	stylePattern := regexp.MustCompile(`<style([^>]*)>`)
-	content = stylePattern.ReplaceAllStringFunc(content, func(match string) string {
-		if strings.Contains(match, "nonce=") {
-			return match
-		}
-		return strings.Replace(match, ">", ` nonce="` + nonce + `">`, 1)
-	})
-	
-	// Tambahkan nonce ke link tag untuk stylesheet
-	linkPattern := regexp.MustCompile(`<link([^>]*rel=['"]stylesheet['"][^>]*)>`)
-	content = linkPattern.ReplaceAllStringFunc(content, func(match string) string {
-		if strings.Contains(match, "nonce=") {
-			return match
-		}
-		return strings.Replace(match, ">", ` nonce="` + nonce + `">`, 1)
-	})
-	
-	return content, cspHeader
+    nonce := generateNonce()
+    cspHeader := `<meta http-equiv="Content-Security-Policy" content="default-src 'self' nonce-` + nonce + `' script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline 'nonce-` + nonce + `'; img-src 'self' data: https://storage.googleapis.com https://4211421036.github.io; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.github.com https://www.google-analytics.com; frame-src 'self' https://www.googletagmanager.com;">`
+
+    scriptPattern := regexp.MustCompile(`<script([^>]*)>`)
+    content = scriptPattern.ReplaceAllStringFunc(content, func(match string) string {
+        if strings.Contains(match, "nonce=") {
+            return match
+        }
+        return strings.Replace(match, ">", ` nonce="` + nonce + `">`, 1)
+    })
+
+    stylePattern := regexp.MustCompile(`<style([^>]*)>`)
+    content = stylePattern.ReplaceAllStringFunc(content, func(match string) string {
+        if strings.Contains(match, "nonce=") {
+            return match
+        }
+        return strings.Replace(match, ">", ` nonce="` + nonce + `">`, 1)
+    })
+
+    linkPattern := regexp.MustCompile(`<link([^>]*rel=['"]stylesheet['"][^>]*)>`)
+    content = linkPattern.ReplaceAllStringFunc(content, func(match string) string {
+        if strings.Contains(match, "nonce=") {
+            return match
+        }
+        return strings.Replace(match, ">", ` nonce="` + nonce + `">`, 1)
+    })
+
+    return content, cspHeader
 }
 
 
