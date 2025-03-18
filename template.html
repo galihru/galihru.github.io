@@ -1148,6 +1148,434 @@
         const existingNextButton = document.querySelector('.carousel-next');
         const existingPrevButton = document.querySelector('.carousel-prev');
         let existingCurrentIndex = 0;
+
+        // Function to create GitHub repository showcase UI
+function createGitHubRepoShowcase(username = '4211421036') {
+  // Create container
+  const showcaseContainer = document.createElement('div');
+  showcaseContainer.className = 'repo-showcase-container';
+  
+  // Create header
+  const header = document.createElement('div');
+  header.className = 'repo-showcase-header';
+  header.innerHTML = `
+    <h2>Essential GitHub Repositories</h2>
+    <p>Check out these featured repositories from ${username}</p>
+  `;
+  showcaseContainer.appendChild(header);
+  
+  // Create grid container
+  const gridContainer = document.createElement('div');
+  gridContainer.className = 'repo-grid-container';
+  
+  // Create carousel navigation
+  const carouselNav = document.createElement('div');
+  carouselNav.className = 'repo-carousel-nav';
+  carouselNav.innerHTML = `
+    <button class="repo-carousel-prev">←</button>
+    <div class="repo-carousel-indicator">
+      <span class="repo-active-page">1</span>/<span class="repo-total-pages">1</span>
+    </div>
+    <button class="repo-carousel-next">→</button>
+  `;
+  
+  // Append to showcase container
+  showcaseContainer.appendChild(gridContainer);
+  showcaseContainer.appendChild(carouselNav);
+  
+  // Add CSS
+  const style = document.createElement('style');
+  style.textContent = `
+    .repo-showcase-container {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #2d2d2d;
+      color: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .repo-showcase-header {
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .repo-showcase-header h2 {
+      font-size: 24px;
+      margin: 0 0 8px 0;
+    }
+    
+    .repo-showcase-header p {
+      margin: 0;
+      opacity: 0.7;
+    }
+    
+    .repo-grid-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    
+    @media (max-width: 1024px) {
+      .repo-grid-container {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+      }
+    }
+    
+    @media (max-width: 640px) {
+      .repo-grid-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .repo-card {
+      background-color: #3a3a3a;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
+    .repo-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .repo-card-header {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+    }
+    
+    .repo-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+      margin-right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #4a4a4a;
+      color: #fff;
+      font-weight: bold;
+      font-size: 20px;
+    }
+    
+    .repo-title {
+      font-weight: 600;
+      font-size: 16px;
+      flex-grow: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .repo-card-body {
+      padding: 0 16px 16px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .repo-description {
+      margin-bottom: 16px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      flex-grow: 1;
+    }
+    
+    .repo-meta {
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 16px;
+    }
+    
+    .repo-meta-item {
+      display: flex;
+      align-items: center;
+    }
+    
+    .repo-meta-item i {
+      margin-right: 4px;
+      font-size: 14px;
+    }
+    
+    .repo-button {
+      background-color: #0077b5;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      text-align: center;
+      text-decoration: none;
+      transition: background-color 0.2s;
+      width: 100%;
+    }
+    
+    .repo-button:hover {
+      background-color: #005fa3;
+    }
+    
+    .repo-carousel-nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    
+    .repo-carousel-prev,
+    .repo-carousel-next {
+      background-color: #444;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      color: white;
+      transition: background-color 0.2s;
+    }
+    
+    .repo-carousel-prev:hover,
+    .repo-carousel-next:hover {
+      background-color: #555;
+    }
+    
+    .repo-carousel-indicator {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .repo-language-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+    
+    .repo-tag {
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 12px;
+      background-color: rgba(255, 255, 255, 0.1);
+      margin-right: 4px;
+      margin-bottom: 4px;
+    }
+    
+    .repo-language-tags {
+      margin-bottom: 12px;
+      display: flex;
+      flex-wrap: wrap;
+    }
+  `;
+  document.head.appendChild(style);
+  
+  // Language colors mapping
+  const languageColors = {
+    javascript: '#f1e05a',
+    typescript: '#2b7489',
+    html: '#e34c26',
+    css: '#563d7c',
+    python: '#3572A5',
+    java: '#b07219',
+    csharp: '#178600',
+    php: '#4F5D95',
+    ruby: '#701516',
+    go: '#00ADD8',
+    rust: '#dea584',
+    dart: '#00B4AB',
+    kotlin: '#F18E33',
+    swift: '#ffac45',
+    c: '#555555',
+    'c++': '#f34b7d',
+    shell: '#89e051',
+    other: '#8257e5'
+  };
+  
+  // Function to get language color
+  function getLanguageColor(language) {
+    const lang = language ? language.toLowerCase() : 'other';
+    return languageColors[lang] || languageColors.other;
+  }
+  
+  // Function to get first letter of repo name
+  function getRepoInitial(repoName) {
+    return repoName.charAt(0).toUpperCase();
+  }
+  
+  // Function to create repository card
+  function createRepoCard(repo) {
+    const hasHomepage = repo.homepage && repo.homepage.trim() !== '';
+    const card = document.createElement('div');
+    card.className = 'repo-card';
+    
+    const language = repo.language || 'Other';
+    const languageColor = getLanguageColor(language);
+    
+    card.innerHTML = `
+      <div class="repo-card-header">
+        <div class="repo-icon" style="background-color: ${languageColor}">
+          ${getRepoInitial(repo.name)}
+        </div>
+        <div class="repo-title">${repo.name}</div>
+      </div>
+      <div class="repo-card-body">
+        <div class="repo-language-tags">
+          <span class="repo-tag">
+            <span class="repo-language-indicator" style="background-color: ${languageColor}"></span>
+            ${language}
+          </span>
+        </div>
+        <div class="repo-description">${repo.description || 'No description available'}</div>
+        <div class="repo-meta">
+          <span class="repo-meta-item"><i>★</i> ${repo.stargazers_count}</span>
+          <span class="repo-meta-item"><i>⑂</i> ${repo.forks_count}</span>
+          <span class="repo-meta-item"><i>⊙</i> ${repo.watchers_count}</span>
+        </div>
+        <a href="${hasHomepage ? repo.homepage : repo.html_url}" target="_blank" class="repo-button">
+          ${hasHomepage ? 'View Demo' : 'View Repository'}
+        </a>
+      </div>
+    `;
+    
+    // If the repo has a homepage, make the card open the demo page when clicked
+    // otherwise, go to the GitHub repo page
+    if (hasHomepage) {
+      card.addEventListener('click', (e) => {
+        // Don't trigger if clicking on the button (it has its own link)
+        if (!e.target.closest('.repo-button')) {
+          window.open(repo.homepage, '_blank');
+        }
+      });
+    } else {
+      card.addEventListener('click', (e) => {
+        // Don't trigger if clicking on the button (it has its own link)
+        if (!e.target.closest('.repo-button')) {
+          window.open(repo.html_url, '_blank');
+        }
+      });
+    }
+    
+    return card;
+  }
+  
+  // Pagination state
+  let currentPage = 0;
+  let totalPages = 1;
+  const reposPerPage = 8; // 2x4 grid
+  let allRepos = [];
+  
+  // Function to update grid with current page repos
+  function updateGrid() {
+    const startIndex = currentPage * reposPerPage;
+    const endIndex = startIndex + reposPerPage;
+    const currentRepos = allRepos.slice(startIndex, endIndex);
+    
+    // Clear grid
+    gridContainer.innerHTML = '';
+    
+    // Add repos to grid
+    currentRepos.forEach(repo => {
+      gridContainer.appendChild(createRepoCard(repo));
+    });
+    
+    // Update indicator
+    document.querySelector('.repo-active-page').textContent = currentPage + 1;
+    document.querySelector('.repo-total-pages').textContent = totalPages;
+    
+    // Update button states
+    const prevButton = document.querySelector('.repo-carousel-prev');
+    const nextButton = document.querySelector('.repo-carousel-next');
+    
+    prevButton.disabled = currentPage === 0;
+    prevButton.style.opacity = currentPage === 0 ? '0.5' : '1';
+    
+    nextButton.disabled = currentPage === totalPages - 1;
+    nextButton.style.opacity = currentPage === totalPages - 1 ? '0.5' : '1';
+  }
+  
+  // Fetch repositories from GitHub API
+  async function fetchRepos() {
+    try {
+      const response = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=updated`);
+      if (!response.ok) throw new Error('Failed to fetch repositories');
+      
+      allRepos = await response.json();
+      totalPages = Math.ceil(allRepos.length / reposPerPage);
+      
+      // Update the grid with first page
+      updateGrid();
+      
+      // Add event listeners to navigation buttons
+      document.querySelector('.repo-carousel-prev').addEventListener('click', () => {
+        if (currentPage > 0) {
+          currentPage--;
+          updateGrid();
+        }
+      });
+      
+      document.querySelector('.repo-carousel-next').addEventListener('click', () => {
+        if (currentPage < totalPages - 1) {
+          currentPage++;
+          updateGrid();
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching repositories:', error);
+      gridContainer.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+          <h3>Failed to load repositories</h3>
+          <p>Please try again later or check your connection.</p>
+        </div>
+      `;
+    }
+  }
+  
+  // Initialize by fetching repos
+  fetchRepos();
+  
+  return showcaseContainer;
+}
+
+// Function to integrate GitHub repo showcase with existing page
+function integrateGitHubRepoShowcase() {
+  // Find a suitable container to append our showcase
+  const container = document.querySelector('.carousel-track').closest('div').parentElement;
+  
+  // Create the showcase
+  const showcase = createGitHubRepoShowcase('4211421036'); // Replace with your GitHub username
+  
+  // Insert showcase after the existing carousel
+  container.appendChild(showcase);
+}
+
+// Initialize when the document is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  integrateGitHubRepoShowcase();
+});
     </script>
     <script>
         if ('serviceWorker' in navigator) {
