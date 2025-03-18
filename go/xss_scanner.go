@@ -8,8 +8,8 @@ import (
 )
 
 func main() {
-	// Baca file HTML
-	content, err := ioutil.ReadFile("index.html")
+	// Baca file index.html dari direktori root
+	content, err := ioutil.ReadFile("../index.html")
 	if err != nil {
 		log.Fatal(err)
 	}
