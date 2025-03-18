@@ -6,22 +6,22 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"os"
 	"regexp"
 	"strings"
 	"time"
-	"math/rand"
 )
 
 // SecurityReport struktur untuk menyimpan hasil pemeriksaan keamanan
 type SecurityReport struct {
-	Timestamp      time.Time
-	XSSVulns       []string
-	SQLInjections  []string
-	CSRFIssues     []string
-	HeaderIssues   []string
+	Timestamp       time.Time
+	XSSVulns        []string
+	SQLInjections   []string
+	CSRFIssues      []string
+	HeaderIssues    []string
 	ContentSecurity map[string]bool
-	FileHash       string
+	FileHash        string
 }
 
 // Fungsi untuk menghitung hash file untuk deteksi perubahan
@@ -30,7 +30,7 @@ func calculateFileHash(filePath string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	
+
 	hashBytes := sha256.Sum256(content)
 	return hex.EncodeToString(hashBytes[:]), nil
 }
@@ -45,18 +45,19 @@ func detectXSSVulnerabilities(content string) []string {
 		`<iframe\b[^>]*>.*?</iframe>`,        // Iframes
 		`<img[^>]+src\s*=\s*['"]?\s*javascript:`, // JavaScript in img src
 	}
-	
+
 	var vulnerabilities []string
-	
+
 	for _, pattern := range patterns {
 		re := regexp.MustCompile(pattern)
 		matches := re.FindAllString(content, -1)
 		vulnerabilities = append(vulnerabilities, matches...)
 	}
-	
+
 	return vulnerabilities
 }
 
+// Fungsi untuk menghasilkan nonce
 func generateNonce() string {
 	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	result := make([]byte, 16)
@@ -76,76 +77,76 @@ func detectSQLInjectionVulnerabilities(content string) []string {
 		`(\w+)\s*=\s*['"].*?INSERT\s+INTO`,                           // INSERT attacks
 		`(\w+)\s*=\s*['"].*?1\s*=\s*1`,                               // True condition
 	}
-	
+
 	var vulnerabilities []string
-	
+
 	for _, pattern := range patterns {
 		re := regexp.MustCompile(pattern)
 		matches := re.FindAllString(content, -1)
 		vulnerabilities = append(vulnerabilities, matches...)
 	}
-	
+
 	return vulnerabilities
 }
 
+// Fungsi untuk menambahkan header yang hilang
 func addMissingHeaders(content string, nonce string) string {
-    nonce := generateNonce()
-    headers := []string{
-        `<meta http-equiv="Content-Security-Policy" content="default-src 'self' nonce-` + nonce + `' script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline 'nonce-` + nonce + `'; img-src 'self' data: https://storage.googleapis.com https://4211421036.github.io; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.github.com https://www.google-analytics.com; frame-src 'self' https://www.googletagmanager.com;">`,
-        `<meta http-equiv="X-XSS-Protection" content="1; mode=block">`,
-        `<meta http-equiv="X-Content-Type-Options" content="nosniff">`,
-        `<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">`,
-    }
+	headers := []string{
+		`<meta http-equiv="Content-Security-Policy" content="default-src 'self' nonce-` + nonce + `' script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline 'nonce-` + nonce + `'; img-src 'self' data: https://storage.googleapis.com https://4211421036.github.io; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.github.com https://www.google-analytics.com; frame-src 'self' https://www.googletagmanager.com;">`,
+		`<meta http-equiv="X-XSS-Protection" content="1; mode=block">`,
+		`<meta http-equiv="X-Content-Type-Options" content="nosniff">`,
+		`<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">`,
+	}
 
-    for _, header := range headers {
-        if !strings.Contains(content, header) {
-            content = strings.Replace(content, "</head>", header+"\n</head>", 1)
-        }
-    }
+	for _, header := range headers {
+		if !strings.Contains(content, header) {
+			content = strings.Replace(content, "</head>", header+"\n</head>", 1)
+		}
+	}
 
-    return content
+	return content
 }
 
+// Fungsi untuk menambahkan nonce ke elemen-elemen HTML
 func addNonceToElements(content string) (string, string) {
-    nonce := generateNonce()
-    cspHeader := `<meta http-equiv="Content-Security-Policy" content="default-src 'self' nonce-` + nonce + `' script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline 'nonce-` + nonce + `'; img-src 'self' data: https://storage.googleapis.com https://4211421036.github.io; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.github.com https://www.google-analytics.com; frame-src 'self' https://www.googletagmanager.com;">`
+	nonce := generateNonce()
+	cspHeader := `<meta http-equiv="Content-Security-Policy" content="default-src 'self' nonce-` + nonce + `' script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline 'nonce-` + nonce + `'; img-src 'self' data: https://storage.googleapis.com https://4211421036.github.io; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.github.com https://www.google-analytics.com; frame-src 'self' https://www.googletagmanager.com;">`
 
-    scriptPattern := regexp.MustCompile(`<script([^>]*)>`)
-    content = scriptPattern.ReplaceAllStringFunc(content, func(match string) string {
-        if strings.Contains(match, "nonce=") {
-            return match
-        }
-        return strings.Replace(match, ">", ` nonce="` + nonce + `">`, 1)
-    })
+	scriptPattern := regexp.MustCompile(`<script([^>]*)>`)
+	content = scriptPattern.ReplaceAllStringFunc(content, func(match string) string {
+		if strings.Contains(match, "nonce=") {
+			return match
+		}
+		return strings.Replace(match, ">", ` nonce="`+nonce+`">`, 1)
+	})
 
-    stylePattern := regexp.MustCompile(`<style([^>]*)>`)
-    content = stylePattern.ReplaceAllStringFunc(content, func(match string) string {
-        if strings.Contains(match, "nonce=") {
-            return match
-        }
-        return strings.Replace(match, ">", ` nonce="` + nonce + `">`, 1)
-    })
+	stylePattern := regexp.MustCompile(`<style([^>]*)>`)
+	content = stylePattern.ReplaceAllStringFunc(content, func(match string) string {
+		if strings.Contains(match, "nonce=") {
+			return match
+		}
+		return strings.Replace(match, ">", ` nonce="`+nonce+`">`, 1)
+	})
 
-    linkPattern := regexp.MustCompile(`<link([^>]*rel=['"]stylesheet['"][^>]*)>`)
-    content = linkPattern.ReplaceAllStringFunc(content, func(match string) string {
-        if strings.Contains(match, "nonce=") {
-            return match
-        }
-        return strings.Replace(match, ">", ` nonce="` + nonce + `">`, 1)
-    })
+	linkPattern := regexp.MustCompile(`<link([^>]*rel=['"]stylesheet['"][^>]*)>`)
+	content = linkPattern.ReplaceAllStringFunc(content, func(match string) string {
+		if strings.Contains(match, "nonce=") {
+			return match
+		}
+		return strings.Replace(match, ">", ` nonce="`+nonce+`">`, 1)
+	})
 
-    return content, cspHeader
+	return content, cspHeader
 }
-
 
 // Fungsi untuk memeriksa kerentanan CSRF
 func detectCSRFVulnerabilities(content string) []string {
 	patterns := []string{
-		`<form[^>]*>.*?</form>`,                      // Forms without CSRF tokens
+		`<form[^>]*>.*?</form>`, // Forms without CSRF tokens
 	}
-	
+
 	var vulnerabilities []string
-	
+
 	for _, pattern := range patterns {
 		re := regexp.MustCompile(pattern)
 		matches := re.FindAllString(content, -1)
@@ -155,45 +156,45 @@ func detectCSRFVulnerabilities(content string) []string {
 			}
 		}
 	}
-	
+
 	return vulnerabilities
 }
 
 // Fungsi untuk memeriksa keamanan header
 func analyzeSecurityHeaders(content string) []string {
 	requiredHeaders := map[string]bool{
-		"Content-Security-Policy": false,
-		"X-XSS-Protection":        false,
-		"X-Content-Type-Options":  false,
-		"X-Frame-Options":         false,
-		"Strict-Transport-Security": false,
+		"Content-Security-Policy":       false,
+		"X-XSS-Protection":              false,
+		"X-Content-Type-Options":        false,
+		"X-Frame-Options":               false,
+		"Strict-Transport-Security":     false,
 	}
-	
+
 	var issues []string
-	
+
 	// Cari meta tag untuk header keamanan
 	headerPatterns := map[string]string{
-		"Content-Security-Policy": `<meta\s+http-equiv\s*=\s*["']Content-Security-Policy["'][^>]*>`,
-		"X-XSS-Protection":        `<meta\s+http-equiv\s*=\s*["']X-XSS-Protection["'][^>]*>`,
-		"X-Content-Type-Options":  `<meta\s+http-equiv\s*=\s*["']X-Content-Type-Options["'][^>]*>`,
-		"X-Frame-Options":         `<meta\s+http-equiv\s*=\s*["']X-Frame-Options["'][^>]*>`,
-		"Strict-Transport-Security": `<meta\s+http-equiv\s*=\s*["']Strict-Transport-Security["'][^>]*>`,
+		"Content-Security-Policy":       `<meta\s+http-equiv\s*=\s*["']Content-Security-Policy["'][^>]*>`,
+		"X-XSS-Protection":              `<meta\s+http-equiv\s*=\s*["']X-XSS-Protection["'][^>]*>`,
+		"X-Content-Type-Options":        `<meta\s+http-equiv\s*=\s*["']X-Content-Type-Options["'][^>]*>`,
+		"X-Frame-Options":               `<meta\s+http-equiv\s*=\s*["']X-Frame-Options["'][^>]*>`,
+		"Strict-Transport-Security":    `<meta\s+http-equiv\s*=\s*["']Strict-Transport-Security["'][^>]*>`,
 	}
-	
+
 	for header, pattern := range headerPatterns {
 		re := regexp.MustCompile(pattern)
 		if re.MatchString(content) {
 			requiredHeaders[header] = true
 		}
 	}
-	
+
 	// Cek header yang hilang
 	for header, found := range requiredHeaders {
 		if !found {
 			issues = append(issues, fmt.Sprintf("Missing security header: %s", header))
 		}
 	}
-	
+
 	return issues
 }
 
@@ -246,47 +247,47 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 	if err != nil {
 		return err
 	}
-	
+
 	contentStr := string(content)
-	
+
 	// Tambahkan nonce ke semua elemen dan dapatkan CSP header yang diperbarui
 	contentStr, cspHeader := addNonceToElements(contentStr)
-	
+
 	// Hapus CSP header yang lama jika ada
 	oldCSPPattern := regexp.MustCompile(`<meta\s+http-equiv\s*=\s*["']Content-Security-Policy["'][^>]*>`)
 	contentStr = oldCSPPattern.ReplaceAllString(contentStr, "")
-	
+
 	// Tambahkan CSP header baru
-	contentStr = strings.Replace(contentStr, "</head>", cspHeader + "\n</head>", 1)
-	
+	contentStr = strings.Replace(contentStr, "</head>", cspHeader+"\n</head>", 1)
+
 	// Tambahkan header keamanan lainnya
-	if !strings.Contains(contentStr, "<meta http-equiv=\"X-XSS-Protection\"") {
+	if !strings.Contains(contentStr, `<meta http-equiv="X-XSS-Protection"`) {
 		xssHeader := `<meta http-equiv="X-XSS-Protection" content="1; mode=block">`
-		contentStr = strings.Replace(contentStr, "</head>", xssHeader + "\n</head>", 1)
+		contentStr = strings.Replace(contentStr, "</head>", xssHeader+"\n</head>", 1)
 	}
-	
-	if !strings.Contains(contentStr, "<meta http-equiv=\"X-Content-Type-Options\"") {
+
+	if !strings.Contains(contentStr, `<meta http-equiv="X-Content-Type-Options"`) {
 		ctHeader := `<meta http-equiv="X-Content-Type-Options" content="nosniff">`
-		contentStr = strings.Replace(contentStr, "</head>", ctHeader + "\n</head>", 1)
+		contentStr = strings.Replace(contentStr, "</head>", ctHeader+"\n</head>", 1)
 	}
-	
-	if !strings.Contains(contentStr, "<meta http-equiv=\"Strict-Transport-Security\"") {
+
+	if !strings.Contains(contentStr, `<meta http-equiv="Strict-Transport-Security"`) {
 		hstsHeader := `<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">`
-		contentStr = strings.Replace(contentStr, "</head>", hstsHeader + "\n</head>", 1)
+		contentStr = strings.Replace(contentStr, "</head>", hstsHeader+"\n</head>", 1)
 	}
-	
+
 	// Tambahkan header Frame Options jika belum ada
-	if !strings.Contains(contentStr, "<meta http-equiv=\"X-Frame-Options\"") {
+	if !strings.Contains(contentStr, `<meta http-equiv="X-Frame-Options"`) {
 		frameHeader := `<meta http-equiv="X-Frame-Options" content="DENY">`
-		contentStr = strings.Replace(contentStr, "</head>", frameHeader + "\n</head>", 1)
+		contentStr = strings.Replace(contentStr, "</head>", frameHeader+"\n</head>", 1)
 	}
-	
-	// 2. Hapus script yang berpotensi berbahaya
+
+	// Hapus script yang berpotensi berbahaya
 	for _, xss := range report.XSSVulns {
 		contentStr = strings.Replace(contentStr, xss, "<!-- Removed potentially unsafe script -->", 1)
 	}
-	
-	// 3. Tambahkan CSRF token ke semua form
+
+	// Tambahkan CSRF token ke semua form
 	csrfTokenScript := `
 <script nonce="__NONCE__">
   function generateCSRFToken() {
@@ -308,17 +309,17 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 `
 	// Gunakan nonce yang sama untuk script ini
 	csrfTokenScript = strings.Replace(csrfTokenScript, "__NONCE__", generateNonce(), 1)
-	
+
 	if len(report.CSRFIssues) > 0 && !strings.Contains(contentStr, "csrf_token") {
-		contentStr = strings.Replace(contentStr, "</head>", csrfTokenScript + "\n</head>", 1)
+		contentStr = strings.Replace(contentStr, "</head>", csrfTokenScript+"\n</head>", 1)
 	}
-	
-	// 4. HTTP -> HTTPS
+
+	// HTTP -> HTTPS
 	if !report.ContentSecurity["HTTPS Resources Only"] {
 		contentStr = strings.Replace(contentStr, "http://", "https://", -1)
 	}
-	
-	// 5. Tambahkan SRI untuk script eksternal jika belum ada
+
+	// Tambahkan SRI untuk script eksternal jika belum ada
 	if !report.ContentSecurity["SRI (Subresource Integrity)"] {
 		scriptPattern := regexp.MustCompile(`<script\s+src="([^"]+)"([^>]*)>`)
 		contentStr = scriptPattern.ReplaceAllStringFunc(contentStr, func(match string) string {
@@ -328,7 +329,7 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 			return strings.Replace(match, ">", ` integrity="sha384-placeholder" crossorigin="anonymous">`, 1)
 		})
 	}
-	
+
 	// Tulis kembali ke file
 	return ioutil.WriteFile(filePath, []byte(contentStr), 0644)
 }
@@ -388,43 +389,43 @@ FORMULASI MATEMATIS CYBERSECURITY:
 func main() {
 	// Cetak informasi
 	fmt.Println("=== Web Security Scanner dan Auto Repair ===")
-	
+
 	// Path file
 	filePath := "../index.html"
 	if len(os.Args) > 1 {
 		filePath = os.Args[1]
 	}
-	
+
 	// Baca file
 	content, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		log.Fatal("Error membaca file: ", err)
 	}
 	contentStr := string(content)
-	
+
 	// Hitung hash file untuk monitoring perubahan
 	fileHash, err := calculateFileHash(filePath)
 	if err != nil {
 		log.Println("Gagal menghitung hash file:", err)
 	}
-	
+
 	// Buat laporan keamanan
 	report := SecurityReport{
-		Timestamp:      time.Now(),
-		XSSVulns:       detectXSSVulnerabilities(contentStr),
-		SQLInjections:  detectSQLInjectionVulnerabilities(contentStr),
-		CSRFIssues:     detectCSRFVulnerabilities(contentStr),
-		HeaderIssues:   analyzeSecurityHeaders(contentStr),
+		Timestamp:       time.Now(),
+		XSSVulns:        detectXSSVulnerabilities(contentStr),
+		SQLInjections:   detectSQLInjectionVulnerabilities(contentStr),
+		CSRFIssues:      detectCSRFVulnerabilities(contentStr),
+		HeaderIssues:    analyzeSecurityHeaders(contentStr),
 		ContentSecurity: analyzeContentSecurity(contentStr),
-		FileHash:       fileHash,
+		FileHash:        fileHash,
 	}
-	
+
 	// Tampilkan hasil pemeriksaan
 	fmt.Println("\n=== LAPORAN KEAMANAN ===")
 	fmt.Printf("File: %s\n", filePath)
 	fmt.Printf("Waktu pemeriksaan: %v\n", report.Timestamp.Format(time.RFC1123))
 	fmt.Printf("File Hash: %s\n\n", report.FileHash)
-	
+
 	fmt.Println("1. KERENTANAN XSS:")
 	if len(report.XSSVulns) > 0 {
 		for i, vuln := range report.XSSVulns {
@@ -433,7 +434,7 @@ func main() {
 	} else {
 		fmt.Println("   Tidak ditemukan kerentanan XSS.")
 	}
-	
+
 	fmt.Println("\n2. KERENTANAN SQL INJECTION:")
 	if len(report.SQLInjections) > 0 {
 		for i, vuln := range report.SQLInjections {
@@ -442,7 +443,7 @@ func main() {
 	} else {
 		fmt.Println("   Tidak ditemukan kerentanan SQL Injection.")
 	}
-	
+
 	fmt.Println("\n3. KERENTANAN CSRF:")
 	if len(report.CSRFIssues) > 0 {
 		for i, vuln := range report.CSRFIssues {
@@ -454,7 +455,7 @@ func main() {
 	} else {
 		fmt.Println("   Tidak ditemukan kerentanan CSRF.")
 	}
-	
+
 	fmt.Println("\n4. MASALAH HEADER KEAMANAN:")
 	if len(report.HeaderIssues) > 0 {
 		for i, issue := range report.HeaderIssues {
@@ -463,7 +464,7 @@ func main() {
 	} else {
 		fmt.Println("   Semua header keamanan telah diimplementasikan dengan baik.")
 	}
-	
+
 	fmt.Println("\n5. KEAMANAN KONTEN:")
 	for feature, implemented := range report.ContentSecurity {
 		status := "✓ Diimplementasikan"
@@ -472,17 +473,17 @@ func main() {
 		}
 		fmt.Printf("   [%s] %s\n", feature, status)
 	}
-	
+
 	// Tanyakan pengguna apakah ingin memperbaiki masalah keamanan
 	fmt.Println("\nMemulai proses perbaikan otomatis...")
-	
+
 	// Perbaiki masalah keamanan
 	err = fixSecurityIssues(filePath, report)
 	if err != nil {
 		log.Fatal("Gagal memperbaiki masalah keamanan: ", err)
 	}
 	fmt.Println("Perbaikan otomatis berhasil dilakukan!")
-	
+
 	// Tampilkan formulasi matematis keamanan
 	printSecurityFormulations()
 }
