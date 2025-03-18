@@ -35,7 +35,7 @@ func calculateFileHash(filePath string) (string, error) {
 }
 
 // Fungsi untuk memeriksa kerentanan XSS
-func detectXSSVulnerabilities( string) []string {
+func detectXSSVulnerabilities(content string) []string {
 	patterns := []string{
 		`<script\b[^>]*>.*?</script>`,        // Script tags
 		`on\w+\s*=\s*['"].*?['"]`,            // Event handlers
@@ -49,7 +49,7 @@ func detectXSSVulnerabilities( string) []string {
 	
 	for _, pattern := range patterns {
 		re := regexp.MustCompile(pattern)
-		matches := re.FindAllString(, -1)
+		matches := re.FindAllString(content, -1)
 		vulnerabilities = append(vulnerabilities, matches...)
 	}
 	
@@ -57,7 +57,7 @@ func detectXSSVulnerabilities( string) []string {
 }
 
 // Fungsi untuk memeriksa kerentanan SQL Injection
-func detectSQLInjectionVulnerabilities( string) []string {
+func detectSQLInjectionVulnerabilities(content string) []string {
 	patterns := []string{
 		`(\w+)\s*=\s*['"].*?(\s*|\+)\d*\s*OR\s*['"].*?['"].*?['"]`,  // OR attacks
 		`(\w+)\s*=\s*['"].*?['"];.*?--`,                              // Comment attacks
@@ -71,14 +71,14 @@ func detectSQLInjectionVulnerabilities( string) []string {
 	
 	for _, pattern := range patterns {
 		re := regexp.MustCompile(pattern)
-		matches := re.FindAllString(, -1)
+		matches := re.FindAllString(content, -1)
 		vulnerabilities = append(vulnerabilities, matches...)
 	}
 	
 	return vulnerabilities
 }
 
-func addMissingHeaders( string) string {
+func addMissingHeaders(content string) string {
 	headers := []string{
 		`<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; img-src 'self' data: https://storage.googleapis.com https://4211421036.github.io; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.github.com https://www.google-analytics.com; frame-src 'self' https://www.googletagmanager.com;">`,
 		`<meta http-equiv="X-XSS-Protection" content="1; mode=block">`,
