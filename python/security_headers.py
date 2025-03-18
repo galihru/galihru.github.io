@@ -2,14 +2,12 @@ from bs4 import BeautifulSoup
 import os
 
 def add_security_headers(html_file):
-    print(f"Memproses file: {html_file}")  # Debugging
     with open(html_file, 'r+', encoding='utf-8') as f:
         soup = BeautifulSoup(f, 'html.parser')
-        print(f"Struktur HTML sebelum modifikasi:\n{soup.prettify()}")  # Debugging
 
         # Pastikan tag <head> ada
         if not soup.head:
-            print("Tag <head> tidak ditemukan, membuat tag <head> baru...")  # Debugging
+            # Jika tidak ada <head>, buat tag <head> baru
             head_tag = soup.new_tag('head')
             soup.html.insert(0, head_tag)
 
@@ -35,10 +33,10 @@ def add_security_headers(html_file):
         f.seek(0)
         f.write(str(soup))
         f.truncate()
-        print(f"Struktur HTML setelah modifikasi:\n{soup.prettify()}")  # Debugging
 
-# Jalankan fungsi untuk semua file HTML
-for root, dirs, files in os.walk('.'):
-    for file in files:
-        if file.endswith('.html'):
-            add_security_headers(os.path.join(root, file))
+# Jalankan fungsi hanya untuk index.html
+html_file = 'index.html'  # Hanya proses file index.html
+if os.path.exists(html_file):
+    add_security_headers(html_file)
+else:
+    print(f"File {html_file} tidak ditemukan.")
