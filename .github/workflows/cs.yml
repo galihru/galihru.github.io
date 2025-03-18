@@ -96,14 +96,14 @@ jobs:
       run: |
         cd nodejs
         npm start
-    
+  
     - name: Commit and push changes
       env:
         GH_PAT: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # Gunakan PAT yang disimpan sebagai secret
       run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git add .
-        git commit -m "Auto-fix security issues in index.html"
-        git pull --rebase origin main
-        git push https://$GH_PAT@github.com/4211421036/4211421036.github.io.git main
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Auto-fix cybersecurity issues"
+          git pull --rebase origin main  # Rebase perubahan dari remote
+          git push --force-with-lease https://$GH_PAT@github.com/4211421036/4211421036.github.io.git main
