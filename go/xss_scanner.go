@@ -37,12 +37,12 @@ func calculateFileHash(filePath string) (string, error) {
 // Fungsi untuk memeriksa kerentanan XSS
 func detectXSSVulnerabilities(content string) []string {
 	patterns := []string{
-		`<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>`,        // Script tags
-		`on\w+\s*=\s*['"].*?['"]`,                                  // Event handlers
-		`javascript:\s*[\w\.]+\(.*?\)`,                              // JavaScript protocol
-		`data:\s*text\/html.*?base64`,                               // Data URLs with HTML
-		`<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>`,        // Iframes
-		`<img[^>]+src\s*=\s*['"]?\s*javascript:`,                    // JavaScript in img src
+		`<script\b[^>]*>.*?</script>`,        // Script tags
+		`on\w+\s*=\s*['"].*?['"]`,            // Event handlers
+		`javascript:\s*[\w\.]+\(.*?\)`,       // JavaScript protocol
+		`data:\s*text\/html.*?base64`,        // Data URLs with HTML
+		`<iframe\b[^>]*>.*?</iframe>`,        // Iframes
+		`<img[^>]+src\s*=\s*['"]?\s*javascript:`, // JavaScript in img src
 	}
 	
 	var vulnerabilities []string
@@ -81,8 +81,7 @@ func detectSQLInjectionVulnerabilities(content string) []string {
 // Fungsi untuk memeriksa kerentanan CSRF
 func detectCSRFVulnerabilities(content string) []string {
 	patterns := []string{
-		`<form[^>]*>(?:(?!<\/form>).)*<\/form>`,                      // Forms without CSRF tokens
-		`<form[^>]*>(?:(?!csrf|token).)*<\/form>`,                    // Forms without token keywords
+		`<form[^>]*>.*?</form>`,                      // Forms without CSRF tokens
 	}
 	
 	var vulnerabilities []string
@@ -167,7 +166,7 @@ func analyzeContentSecurity(content string) map[string]bool {
 	}
 	
 	// Cek JavaScript inline
-	inlineJSPattern := regexp.MustCompile(`<script\b[^<]*>(?:(?!<\/script>).)*<\/script>`)
+	inlineJSPattern := regexp.MustCompile(`<script\b[^>]*>(?:(?!<\/script>).)*<\/script>`)
 	if inlineJSPattern.MatchString(content) {
 		securityFeatures["No Inline JavaScript"] = false
 	}
