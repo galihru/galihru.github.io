@@ -1,0 +1,98 @@
+name: Cybersecurity Checks
+
+on:
+  schedule:
+    - cron: '*/5 * * * *' # Menjalankan setiap 1 menit, sesuaikan dengan kebutuhan Anda.
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    # Install system dependencies
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libxml2-dev libxslt-dev python3-dev
+
+    # Python
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'  # Ganti ke 3.12 atau lebih rendah
+
+    - name: Install Python dependencies
+      run: |
+        pip install -r python/requirements.txt
+
+    - name: Run Python scripts
+      run: |
+        python python/security_headers.py
+        python python/csp_generator.py
+
+    # Go
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+
+    - name: Run Go XSS Scanner
+      run: |
+        cd go
+        go mod tidy
+        go run xss_scanner.go
+
+    # C
+    - name: Install OpenSSL for C
+      run: sudo apt-get install libssl-dev
+
+    - name: Run C File Integrity Checker
+      run: |
+        cd c
+        gcc -o file_checker file_checker.c -lssl -lcrypto
+        ./file_checker
+
+    # C++
+    - name: Run C++ CSP Generator
+      run: |
+        cd cpp
+        g++ -o csp_generator csp_generator.cpp -lssl -lcrypto
+        ./csp_generator
+
+    # Ruby
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.1'
+
+    - name: Install Ruby dependencies
+      run: |
+        cd ruby
+        bundle install
+
+    - name: Run Ruby Log Analyzer
+      run: |
+        cd ruby
+        ruby log_analyzer.rb ./access.log
+
+    # Node.js
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install Node.js dependencies
+      run: |
+        cd nodejs
+        npm install
+
+    - name: Run Node.js Header Checker
+      run: |
+        cd nodejs
+        npm start
