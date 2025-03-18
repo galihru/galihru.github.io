@@ -1563,7 +1563,7 @@ function createGitHubRepoShowcase(username = '4211421036') {
 // Function to integrate GitHub repo showcase with existing page
 function integrateGitHubRepoShowcase() {
   // Find a suitable container to append our showcase
-  const container = document.querySelector('.content').closest('div').parentElement;
+  const container = document.querySelector('.carousel').closest('div').parentElement;
   
   // Create the showcase
   const showcase = createGitHubRepoShowcase('4211421036'); // Replace with your GitHub username
