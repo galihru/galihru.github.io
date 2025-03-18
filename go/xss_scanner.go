@@ -198,6 +198,12 @@ func analyzeContentSecurity(content string) map[string]bool {
 	return securityFeatures
 }
 
+func removeInvalidMetaTags(content string) string {
+	// Hapus tag <meta> untuk X-Frame-Options
+	invalidMetaTag := `<meta http-equiv="X-Frame-Options" content="DENY">`
+	return strings.Replace(content, invalidMetaTag, "", -1)
+}
+
 // Fungsi untuk memperbaiki isu keamanan yang ditemukan
 func fixSecurityIssues(filePath string, report SecurityReport) error {
 	content, err := ioutil.ReadFile(filePath)
@@ -208,6 +214,8 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 	contentStr := string(content)
 
 	contentStr = addMissingHeaders(contentStr)
+	// Hapus tag <meta> yang tidak valid
+	contentStr = removeInvalidMetaTags(contentStr)
 	
 	// 1. Tambahkan headers keamanan jika tidak ada
 	if !strings.Contains(contentStr, "<meta http-equiv=\"Content-Security-Policy\"") {
