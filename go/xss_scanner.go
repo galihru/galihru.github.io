@@ -2,6 +2,8 @@ package main
 
 import (
 	"crypto/sha256"
+	"crypto/sha512"
+	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"io/ioutil"
@@ -24,6 +26,17 @@ type SecurityReport struct {
 	FileHash        string
 }
 
+// Fungsi untuk menghitung hash SRI (SHA-384)
+func calculateSRIHash(filePath string) (string, error) {
+	content, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return "", err
+	}
+
+	hash := sha512.Sum384(content)
+	return "sha384-" + base64.StdEncoding.EncodeToString(hash[:]), nil
+}
+
 // Fungsi untuk menghitung hash file untuk deteksi perubahan
 func calculateFileHash(filePath string) (string, error) {
 	content, err := ioutil.ReadFile(filePath)
@@ -33,6 +46,35 @@ func calculateFileHash(filePath string) (string, error) {
 
 	hashBytes := sha256.Sum256(content)
 	return hex.EncodeToString(hashBytes[:]), nil
+}
+
+// Fungsi untuk menambahkan SRI ke tag <script>
+func addSRIToScripts(content string) string {
+	scriptPattern := regexp.MustCompile(`<script\s+src="([^"]+)"([^>]*)>`)
+	content = scriptPattern.ReplaceAllStringFunc(content, func(match string) string {
+		if strings.Contains(match, "integrity=") {
+			return match
+		}
+
+		// Ambil URL src
+		srcPattern := regexp.MustCompile(`src="([^"]+)"`)
+		srcMatch := srcPattern.FindStringSubmatch(match)
+		if len(srcMatch) < 2 {
+			return match
+		}
+		src := srcMatch[1]
+
+		// Hitung hash SRI
+		hash, err := calculateSRIHash(src)
+		if err != nil {
+			return match
+		}
+
+		// Tambahkan integrity dan crossorigin
+		return strings.Replace(match, ">", ` integrity="`+hash+`" crossorigin="anonymous">`, 1)
+	})
+
+	return content
 }
 
 // Fungsi untuk memeriksa kerentanan XSS
@@ -274,12 +316,6 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 	if !strings.Contains(contentStr, `<meta http-equiv="Strict-Transport-Security"`) {
 		hstsHeader := `<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">`
 		contentStr = strings.Replace(contentStr, "</head>", hstsHeader+"\n</head>", 1)
-	}
-
-	// Tambahkan header Frame Options jika belum ada
-	if !strings.Contains(contentStr, `<meta http-equiv="X-Frame-Options"`) {
-		frameHeader := `<meta http-equiv="X-Frame-Options" content="DENY">`
-		contentStr = strings.Replace(contentStr, "</head>", frameHeader+"\n</head>", 1)
 	}
 
 	// Hapus script yang berpotensi berbahaya
