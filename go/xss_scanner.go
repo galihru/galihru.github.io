@@ -77,7 +77,7 @@ func addSRIToScripts(content string) string {
         src := srcMatch[1]
 
 	hrefMatch := regexp.MustCompile(`href=["']([^"']+)["']`).FindStringSubmatch(match)
-        if len(srcMatch) < 2 {
+        if len(hrefMatch) < 2 {
             return match
         }
         href := hrefMatch[1]
