@@ -400,7 +400,6 @@ styleElement.textContent = `
     flex-wrap: wrap;
     gap: 20px;
     padding: 20px;
-    background-color: var(--background-colors);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: var(--text-colors);
 }
@@ -408,13 +407,15 @@ styleElement.textContent = `
 .${classNames.allCategoriesLink} {
     width: 100%;
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     align-items: center;
     margin-bottom: 15px;
     font-weight: bold;
     cursor: pointer;
     color: var(--primary-colors);
     transition: color 0.3s ease;
+    gap: 10px;
+    font-size: larger;
 }
 
 .${classNames.allCategoriesLink}:hover {
@@ -425,7 +426,7 @@ styleElement.textContent = `
     flex: 1;
     min-width: 300px;
     background-color: var(--card-backgrounds);
-    border-radius: 12px;
+    border-radius: 25px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding: 20px;
