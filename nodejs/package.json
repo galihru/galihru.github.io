@@ -1,0 +1,14 @@
+{
+  "name": "header-checker",
+  "version": "1.0.0",
+  "description": "HTTP Header Checker",
+  "main": "header_checker.js",
+  "scripts": {
+    "start": "node header_checker.js"
+  },
+  "dependencies": {
+    "https": "^1.0.0",
+    "crypto": "^1.0.1",
+    "fs": "^0.0.1-security"
+  }
+}
