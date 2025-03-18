@@ -56,6 +56,15 @@ func detectXSSVulnerabilities(content string) []string {
 	return vulnerabilities
 }
 
+func generateNonce() string {
+	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	result := make([]byte, 16)
+	for i := range result {
+		result[i] = chars[rand.Intn(len(chars))]
+	}
+	return string(result)
+}
+
 // Fungsi untuk memeriksa kerentanan SQL Injection
 func detectSQLInjectionVulnerabilities(content string) []string {
 	patterns := []string{
@@ -80,7 +89,7 @@ func detectSQLInjectionVulnerabilities(content string) []string {
 
 func addMissingHeaders(content string) string {
 	headers := []string{
-		`<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; img-src 'self' data: https://storage.googleapis.com https://4211421036.github.io; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.github.com https://www.google-analytics.com; frame-src 'self' https://www.googletagmanager.com;">`,
+		`<meta http-equiv="Content-Security-Policy" content="default-src 'self'nonce-` + nonce + `' script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline 'nonce-` + nonce + `'; img-src 'self' data: https://storage.googleapis.com https://4211421036.github.io; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.github.com https://www.google-analytics.com; frame-src 'self' https://www.googletagmanager.com;">`,
 		`<meta http-equiv="X-XSS-Protection" content="1; mode=block">`,
 		`<meta http-equiv="X-Content-Type-Options" content="nosniff">`,
 		`<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">`,
@@ -94,6 +103,53 @@ func addMissingHeaders(content string) string {
 
 	return content
 }
+
+func addNonceToElements(content string) (string, string) {
+	// Tambahkan import yang diperlukan di bagian atas file
+	// import "math/rand"
+	// import "strings"
+	// import "time"
+	
+	// Inisialisasi random seed
+	// rand.Seed(time.Now().UnixNano()) // Untuk Go versi < 1.20
+	// Untuk Go versi 1.20+, rand.Seed tidak diperlukan lagi
+	
+	// Hasilkan nonce untuk digunakan di seluruh halaman
+	nonce := generateNonce()
+	
+	// Menambahkan nonce ke CSP header
+	cspHeader := `<meta http-equiv="Content-Security-Policy" content="default-src 'self'nonce-` + nonce + `' script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline 'nonce-` + nonce + `'; img-src 'self' data: https://storage.googleapis.com https://4211421036.github.io; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://api.github.com https://www.google-analytics.com; frame-src 'self' https://www.googletagmanager.com;">``
+	
+	// Tambahkan nonce ke semua script tag
+	scriptPattern := regexp.MustCompile(`<script([^>]*)>`)
+	content = scriptPattern.ReplaceAllStringFunc(content, func(match string) string {
+		if strings.Contains(match, "nonce=") {
+			return match
+		}
+		return strings.Replace(match, ">", ` nonce="` + nonce + `">`, 1)
+	})
+	
+	// Tambahkan nonce ke semua style tag
+	stylePattern := regexp.MustCompile(`<style([^>]*)>`)
+	content = stylePattern.ReplaceAllStringFunc(content, func(match string) string {
+		if strings.Contains(match, "nonce=") {
+			return match
+		}
+		return strings.Replace(match, ">", ` nonce="` + nonce + `">`, 1)
+	})
+	
+	// Tambahkan nonce ke link tag untuk stylesheet
+	linkPattern := regexp.MustCompile(`<link([^>]*rel=['"]stylesheet['"][^>]*)>`)
+	content = linkPattern.ReplaceAllStringFunc(content, func(match string) string {
+		if strings.Contains(match, "nonce=") {
+			return match
+		}
+		return strings.Replace(match, ">", ` nonce="` + nonce + `">`, 1)
+	})
+	
+	return content, cspHeader
+}
+
 
 // Fungsi untuk memeriksa kerentanan CSRF
 func detectCSRFVulnerabilities(content string) []string {
@@ -205,15 +261,18 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 	}
 	
 	contentStr := string(content)
-
-	contentStr = addMissingHeaders(contentStr)
 	
-	// 1. Tambahkan headers keamanan jika tidak ada
-	if !strings.Contains(contentStr, "<meta http-equiv=\"Content-Security-Policy\"") {
-		cspHeader := `<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'">`
-		contentStr = strings.Replace(contentStr, "</head>", cspHeader + "\n</head>", 1)
-	}
+	// Tambahkan nonce ke semua elemen dan dapatkan CSP header yang diperbarui
+	contentStr, cspHeader := addNonceToElements(contentStr)
 	
+	// Hapus CSP header yang lama jika ada
+	oldCSPPattern := regexp.MustCompile(`<meta\s+http-equiv\s*=\s*["']Content-Security-Policy["'][^>]*>`)
+	contentStr = oldCSPPattern.ReplaceAllString(contentStr, "")
+	
+	// Tambahkan CSP header baru
+	contentStr = strings.Replace(contentStr, "</head>", cspHeader + "\n</head>", 1)
+	
+	// Tambahkan header keamanan lainnya
 	if !strings.Contains(contentStr, "<meta http-equiv=\"X-XSS-Protection\"") {
 		xssHeader := `<meta http-equiv="X-XSS-Protection" content="1; mode=block">`
 		contentStr = strings.Replace(contentStr, "</head>", xssHeader + "\n</head>", 1)
@@ -229,6 +288,12 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 		contentStr = strings.Replace(contentStr, "</head>", hstsHeader + "\n</head>", 1)
 	}
 	
+	// Tambahkan header Frame Options jika belum ada
+	if !strings.Contains(contentStr, "<meta http-equiv=\"X-Frame-Options\"") {
+		frameHeader := `<meta http-equiv="X-Frame-Options" content="DENY">`
+		contentStr = strings.Replace(contentStr, "</head>", frameHeader + "\n</head>", 1)
+	}
+	
 	// 2. Hapus script yang berpotensi berbahaya
 	for _, xss := range report.XSSVulns {
 		contentStr = strings.Replace(contentStr, xss, "<!-- Removed potentially unsafe script -->", 1)
@@ -236,7 +301,7 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 	
 	// 3. Tambahkan CSRF token ke semua form
 	csrfTokenScript := `
-<script>
+<script nonce="__NONCE__">
   function generateCSRFToken() {
     return Array(32).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('');
   }
@@ -254,6 +319,9 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
   });
 </script>
 `
+	// Gunakan nonce yang sama untuk script ini
+	csrfTokenScript = strings.Replace(csrfTokenScript, "__NONCE__", generateNonce(), 1)
+	
 	if len(report.CSRFIssues) > 0 && !strings.Contains(contentStr, "csrf_token") {
 		contentStr = strings.Replace(contentStr, "</head>", csrfTokenScript + "\n</head>", 1)
 	}
@@ -265,9 +333,6 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 	
 	// 5. Tambahkan SRI untuk script eksternal jika belum ada
 	if !report.ContentSecurity["SRI (Subresource Integrity)"] {
-		// Fungsi ini kompleks untuk implementasi penuh
-		// Intinya: tambahkan atribut integrity ke script/link eksternal
-		// Contoh sederhana:
 		scriptPattern := regexp.MustCompile(`<script\s+src="([^"]+)"([^>]*)>`)
 		contentStr = scriptPattern.ReplaceAllStringFunc(contentStr, func(match string) string {
 			if strings.Contains(match, "integrity=") {
@@ -275,27 +340,6 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 			}
 			return strings.Replace(match, ">", ` integrity="sha384-placeholder" crossorigin="anonymous">`, 1)
 		})
-	}
-	
-	// 6. Tambahkan nonce untuk inline scripts jika diperlukan
-	if !report.ContentSecurity["No Inline JavaScript"] {
-		nonceScript := `
-<script>
-  // Fungsi untuk menghasilkan nonce
-  function generateNonce() {
-    return Array(16).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('');
-  }
-  window.__nonce = generateNonce();
-  document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('script:not([src])').forEach(script => {
-      if (!script.hasAttribute('nonce')) {
-        script.setAttribute('nonce', window.__nonce);
-      }
-    });
-  });
-</script>
-`
-		contentStr = strings.Replace(contentStr, "</head>", nonceScript + "\n</head>", 1)
 	}
 	
 	// Tulis kembali ke file
