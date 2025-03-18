@@ -224,11 +224,6 @@ func fixSecurityIssues(filePath string, report SecurityReport) error {
 		contentStr = strings.Replace(contentStr, "</head>", ctHeader + "\n</head>", 1)
 	}
 	
-	if !strings.Contains(contentStr, "<meta http-equiv=\"X-Frame-Options\"") {
-		frameHeader := `<meta http-equiv="X-Frame-Options" content="DENY">`
-		contentStr = strings.Replace(contentStr, "</head>", frameHeader + "\n</head>", 1)
-	}
-	
 	if !strings.Contains(contentStr, "<meta http-equiv=\"Strict-Transport-Security\"") {
 		hstsHeader := `<meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains">`
 		contentStr = strings.Replace(contentStr, "</head>", hstsHeader + "\n</head>", 1)
