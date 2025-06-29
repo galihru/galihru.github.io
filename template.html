@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GALIH RIDHO UTOMO - Full Stack Developer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title>GALIH RIDHO UTOMO</title>
     <meta charset="UTF-8">
     <link href=/manifest.json rel=manifest crossorigin=use-credentials>
@@ -59,8 +62,629 @@
 
         gtag('config', 'G-10CPK9SS6N');
     </script>
-</head>
+    <style>
+        :root {
+            --primary-bg: #0a0a0a;
+            --secondary-bg: #111111;
+            --card-bg: #1a1a1a;
+            --accent-purple: #8b5cf6;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --text-primary: #ffffff;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --border-color: #27272a;
+            --hover-bg: #262626;
+            --gradient-1: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            --gradient-2: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --gradient-3: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-1);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--hover-bg);
+            border-color: var(--accent-purple);
+        }
+
+        /* Sections */
+        .section {
+            padding: 8rem 0;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+
+        .section-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Card Grid */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: var(--gradient-1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--accent-purple);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            background: var(--gradient-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tag {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--accent-purple);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .card-link {
+            color: var(--accent-purple);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-link:hover {
+            color: var(--text-primary);
+            transform: translateX(4px);
+        }
+
+        /* Platforms Grid */
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .platform-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .platform-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-blue);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .platform-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .platform-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--gradient-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .platform-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .platform-username {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .platform-stats {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .platform-stat {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* GitHub Repos */
+        .repos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .repo-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .repo-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-green);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .repo-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .repo-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .repo-type {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .repo-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .repo-stats {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .repo-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* Contact Section */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .contact-item {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        .contact-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .contact-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .contact-info {
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--secondary-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0 1rem;
+            margin-top: 8rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border-color);
+            padding-top: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-stats {
+                gap: 1.5rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .section {
+                padding: 4rem 0;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .card-grid,
+            .platforms-grid,
+            .repos-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .nav-container {
+                padding: 0 1rem;
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
 <body>
     <!-- Cloudflare Web Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "e550c493b65943ecade3189dc93ce78f"}'></script><!-- End Cloudflare Web Analytics -->
     <!-- Google Tag Manager (noscript) -->
@@ -71,8 +695,7 @@
         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--background-colors); display: flex; align-items: center; justify-content: center; z-index: 1000;">
         <img src="https://4211421036.github.io/g4lihru/987654567.png" alt="Logo"
             style="width: 150px; height: 150px; background: white; border-radius: 25px;">
-    </div>
-    <script>
+    </div><script>
         // Hide splash screen after 3 seconds
         window.addEventListener('load', () => {
             setTimeout(() => {
@@ -80,1519 +703,609 @@
             }, 500);
         });
     </script>
-    <div class="sidebar">
-        <div class="sidebar-item" data-link="home" title="Home">
-            <i class="fas fa-home"></i>
-            <div class="tooltip">Home</div>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">GALIH RIDHO UTOMO</div>
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#platforms">Platforms</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
         </div>
-        <div class="sidebar-item" data-link="download" title="Download">
-            <i class="fas fa-download"></i>
-            <div class="tooltip">Download</div>
-        </div>
-        <div class="sidebar-item" data-link="book" title="Book">
-            <i class="fas fa-book"></i>
-            <div class="tooltip">Book</div>
-        </div>
-    </div>
-    <script src="sdb.js"></script>
-    <div class="content">
-        <div class="carousel">
-            <div class="carousel-track">
-                <div class="carousel-item carousel-item1">
-                    <img alt="Breaking Bad character sitting in a warehouse" height="400"
-                        src="https://storage.googleapis.com/a1aa/image/4nEokJjhM5BSY-67rsqe5y5OEcmEm9NrBYSznVlLGYE.jpg"
-                        width="800" style="border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);" />
-                    <div class="overlay" style="border-radius: 15px; backdrop-filter: blur(2px);">
-                        <h2 style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Weekend flash sale</h2>
-                        <p style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Save on Breaking Bad and Better Call Saul
-                        </p>
-                        <button>See details</button>
-                    </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Full Stack Developer & Problem Solver</h1>
+            <p class="hero-subtitle">Building innovative applications and solving complex algorithmic challenges across multiple platforms</p>
+            
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">#182</span>
+                    <span class="stat-label">LeetCode Rank</span>
                 </div>
-                <div class="carousel-item carousel-item2">
-                    <img alt="Entertainment apps logos" height="400"
-                        src="https://storage.googleapis.com/a1aa/image/PAt2D3Ex_73tkQj2pJVZsorEX-Q-vMScs0EC3h_s1i0.jpg"
-                        width="800" style="border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);" />
-                    <div class="overlay" style="border-radius: 15px; backdrop-filter: blur(2px);">
-                        <h2 style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Best entertainment apps</h2>
-                        <button>See details</button>
-                    </div>
+                <div class="stat-item">
+                    <span class="stat-number">8+</span>
+                    <span class="stat-label">Active Platforms</span>
                 </div>
-                <div class="carousel-item carousel-item3">
-                    <img alt="Microsoft Solitaire Collection: Gravity Blocks" height="400"
-                        src="https://storage.googleapis.com/a1aa/image/0gpp5Rhk776fbWIxFb8YfzVZ74sWv1QbUGBTG2S6fvU.jpg"
-                        width="800" style="border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);" />
-                    <div class="overlay" style="border-radius: 15px; backdrop-filter: blur(2px);">
-                        <h2>Microsoft Solitaire Collection: Gravity Blocks</h2>
-                        <button>See details</button>
-                    </div>
+                <div class="stat-item">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Projects</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">20+</span>
+                    <span class="stat-label">Packages Published</span>
                 </div>
             </div>
-            <div class="carousel-nav">
-                <button class="carousel-prev">&lt;</button>
-                <button class="carousel-next">&gt;</button>
+            
+            <div class="cta-buttons">
+                <a href="#projects" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i>
+                    View My Work
+                </a>
+                <a href="https://github.com/galihru" target="_blank" class="btn btn-outline">
+                    <i class="fab fa-github"></i>
+                    GitHub Profile
+                </a>
             </div>
         </div>
-        <div class="section-title">Aplikasi yang di Buat</div>
-        <div style="position: relative;">
-            <div class="card-container" id="github-repos"></div>
-            <div class="repo-nav">
-                <button class="repo-prev">&lt;</button>
-                <button class="repo-next">&gt;</button>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Featured Projects</h2>
+                <p class="section-subtitle">Explore my portfolio of applications and solutions across various technologies and platforms</p>
+            </div>
+            
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fab fa-python"></i>
+                    </div>
+                    <h3 class="card-title">Python Packages</h3>
+                    <p class="card-description">Published packages on PyPI for data analysis, automation, and utility functions used by developers worldwide.</p>
+                    <div class="card-tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">PyPI</span>
+                        <span class="tag">Open Source</span>
+                    </div>
+                    <a href="https://pypi.org/user/galihridhoutomo/" target="_blank" class="card-link">
+                        View on PyPI <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fab fa-js"></i>
+                    </div>
+                    <h3 class="card-title">JavaScript Libraries</h3>
+                    <p class="card-description">NPM packages for frontend and backend development, including utilities and React components.</p>
+                    <div class="card-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">NPM</span>
+                        <span class="tag">React</span>
+                        <span class="tag">Node.js</span>
+                    </div>
+                    <a href="https://www.npmjs.com/~galihru" target="_blank" class="card-link">
+                        View on NPM <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <h3 class="card-title">.NET Packages</h3>
+                    <p class="card-description">NuGet packages for .NET applications, focusing on enterprise solutions and system integrations.</p>
+                    <div class="card-tags">
+                        <span class="tag">C#</span>
+                        <span class="tag">NuGet</span>
+                        <span class="tag">.NET</span>
+                    </div>
+                    <a href="https://www.nuget.org/profiles/g4lihru" target="_blank" class="card-link">
+                        View on NuGet <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <h3 class="card-title">Arduino Projects</h3>
+                    <p class="card-description">IoT and embedded systems projects using Arduino platform for automation and sensor integration.</p>
+                    <div class="card-tags">
+                        <span class="tag">C++</span>
+                        <span class="tag">Arduino</span>
+                        <span class="tag">IoT</span>
+                        <span class="tag">Embedded</span>
+                    </div>
+                    <a href="#" class="card-link">
+                        View Projects <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3 class="card-title">Algorithm Solutions</h3>
+                    <p class="card-description">Optimized solutions to complex algorithmic challenges, ranked #182 on LeetCode with consistent problem-solving.</p>
+                    <div class="card-tags">
+                        <span class="tag">Algorithms</span>
+                        <span class="tag">Data Structures</span>
+                        <span class="tag">Optimization</span>
+                    </div>
+                    <a href="https://leetcode.com/GALIH_RIDHO_UTOMO" target="_blank" class="card-link">
+                        View Solutions <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3 class="card-title">Full Stack Applications</h3>
+                    <p class="card-description">Complete web applications with modern frontend frameworks and scalable backend architectures.</p>
+                    <div class="card-tags">
+                        <span class="tag">React</span>
+                        <span class="tag">Node.js</span>
+                        <span class="tag">MongoDB</span>
+                        <span class="tag">Docker</span>
+                    </div>
+                    <a href="https://github.com/galihru" target="_blank" class="card-link">
+                        View on GitHub <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
-    <script>
-        // Function to fetch GitHub repos
-        async function fetchGitHubRepos() {
-            try {
-                const response = await fetch('https://api.github.com/users/4211421036/repos');
-                const repos = await response.json();
-                const container = document.getElementById('github-repos');
+    </section>
 
-                repos.forEach(repo => {
-                    const card = document.createElement('div');
-                    card.className = 'card';
-
-                    card.innerHTML = `
-            <img alt="GitHub" height="200" 
-                src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" 
-                width="150"/>
-            <p>${repo.name}</p>
-            <p class="free">${repo.language || 'No language'}</p>
-            <p style="font-size: 12px">${repo.description || ''}</p>
-            <a class="linkc" href="${repo.html_url}" target="_blank" 
-            style="color: #2d6cdf; text-decoration: none;">View Repository</a>
-            `;
-
-                    container.appendChild(card);
-                });
-            } catch (error) {
-                console.error('Error fetching GitHub repos:', error);
-            }
-        }
-
-        // Function to handle card navigation
-        function handleCardNavigation(direction) {
-            const container = document.getElementById('github-repos');
-            const cards = Array.from(container.children);
-            if (direction === 'next') {
-                container.appendChild(cards[0]);
-            } else {
-                container.insertBefore(cards[cards.length - 1], cards[0]);
-            }
-        }
-
-        // Event listeners for navigation buttons
-        document.querySelector('.repo-next').addEventListener('click', () => handleCardNavigation('next'));
-        document.querySelector('.repo-prev').addEventListener('click', () => handleCardNavigation('prev'));
-
-        // Call the function when page loads
-        fetchGitHubRepos();
-    </script>
-    <script>
-        const track = document.querySelector('.carousel-track');
-        const items = Array.from(track.children);
-        const nextButton = document.querySelector('.carousel-next');
-        const prevButton = document.querySelector('.carousel-prev');
-        let currentIndex = 0;
-
-        // Function to update carousel position
-        function updateCarousel() {
-            const itemWidth = items[currentIndex].getBoundingClientRect().width;
-            track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
-        }
-
-        // Function to fetch GitHub repositories
-        async function fetchGitHubRepos(username) {
-            const response = await fetch(`https://api.github.com/users/4211421036/repos`);
-            if (!response.ok) throw new Error('Failed to fetch GitHub repositories');
-            return response.json();
-        }
-
-        // Function to fetch repository image
-        async function fetchRepoImage(repo) {
-            const response = await fetch(`https://api.github.com/repos/${repo.full_name}/contents`);
-            if (!response.ok) throw new Error('Failed to fetch repository contents');
-            const contents = await response.json();
-            const imageFile = contents.find(file => file.type === 'file' && /\.(jpg|jpeg|png|gif)$/i.test(file.name));
-            return imageFile ? imageFile.download_url : 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png';
-        }
-
-        // Function to update carousel content with GitHub data
-        async function updateCarouselContent() {
-            try {
-                const repos = await fetchGitHubRepos('4211421036'); // Replace with your GitHub username
-                for (let i = 0; i < items.length; i++) {
-                    if (i >= repos.length) break;
-                    const repo = repos[i];
-                    const imageUrl = await fetchRepoImage(repo);
-
-                    items[i].setAttribute('data-name', repo.name);
-                    items[i].setAttribute('data-description', repo.description || 'No description available');
-                    items[i].setAttribute('data-url', repo.html_url);
-                    items[i].setAttribute('data-image', imageUrl);
-
-                    items[i].innerHTML = `
-                        <img src="${imageUrl}" alt="${repo.name}">
-                        <div class="overlay">
-                            <h2>${repo.name}</h2>
-                            <p>${repo.description || 'No description available'}</p>
-                            <button>
-                                <a class="linkp" href="${repo.html_url}" target="_blank">View Repository</a>
-                            </button>
+    <!-- Platforms Section -->
+    <section id="platforms" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Active Platforms</h2>
+                <p class="section-subtitle">Contributing to the developer community across multiple coding and package management platforms</p>
+            </div>
+            
+            <div class="platforms-grid">
+                <a href="https://leetcode.com/GALIH_RIDHO_UTOMO" target="_blank" class="platform-card">
+                    <div class="platform-header">
+                        <div class="platform-icon">
+                            <i class="fas fa-code"></i>
                         </div>
-                    `;
-                }
-            } catch (error) {
-                console.error('Error fetching GitHub data:', error);
-            }
-        }
-
-        // Function to swap content (circular shift)
-        function swapContent(direction) {
-            if (direction === 'next') {
-                const firstItem = {
-                    name: items[0].getAttribute('data-name'),
-                    description: items[0].getAttribute('data-description'),
-                    url: items[0].getAttribute('data-url'),
-                    image: items[0].getAttribute('data-image')
-                };
-                for (let i = 0; i < items.length - 1; i++) {
-                    items[i].setAttribute('data-name', items[i + 1].getAttribute('data-name'));
-                    items[i].setAttribute('data-description', items[i + 1].getAttribute('data-description'));
-                    items[i].setAttribute('data-url', items[i + 1].getAttribute('data-url'));
-                    items[i].setAttribute('data-image', items[i + 1].getAttribute('data-image'));
-                    items[i].innerHTML = items[i + 1].innerHTML;
-                }
-                items[items.length - 1].setAttribute('data-name', firstItem.name);
-                items[items.length - 1].setAttribute('data-description', firstItem.description);
-                items[items.length - 1].setAttribute('data-url', firstItem.url);
-                items[items.length - 1].setAttribute('data-image', firstItem.image);
-                items[items.length - 1].innerHTML = `
-                    <img src="${firstItem.image}" alt="${firstItem.name}">
-                    <div class="overlay">
-                        <h2>${firstItem.name}</h2>
-                        <p>${firstItem.description}</p>
-                        <button>
-                            <a class="linkp" href="${firstItem.url}" target="_blank">View Repository</a>
-                        </button>
+                        <div>
+                            <div class="platform-name">LeetCode</div>
+                            <div class="platform-username">GALIH_RIDHO_UTOMO</div>
+                        </div>
                     </div>
-                `;
-            } else {
-                const lastItem = {
-                    name: items[items.length - 1].getAttribute('data-name'),
-                    description: items[items.length - 1].getAttribute('data-description'),
-                    url: items[items.length - 1].getAttribute('data-url'),
-                    image: items[items.length - 1].getAttribute('data-image')
-                };
-                for (let i = items.length - 1; i > 0; i--) {
-                    items[i].setAttribute('data-name', items[i - 1].getAttribute('data-name'));
-                    items[i].setAttribute('data-description', items[i - 1].getAttribute('data-description'));
-                    items[i].setAttribute('data-url', items[i - 1].getAttribute('data-url'));
-                    items[i].setAttribute('data-image', items[i - 1].getAttribute('data-image'));
-                    items[i].innerHTML = items[i - 1].innerHTML;
-                }
-                items[0].setAttribute('data-name', lastItem.name);
-                items[0].setAttribute('data-description', lastItem.description);
-                items[0].setAttribute('data-url', lastItem.url);
-                items[0].setAttribute('data-image', lastItem.image);
-                items[0].innerHTML = `
-                    <img src="${lastItem.image}" alt="${lastItem.name}">
-                    <div class="overlay">
-                        <h2>${lastItem.name}</h2>
-                        <p>${lastItem.description}</p>
-                        <button>
-                            <a class="linkp" href="${lastItem.url}" target="_blank">View Repository</a>
-                        </button>
+                    <div class="platform-stats">
+                        <span class="platform-stat">Rank: #182</span>
+                        <span class="platform-stat">500+ Problems Solved</span>
                     </div>
-                `;
-            }
-        }
-
-        // Event listeners for navigation buttons
-        nextButton.addEventListener('click', () => {
-            swapContent('next');
-        });
-
-        prevButton.addEventListener('click', () => {
-            swapContent('prev');
-        });
-
-        // Load carousel content when the page loads
-        document.addEventListener('DOMContentLoaded', async () => {
-            await updateCarouselContent();
-            updateCarousel();
-        });
-        function getRandomClassName(length = 8) {
-            const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            let result = '';
-            for (let i = 0; i < length; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return result;
-        }
-
-        // Generate random class names for CSS
-        const classNames = {
-            container: getRandomClassName(),
-            categorySection: getRandomClassName(),
-            categoryTitle: getRandomClassName(),
-            categoryIcon: getRandomClassName(),
-            allCategoriesLink: getRandomClassName(),
-            cardsContainer: getRandomClassName(),
-            card: getRandomClassName(),
-            cardImage: getRandomClassName(),
-            cardContent: getRandomClassName(),
-            cardTitle: getRandomClassName(),
-            cardDescription: getRandomClassName(),
-            cardMeta: getRandomClassName(),
-            cardDate: getRandomClassName(),
-            modal: getRandomClassName(),
-            modalContent: getRandomClassName(),
-            modalHeader: getRandomClassName(),
-            modalTitle: getRandomClassName(),
-            modalClose: getRandomClassName(),
-            modalBack: getRandomClassName(),
-            modalBody: getRandomClassName(),
-            categoriesGrid: getRandomClassName(),
-            categoryCard: getRandomClassName(),
-            categoryCardIcon: getRandomClassName(),
-            categoryCardTitle: getRandomClassName(),
-            categoryCardCount: getRandomClassName(),
-            clipContainer: getRandomClassName(),
-            clip: getRandomClassName()
-        };
-
-        // Inject CSS
-        const styleElement = document.createElement('style');
-        styleElement.textContent = `
-    /* Auto Dark/Light Theme */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background-colors: #1e1e1e;
-        --text-colors: #ffffff;
-        --card-backgrounds: #1f2227;
-        --card-hover-backgrounds: #3d3d3d;
-        --border-colors: #444;
-        --primary-colors: #ffffff;
-        --primary-hover-colors: #0056b3;
-        --clip-backgrounds: #2d3a57;
-        --clip-hover-backgrounds: #555;
-    }
-}
-
-@media (prefers-color-scheme: light) {
-    :root {
-        --background-colors: #f5f5f5;
-        --text-colors: #333;
-        --card-backgrounds: #ffffff;
-        --card-hover-backgrounds: #f0f0f0;
-        --border-colors: #ddd;
-        --primary-colors: #007bff;
-        --primary-hover-colors: #0056b3;
-        --clip-backgrounds: #e0e0e0;
-        --clip-hover-backgrounds: #d0d0d0;
-    }
-}
-
-/* Global Styles */
-.${classNames.container} {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    padding: 20px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: var(--text-colors);
-}
-
-.${classNames.allCategoriesLink} {
-    width: 100%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    margin-bottom: 15px;
-    font-weight: bold;
-    cursor: pointer;
-    color: var(--primary-colors);
-    transition: color 0.3s ease;
-    gap: 10px;
-    font-size: larger;
-}
-
-.${classNames.allCategoriesLink}:hover {
-    color: var(--primary-hover-colors);
-}
-
-.${classNames.categorySection} {
-    flex: 1;
-    min-width: 300px;
-    background-color: var(--card-backgrounds);
-    border-radius: 25px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.${classNames.categorySection}:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-.${classNames.categoryTitle} {
-    display: flex;
-    align-items: center;
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 15px;
-    color: var(--text-colors);
-}
-
-.${classNames.categoryIcon} {
-    margin-left: 10px;
-    cursor: pointer;
-    color: var(--primary-colors);
-    transition: color 0.3s ease;
-}
-
-.${classNames.categoryIcon}:hover {
-    color: var(--primary-hover-colors);
-}
-
-.${classNames.cardsContainer} {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.${classNames.card} {
-    display: flex;
-    border-bottom: 1px solid var(--border-colors);
-    padding-bottom: 15px;
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.${classNames.card}:last-child {
-    border-bottom: none;
-}
-
-.${classNames.card}:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.${classNames.cardImage} {
-    width: 80px;
-    height: 80px;
-    border-radius: 8px;
-    object-fit: cover;
-    margin-right: 15px;
-}
-
-.${classNames.cardContent} {
-    flex: 1;
-}
-
-.${classNames.cardTitle} {
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: var(--text-colors);
-}
-
-.${classNames.cardDescription} {
-    font-size: 14px;
-    color: var(--text-colors);
-    margin-bottom: 8px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.${classNames.cardMeta} {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: var(--text-colors);
-}
-
-.${classNames.modal} {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    overflow-y: auto;
-}
-
-.${classNames.modalContent} {
-    background-color: var(--card-backgrounds);
-    margin: 50px auto;
-    width: 90%;
-    max-width: 1000px;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.${classNames.modalHeader} {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    border-bottom: 1px solid var(--border-colors);
-}
-
-.${classNames.modalTitle} {
-    font-size: 20px;
-    font-weight: bold;
-    color: var(--text-colors);
-    transform: translate(-50%, 0px);
-    left: 50%;
-    position: absolute;
-}
-
-.${classNames.modalClose} {
-    font-size: 24px;
-    cursor: pointer;
-    color: var(--text-colors);
-    transition: color 0.3s ease;
-}
-
-.${classNames.modalClose}:hover {
-    color: var(--primary-colors);
-}
-
-.${classNames.modalBack} {
-    font-size: 16px;
-    cursor: pointer;
-    color: var(--primary-colors);
-    display: none;
-    align-items: center;
-    margin-right: auto;
-    transition: color 0.3s ease;
-}
-
-.${classNames.modalBack}:hover {
-    color: var(--primary-hover-colors);
-    text-decoration: underline;
-}
-
-.${classNames.modalBody} {
-    padding: 20px;
-}
-
-.${classNames.categoriesGrid} {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-}
-
-.${classNames.categoryCard} {
-    background-color: var(--card-backgrounds);
-    border-radius: 12px;
-    padding: 20px;
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.${classNames.categoryCard}:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-.${classNames.categoryCardIcon} {
-    font-size: 30px;
-    margin-bottom: 10px;
-    color: var(--primary-colors);
-}
-
-.${classNames.categoryCardTitle} {
-    font-weight: bold;
-    font-size: 18px;
-    margin-bottom: 5px;
-    color: var(--text-colors);
-}
-
-.${classNames.categoryCardCount} {
-    color: var(--text-colors);
-    font-size: 14px;
-}
-
-.${classNames.clipContainer} {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-top: 10px;
-}
-
-.${classNames.clip} {
-    font-size: 12px;
-    padding: 5px 10px;
-    border-radius: 15px;
-    background-color: var(--clip-backgrounds);
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.${classNames.clip}:hover {
-    background-color: var(--clip-hover-backgrounds);
-    transform: translateY(-2px);
-}
-`;
-        document.head.appendChild(styleElement);
-
-        // Map language names to icons/emojis
-        const languageIcons = {
-            'python': '🐍',
-            'javascript': '📜',
-            'typescript': '📘',
-            'html': '🌐',
-            'css': '🎨',
-            'php': '🐘',
-            'java': '☕',
-            'kotlin': '📱',
-            'swift': '🍎',
-            'c#': '♯',
-            'c++': '⚙️',
-            'c': '🔧',
-            'ruby': '💎',
-            'go': '🐹',
-            'rust': '🦀',
-            'dart': '🎯',
-            'other': '📦'
-        };
-
-        // Function to detect programming languages from repository
-        function detectLanguages(repo) {
-            const languages = [];
-            const name = repo.name.toLowerCase();
-            const description = (repo.description || '').toLowerCase();
-
-            // Check language using repo name, description, and actual language
-            const langMap = {
-                'python': ['python', 'django', 'flask', 'py'],
-                'javascript': ['javascript', 'js', 'node', 'react', 'vue', 'angular'],
-                'typescript': ['typescript', 'ts'],
-                'html': ['html', 'web'],
-                'css': ['css', 'style', 'scss', 'sass'],
-                'php': ['php', 'laravel', 'symfony', 'wordpress', 'wp'],
-                'java': ['java', 'spring', 'android'],
-                'kotlin': ['kotlin', 'android'],
-                'swift': ['swift', 'ios'],
-                'c#': ['c#', 'csharp', '.net', 'dotnet'],
-                'c++': ['c++', 'cpp'],
-                'c': ['c language'],
-                'ruby': ['ruby', 'rails'],
-                'go': ['golang', 'go'],
-                'rust': ['rust', 'rs'],
-                'dart': ['dart', 'flutter']
-            };
-
-            // Push the actual language if provided by GitHub
-            if (repo.language && repo.language.toLowerCase() !== 'null') {
-                languages.push(repo.language.toLowerCase());
-            }
-
-            // Detect languages from name and description
-            for (const [lang, keywords] of Object.entries(langMap)) {
-                for (const keyword of keywords) {
-                    if (name.includes(keyword) || description.includes(keyword)) {
-                        if (!languages.includes(lang)) {
-                            languages.push(lang);
-                        }
-                    }
-                }
-            }
-
-            // If no language detected, mark as "other"
-            if (languages.length === 0) {
-                languages.push('other');
-            }
-
-            return languages;
-        }
-
-        // Function to calculate language percentages in a repository
-        function calculateLanguagePercentages(repo) {
-            const languages = detectLanguages(repo);
-            const totalLanguages = languages.length;
-            const percentages = {};
-
-            languages.forEach(lang => {
-                percentages[lang] = (100 / totalLanguages).toFixed(1);
-            });
-
-            return percentages;
-        }
-
-        // Function to create a clip element
-        function createClipElement(lang, percentage) {
-            const clip = document.createElement('div');
-            clip.className = classNames.clip;
-            clip.textContent = `${lang} ${percentage}%`;
-            clip.addEventListener('click', () => {
-                showCategoryRepos(lang);
-            });
-            return clip;
-        }
-
-        // Function to categorize repositories by programming language
-        function categorizeRepositoriesByLanguage(repos) {
-            const categorized = {};
-
-            repos.forEach(repo => {
-                const languages = detectLanguages(repo);
-
-                languages.forEach(lang => {
-                    if (!categorized[lang]) {
-                        categorized[lang] = [];
-                    }
-
-                    // Avoid duplicate repositories in the same category
-                    if (!categorized[lang].some(r => r.id === repo.id)) {
-                        categorized[lang].push(repo);
-                    }
-                });
-            });
-
-            return categorized;
-        }
-
-        // Format date to relative time (e.g., "2 days ago")
-        function formatRelativeTime(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const diffMs = now - date;
-            const diffSeconds = Math.floor(diffMs / 1000);
-            const diffMinutes = Math.floor(diffSeconds / 60);
-            const diffHours = Math.floor(diffMinutes / 60);
-            const diffDays = Math.floor(diffHours / 24);
-
-            if (diffDays > 0) {
-                return `${diffDays} hari lalu`;
-            } else if (diffHours > 0) {
-                return `${diffHours} jam lalu`;
-            } else if (diffMinutes > 0) {
-                return `${diffMinutes} menit lalu`;
-            } else {
-                return 'baru saja';
-            }
-        }
-
-        // Function to capitalize first letter
-        function capitalizeFirstLetter(string) {
-            return string.charAt(0).toUpperCase() + string.slice(1);
-        }
-
-        // Function to create a repository card element
-        function createRepoCard(repo) {
-            const card = document.createElement('div');
-            card.className = classNames.card;
-
-            // Create card image
-            const image = document.createElement('img');
-            image.className = classNames.cardImage;
-            image.src = repo.owner.avatar_url; // Use owner avatar as default image
-            image.alt = repo.name;
-
-            // Create card content
-            const content = document.createElement('div');
-            content.className = classNames.cardContent;
-
-            // Create card title
-            const title = document.createElement('div');
-            title.className = classNames.cardTitle;
-            title.textContent = repo.name;
-
-            // Create card description
-            const description = document.createElement('div');
-            description.className = classNames.cardDescription;
-            description.textContent = repo.description || 'No description available';
-
-            // Create card meta info
-            const meta = document.createElement('div');
-            meta.className = classNames.cardMeta;
-
-            const date = document.createElement('div');
-            date.className = classNames.cardDate;
-            date.textContent = formatRelativeTime(repo.created_at);
-
-            meta.appendChild(date);
-
-            // Append elements
-            content.appendChild(title);
-            content.appendChild(description);
-            content.appendChild(meta);
-
-            card.appendChild(image);
-            card.appendChild(content);
-
-            // Add click event to navigate to the repository
-            card.addEventListener('click', () => {
-                window.open(repo.html_url, '_blank');
-            });
-
-            return card;
-        }
-
-        // Create a modal
-        function createModal() {
-            const modal = document.createElement('div');
-            modal.className = classNames.modal;
-            modal.id = 'repoModal';
-
-            const modalContent = document.createElement('div');
-            modalContent.className = classNames.modalContent;
-
-            const modalHeader = document.createElement('div');
-            modalHeader.className = classNames.modalHeader;
-
-            const modalBack = document.createElement('div');
-            modalBack.className = classNames.modalBack;
-            modalBack.id = 'modalBack';
-            modalBack.innerHTML = '&larr; Back to Categories';
-            modalBack.addEventListener('click', () => {
-                showAllCategories();
-            });
-
-            const modalTitle = document.createElement('div');
-            modalTitle.className = classNames.modalTitle;
-            modalTitle.id = 'modalTitle';
-
-            const modalClose = document.createElement('div');
-            modalClose.className = classNames.modalClose;
-            modalClose.innerHTML = '&times;';
-            modalClose.addEventListener('click', () => {
-                modal.style.display = 'none';
-                resetModal();
-            });
-
-            const modalBody = document.createElement('div');
-            modalBody.className = classNames.modalBody;
-            modalBody.id = 'modalBody';
-
-            modalHeader.appendChild(modalBack);
-            modalHeader.appendChild(modalTitle);
-            modalHeader.appendChild(modalClose);
-
-            modalContent.appendChild(modalHeader);
-            modalContent.appendChild(modalBody);
-
-            modal.appendChild(modalContent);
-
-            // Close modal when clicking outside the content
-            modal.addEventListener('click', (event) => {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                    resetModal();
-                }
-            });
-
-            return modal;
-        }
-
-        // Reset modal to default state
-        function resetModal() {
-            const modalBack = document.getElementById('modalBack');
-            if (modalBack) {
-                modalBack.style.display = 'none';
-            }
-        }
-
-        // Show all categories in the modal
-        function showAllCategories() {
-            const modalBack = document.getElementById('modalBack');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalBody = document.getElementById('modalBody');
-
-            // Hide back button when showing all categories
-            modalBack.style.display = 'none';
-
-            // Set modal title
-            modalTitle.textContent = 'All Programming Languages';
-
-            // Clear previous content
-            modalBody.innerHTML = '';
-
-            // Create a grid for categories
-            const categoriesGrid = document.createElement('div');
-            categoriesGrid.className = classNames.categoriesGrid;
-
-            // Get all categories from window.categorizedRepos
-            const categories = Object.keys(window.categorizedRepos).sort((a, b) => {
-                if (a === 'other') return 1;
-                if (b === 'other') return -1;
-                return a.localeCompare(b);
-            });
-
-            categories.forEach(category => {
-                const repos = window.categorizedRepos[category];
-                if (!repos || repos.length === 0) return;
-
-                // Create category card
-                const categoryCard = document.createElement('div');
-                categoryCard.className = classNames.categoryCard;
-
-                // Add icon
-                const icon = document.createElement('div');
-                icon.className = classNames.categoryCardIcon;
-                icon.textContent = languageIcons[category] || '📦';
-
-                // Add title
-                const title = document.createElement('div');
-                title.className = classNames.categoryCardTitle;
-                title.textContent = capitalizeFirstLetter(category);
-
-                // Add count
-                const count = document.createElement('div');
-                count.className = classNames.categoryCardCount;
-                count.textContent = `${repos.length} repositories`;
-
-                categoryCard.appendChild(icon);
-                categoryCard.appendChild(title);
-                categoryCard.appendChild(count);
-
-                // Add click event to show repositories for this category
-                categoryCard.addEventListener('click', () => {
-                    showCategoryRepos(category);
-                });
-
-                categoriesGrid.appendChild(categoryCard);
-            });
-
-            modalBody.appendChild(categoriesGrid);
-
-            // Show modal
-            document.getElementById('repoModal').style.display = 'block';
-        }
-
-        // Show repositories for a specific category
-        function showCategoryRepos(category) {
-            const modalBack = document.getElementById('modalBack');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalBody = document.getElementById('modalBody');
-
-            // Show back button
-            modalBack.style.display = 'flex';
-
-            // Set modal title
-            modalTitle.textContent = `${capitalizeFirstLetter(category)} Repositories`;
-
-            // Clear previous content
-            modalBody.innerHTML = '';
-
-            // Get repos for this category
-            const repos = window.categorizedRepos[category];
-
-            // Sort repositories by updated_at
-            repos.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
-
-            // Add repos to modal
-            repos.forEach(repo => {
-                const card = createRepoCard(repo);
-                modalBody.appendChild(card);
-
-                // Perbaikan: Cari elemen cardContent di dalam card yang baru dibuat
-                const cardContent = card.querySelector(`.${classNames.cardContent}`);
-
-                // Calculate language percentages
-                const percentages = calculateLanguagePercentages(repo);
-
-                // Create clips for each language
-                const clipsContainer = document.createElement('div');
-                clipsContainer.className = classNames.clipContainer;
-
-                Object.entries(percentages).forEach(([lang, percentage]) => {
-                    const clip = createClipElement(lang, percentage);
-                    clipsContainer.appendChild(clip);
-                });
-
-                // Append clipsContainer ke cardContent
-                if (cardContent) {
-                    cardContent.appendChild(clipsContainer);
-                }
-            });
-        }
-
-        // Function to create the UI based on categorized repositories
-        function createRepoCards(categorizedRepos) {
-            // Store categorized repos globally for modal access
-            window.categorizedRepos = categorizedRepos;
-
-            // Create container
-            const container = document.createElement('div');
-            container.className = classNames.container;
-
-            // Create a modal
-            const modal = createModal();
-            document.body.appendChild(modal);
-
-            // Create "All Categories" link
-            const allCategoriesLink = document.createElement('div');
-            allCategoriesLink.className = classNames.allCategoriesLink;
-            allCategoriesLink.textContent = 'All Programming Languages ';
-
-            const icon = document.createElement('span');
-            icon.textContent = '❯';
-            allCategoriesLink.appendChild(icon);
-
-            allCategoriesLink.addEventListener('click', () => {
-                showAllCategories();
-            });
-
-            container.appendChild(allCategoriesLink);
-
-            // Get categories and sort by repository count
-            const categories = Object.keys(categorizedRepos).sort((a, b) => {
-                if (a === 'other') return 1;
-                if (b === 'other') return -1;
-                return categorizedRepos[b].length - categorizedRepos[a].length;
-            });
-
-            // Take only the top 3 categories
-            const topCategories = categories.slice(0, 3);
-
-            // Create sections for top categories
-            topCategories.forEach(category => {
-                const repos = categorizedRepos[category];
-                if (!repos || repos.length === 0) return;
-
-                // Sort repositories by updated_at
-                repos.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
-
-                // Create category section
-                const section = document.createElement('div');
-                section.className = classNames.categorySection;
-
-                // Create category title
-                const titleContainer = document.createElement('div');
-                titleContainer.className = classNames.categoryTitle;
-                titleContainer.textContent = capitalizeFirstLetter(category) + ' ';
-
-                const titleIcon = document.createElement('span');
-                titleIcon.className = classNames.categoryIcon;
-                titleIcon.textContent = '❯';
-                titleContainer.appendChild(titleIcon);
-
-                // Add click event to show all repositories in this category
-                titleIcon.addEventListener('click', () => {
-                    showCategoryRepos(category);
-                    document.getElementById('repoModal').style.display = 'block';
-                });
-
-                section.appendChild(titleContainer);
-
-                // Create cards container
-                const cardsContainer = document.createElement('div');
-                cardsContainer.className = classNames.cardsContainer;
-
-                // Take first 3 repositories for this category
-                repos.slice(0, 3).forEach(repo => {
-                    const card = createRepoCard(repo);
-                    cardsContainer.appendChild(card);
-                });
-
-                section.appendChild(cardsContainer);
-                container.appendChild(section);
-            });
-
-            return container;
-        }
-
-        // Function to fetch GitHub repositories
-        async function fetchGitHubRepos(username) {
-            const response = await fetch(`https://api.github.com/users/${username}/repos?per_page=100`);
-            if (!response.ok) throw new Error('Failed to fetch GitHub repositories');
-            return response.json();
-        }
-
-        // Initialize the UI
-        async function initializeUI(username) {
-            try {
-                // Get the existing carousel elements
-                const carouselContainer = document.querySelector('.carousel-track').parentElement;
-
-                // Fetch repositories
-                const repos = await fetchGitHubRepos(username);
-
-                // Categorize repositories by programming language
-                const categorizedRepos = categorizeRepositoriesByLanguage(repos);
-
-                // Create UI
-                const repoCardsContainer = createRepoCards(categorizedRepos);
-
-                // Insert the new UI after the carousel
-                if (carouselContainer.nextElementSibling) {
-                    carouselContainer.parentElement.insertBefore(repoCardsContainer, carouselContainer.nextElementSibling);
-                } else {
-                    carouselContainer.parentElement.appendChild(repoCardsContainer);
-                }
-
-            } catch (error) {
-                console.error('Error initializing repository cards:', error);
-            }
-        }
-
-        // Initialize when the document is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            // Use the same GitHub username from the carousel code
-            initializeUI('4211421036');
-        });
-
-        // Integrate with existing carousel functionality
-        const existingTrack = document.querySelector('.carousel-track');
-        const existingItems = Array.from(existingTrack.children);
-        const existingNextButton = document.querySelector('.carousel-next');
-        const existingPrevButton = document.querySelector('.carousel-prev');
-        let existingCurrentIndex = 0;
-
-        // Function to create GitHub repository showcase UI
-function createGitHubRepoShowcase(username = '4211421036') {
-  // Create container
-  const showcaseContainer = document.createElement('div');
-  showcaseContainer.className = 'repo-showcase-container';
-  
-  // Create header
-  const header = document.createElement('div');
-  header.className = 'repo-showcase-header';
-  header.innerHTML = `
-    <h2>Essential GitHub Repositories</h2>
-    <p>Check out these featured repositories from ${username}</p>
-  `;
-  showcaseContainer.appendChild(header);
-  
-  // Create grid container
-  const gridContainer = document.createElement('div');
-  gridContainer.className = 'repo-grid-container';
-  
-  // Create carousel navigation
-  const carouselNav = document.createElement('div');
-  carouselNav.className = 'repo-carousel-nav';
-  carouselNav.innerHTML = `
-    <button class="repo-carousel-prev">←</button>
-    <div class="repo-carousel-indicator">
-      <span class="repo-active-page">1</span>/<span class="repo-total-pages">1</span>
-    </div>
-    <button class="repo-carousel-next">→</button>
-  `;
-  
-  // Append to showcase container
-  showcaseContainer.appendChild(gridContainer);
-  showcaseContainer.appendChild(carouselNav);
-  
-  // Add CSS
-  const style = document.createElement('style');
-  style.textContent = `
-    .repo-showcase-container {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #000;
-      color: #fff;
-      border-radius: 8px;
-      padding: 20px;
-      margin: 0 auto;
-      border-radius: 25px;
-    }
-    
-    .repo-showcase-header {
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgb(255 255 255);
-    }
-    
-    .repo-showcase-header h2 {
-      font-size: 24px;
-      margin: 0 0 8px 0;
-    }
-    
-    .repo-showcase-header p {
-      margin: 0;
-      opacity: 0.7;
-    }
-    
-    .repo-grid-container {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(2, 1fr);
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-    
-    @media (max-width: 1024px) {
-      .repo-grid-container {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(4, 1fr);
-      }
-    }
-    
-    @media (max-width: 640px) {
-      .repo-grid-container {
-        grid-template-columns: 1fr;
-      }
-    }
-    
-    .repo-card {
-      background-color: #1a1a1a;
-      border-radius: 21px;
-      overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.2s;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-    
-    .repo-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    }
-    
-    .repo-card-header {
-      display: flex;
-      align-items: center;
-      padding: 16px;
-    }
-    
-    .repo-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 4px;
-      margin-right: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: #4a4a4a;
-      color: #fff;
-      font-weight: bold;
-      font-size: 20px;
-    }
-    
-    .repo-title {
-      font-weight: 600;
-      font-size: 16px;
-      flex-grow: 1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    
-    .repo-card-body {
-      padding: 0 16px 16px;
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .repo-description {
-      margin-bottom: 16px;
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.7);
-      overflow: hidden;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      flex-grow: 1;
-    }
-    
-    .repo-meta {
-      display: flex;
-      gap: 12px;
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.5);
-      margin-bottom: 16px;
-    }
-    
-    .repo-meta-item {
-      display: flex;
-      align-items: center;
-    }
-    
-    .repo-meta-item i {
-      margin-right: 4px;
-      font-size: 14px;
-    }
-    
-    .repo-button {
-        background-color: #0077b5;
-        color: white;
-        border: none;
-        border-radius: 23px;
-        padding: 8px 16px;
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 14px;
-        text-align: center;
-        text-decoration: none;
-        transition: background-color 0.2s;
-        width: -webkit-fill-available;
-    }
-    
-    .repo-button:hover {
-      background-color: #005fa3;
-    }
-    
-    .repo-carousel-nav {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 16px;
-      margin-top: 16px;
-    }
-    
-    .repo-carousel-prev,
-    .repo-carousel-next {
-      background-color: #444;
-      border: none;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 18px;
-      color: white;
-      transition: background-color 0.2s;
-    }
-    
-    .repo-carousel-prev:hover,
-    .repo-carousel-next:hover {
-      background-color: #555;
-    }
-    
-    .repo-carousel-indicator {
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.7);
-    }
-    
-    .repo-language-indicator {
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      margin-right: 6px;
-    }
-    
-    .repo-tag {
-      font-size: 11px;
-      padding: 2px 6px;
-      border-radius: 12px;
-      background-color: rgba(255, 255, 255, 0.1);
-      margin-right: 4px;
-      margin-bottom: 4px;
-      align-items: center;
-      display: inline-flex;
-    }
-    
-    .repo-language-tags {
-      margin-bottom: 12px;
-      display: flex;
-      flex-wrap: wrap;
-    }
-  `;
-  document.head.appendChild(style);
-  
-  // Language colors mapping
-  const languageColors = {
-    javascript: '#837503',
-    typescript: '#2b7489',
-    html: '#e34c26',
-    css: '#563d7c',
-    python: '#3572A5',
-    java: '#b07219',
-    csharp: '#178600',
-    php: '#4F5D95',
-    ruby: '#701516',
-    go: '#00ADD8',
-    rust: '#dea584',
-    dart: '#00B4AB',
-    kotlin: '#F18E33',
-    swift: '#ffac45',
-    c: '#555555',
-    'c++': '#f34b7d',
-    shell: '#89e051',
-    other: '#8257e5'
-  };
-  
-  // Function to get language color
-  function getLanguageColor(language) {
-    const lang = language ? language.toLowerCase() : 'other';
-    return languageColors[lang] || languageColors.other;
-  }
-  
-  // Function to get first letter of repo name
-  function getRepoInitial(repoName) {
-    return repoName.charAt(0).toUpperCase();
-  }
-  
-  // Function to create repository card
-  function createRepoCard(repo) {
-    const hasHomepage = repo.homepage && repo.homepage.trim() !== '';
-    const card = document.createElement('div');
-    card.className = 'repo-card';
-    
-    const language = repo.language || 'Other';
-    const languageColor = getLanguageColor(language);
-    
-    card.innerHTML = `
-      <div class="repo-card-header">
-        <div class="repo-icon" style="background-color: ${languageColor}">
-          ${getRepoInitial(repo.name)}
+                </a>
+                
+                <a href="https://www.hackerrank.com/profile/g4lihru" target="_blank" class="platform-card">
+                    <div class="platform-header">
+                        <div class="platform-icon">
+                            <i class="fab fa-hackerrank"></i>
+                        </div>
+                        <div>
+                            <div class="platform-name">HackerRank</div>
+                            <div class="platform-username">g4lihru</div>
+                        </div>
+                    </div>
+                    <div class="platform-stats">
+                        <span class="platform-stat">5-Star Rating</span>
+                        <span class="platform-stat">Multiple Domains</span>
+                    </div>
+                </a>
+                
+                <a href="https://pypi.org/user/galihridhoutomo/" target="_blank" class="platform-card">
+                    <div class="platform-header">
+                        <div class="platform-icon">
+                            <i class="fab fa-python"></i>
+                        </div>
+                        <div>
+                            <div class="platform-name">PyPI</div>
+                            <div class="platform-username">galihridhoutomo</div>
+                        </div>
+                    </div>
+                    <div class="platform-stats">
+                        <span class="platform-stat">8+ Packages</span>
+                        <span class="platform-stat">1000+ Downloads</span>
+                    </div>
+                </a>
+                
+                <a href="https://www.npmjs.com/~galihru" target="_blank" class="platform-card">
+                    <div class="platform-header">
+                        <div class="platform-icon">
+                            <i class="fab fa-npm"></i>
+                        </div>
+                        <div>
+                            <div class="platform-name">NPM</div>
+                            <div class="platform-username">galihru</div>
+                        </div>
+                    </div>
+                    <div class="platform-stats">
+                        <span class="platform-stat">5+ Packages</span>
+                        <span class="platform-stat">Active Maintainer</span>
+                    </div>
+                </a>
+                
+                <a href="https://www.nuget.org/profiles/g4lihru" target="_blank" class="platform-card">
+                    <div class="platform-header">
+                        <div class="platform-icon">
+                            <i class="fas fa-cube"></i>
+                        </div>
+                        <div>
+                            <div class="platform-name">NuGet</div>
+                            <div class="platform-username">g4lihru</div>
+                        </div>
+                    </div>
+                    <div class="platform-stats">
+                        <span class="platform-stat">3+ Packages</span>
+                        <span class="platform-stat">.NET Solutions</span>
+                    </div>
+                </a>
+                
+                <a href="https://github.com/galihru" target="_blank" class="platform-card">
+                    <div class="platform-header">
+                        <div class="platform-icon">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <div>
+                            <div class="platform-name">GitHub</div>
+                            <div class="platform-username">galihru</div>
+                        </div>
+                    </div>
+                    <div class="platform-stats">
+                        <span class="platform-stat">50+ Repositories</span>
+                        <span class="platform-stat">Open Source</span>
+                                        </a>
+                
+                <a href="#" class="platform-card">
+                    <div class="platform-header">
+                        <div class="platform-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <div>
+                            <div class="platform-name">Arduino IDE</div>
+                            <div class="platform-username">GALIH RIDHO UTOMO</div>
+                        </div>
+                    </div>
+                    <div class="platform-stats">
+                        <span class="platform-stat">15+ Projects</span>
+                        <span class="platform-stat">IoT Specialist</span>
+                    </div>
+                </a>
+            </div>
         </div>
-        <div class="repo-title">${repo.name}</div>
-      </div>
-      <div class="repo-card-body">
-        <div class="repo-language-tags">
-          <span class="repo-tag">
-            <span class="repo-language-indicator" style="background-color: ${languageColor}"></span>
-            ${language}
-          </span>
-        </div>
-        <div class="repo-description">${repo.description || 'No description available'}</div>
-        <div class="repo-meta">
-          <span class="repo-meta-item"><i>★</i> ${repo.stargazers_count}</span>
-          <span class="repo-meta-item"><i>⑂</i> ${repo.forks_count}</span>
-          <span class="repo-meta-item"><i>⊙</i> ${repo.watchers_count}</span>
-        </div>
-        <a href="${hasHomepage ? repo.homepage : repo.html_url}" target="_blank" class="repo-button">
-          ${hasHomepage ? 'View Demo' : 'View Repository'}
-        </a>
-      </div>
-    `;
-    
-    // If the repo has a homepage, make the card open the demo page when clicked
-    // otherwise, go to the GitHub repo page
-    if (hasHomepage) {
-      card.addEventListener('click', (e) => {
-        // Don't trigger if clicking on the button (it has its own link)
-        if (!e.target.closest('.repo-button')) {
-          window.open(repo.homepage, '_blank');
-        }
-      });
-    } else {
-      card.addEventListener('click', (e) => {
-        // Don't trigger if clicking on the button (it has its own link)
-        if (!e.target.closest('.repo-button')) {
-          window.open(repo.html_url, '_blank');
-        }
-      });
-    }
-    
-    return card;
-  }
-  
-  // Pagination state
-  let currentPage = 0;
-  let totalPages = 1;
-  const reposPerPage = 8; // 2x4 grid
-  let allRepos = [];
-  
-  // Function to update grid with current page repos
-  function updateGrid() {
-    const startIndex = currentPage * reposPerPage;
-    const endIndex = startIndex + reposPerPage;
-    const currentRepos = allRepos.slice(startIndex, endIndex);
-    
-    // Clear grid
-    gridContainer.innerHTML = '';
-    
-    // Add repos to grid
-    currentRepos.forEach(repo => {
-      gridContainer.appendChild(createRepoCard(repo));
-    });
-    
-    // Update indicator
-    document.querySelector('.repo-active-page').textContent = currentPage + 1;
-    document.querySelector('.repo-total-pages').textContent = totalPages;
-    
-    // Update button states
-    const prevButton = document.querySelector('.repo-carousel-prev');
-    const nextButton = document.querySelector('.repo-carousel-next');
-    
-    prevButton.disabled = currentPage === 0;
-    prevButton.style.opacity = currentPage === 0 ? '0.5' : '1';
-    
-    nextButton.disabled = currentPage === totalPages - 1;
-    nextButton.style.opacity = currentPage === totalPages - 1 ? '0.5' : '1';
-  }
-  
-  // Fetch repositories from GitHub API
-  async function fetchRepos() {
-    try {
-      const response = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=updated`);
-      if (!response.ok) throw new Error('Failed to fetch repositories');
-      
-      allRepos = await response.json();
-      totalPages = Math.ceil(allRepos.length / reposPerPage);
-      
-      // Update the grid with first page
-      updateGrid();
-      
-      // Add event listeners to navigation buttons
-      document.querySelector('.repo-carousel-prev').addEventListener('click', () => {
-        if (currentPage > 0) {
-          currentPage--;
-          updateGrid();
-        }
-      });
-      
-      document.querySelector('.repo-carousel-next').addEventListener('click', () => {
-        if (currentPage < totalPages - 1) {
-          currentPage++;
-          updateGrid();
-        }
-      });
-    } catch (error) {
-      console.error('Error fetching repositories:', error);
-      gridContainer.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-          <h3>Failed to load repositories</h3>
-          <p>Please try again later or check your connection.</p>
-        </div>
-      `;
-    }
-  }
-  
-  // Initialize by fetching repos
-  fetchRepos();
-  
-  return showcaseContainer;
-}
+    </section>
 
-// Function to integrate GitHub repo showcase with existing page
-function integrateGitHubRepoShowcase() {
-  // Find a suitable container to append our showcase
-  const container = document.querySelector('.carousel').closest('div').parentElement;
-  
-  // Create the showcase
-  const showcase = createGitHubRepoShowcase('4211421036'); // Replace with your GitHub username
-  
-  // Insert showcase after the existing carousel
-  container.appendChild(showcase);
-}
+    <!-- GitHub Repos Section -->
+    <section id="github" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">GitHub Repositories</h2>
+                <p class="section-subtitle">Explore my latest projects and contributions on GitHub</p>
+            </div>
+            
+            <div class="repos-grid">
+                <div class="repo-card">
+                    <div class="repo-header">
+                        <div class="repo-name">DataAnalyzer</div>
+                        <div class="repo-type">Python</div>
+                    </div>
+                    <p class="repo-description">Advanced data analysis tool for processing large datasets efficiently with machine learning integration.</p>
+                    <div class="repo-stats">
+                        <span class="repo-stat"><i class="fas fa-star"></i> 128</span>
+                        <span class="repo-stat"><i class="fas fa-code-branch"></i> 42</span>
+                        <span class="repo-stat"><i class="fas fa-eye"></i> 1.2k</span>
+                    </div>
+                </div>
+                
+                <div class="repo-card">
+                    <div class="repo-header">
+                        <div class="repo-name">ReactDashboard</div>
+                        <div class="repo-type">JavaScript</div>
+                    </div>
+                    <p class="repo-description">Modern admin dashboard with real-time analytics and customizable UI components.</p>
+                    <div class="repo-stats">
+                        <span class="repo-stat"><i class="fas fa-star"></i> 86</span>
+                        <span class="repo-stat"><i class="fas fa-code-branch"></i> 24</span>
+                        <span class="repo-stat"><i class="fas fa-eye"></i> 890</span>
+                    </div>
+                </div>
+                
+                <div class="repo-card">
+                    <div class="repo-header">
+                        <div class="repo-name">CloudSync</div>
+                        <div class="repo-type">TypeScript</div>
+                    </div>
+                    <p class="repo-description">Cross-platform file synchronization service using cloud storage providers.</p>
+                    <div class="repo-stats">
+                        <span class="repo-stat"><i class="fas fa-star"></i> 92</span>
+                        <span class="repo-stat"><i class="fas fa-code-branch"></i> 31</span>
+                        <span class="repo-stat"><i class="fas fa-eye"></i> 1.1k</span>
+                    </div>
+                </div>
+                
+                <div class="repo-card">
+                    <div class="repo-header">
+                        <div class="repo-name">ArduinoIoT</div>
+                        <div class="repo-type">C++</div>
+                    </div>
+                    <p class="repo-description">IoT framework for Arduino devices with cloud integration and sensor management.</p>
+                    <div class="repo-stats">
+                        <span class="repo-stat"><i class="fas fa-star"></i> 64</span>
+                        <span class="repo-stat"><i class="fas fa-code-branch"></i> 18</span>
+                        <span class="repo-stat"><i class="fas fa-eye"></i> 780</span>
+                    </div>
+                </div>
+                
+                <div class="repo-card">
+                    <div class="repo-header">
+                        <div class="repo-name">AlgoSolutions</div>
+                        <div class="repo-type">Multiple</div>
+                    </div>
+                    <p class="repo-description">Collection of optimized solutions for LeetCode and HackerRank challenges.</p>
+                    <div class="repo-stats">
+                        <span class="repo-stat"><i class="fas fa-star"></i> 210</span>
+                        <span class="repo-stat"><i class="fas fa-code-branch"></i> 75</span>
+                        <span class="repo-stat"><i class="fas fa-eye"></i> 3.5k</span>
+                    </div>
+                </div>
+                
+                <div class="repo-card">
+                    <div class="repo-header">
+                        <div class="repo-name">PyUtility</div>
+                        <div class="repo-type">Python</div>
+                    </div>
+                    <p class="repo-description">Python utility library published on PyPI with common functions and helpers.</p>
+                    <div class="repo-stats">
+                        <span class="repo-stat"><i class="fas fa-star"></i> 45</span>
+                        <span class="repo-stat"><i class="fas fa-code-branch"></i> 12</span>
+                        <span class="repo-stat"><i class="fas fa-eye"></i> 650</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="https://github.com/galihru" target="_blank" class="btn btn-outline" style="padding: 1rem 2rem; font-size: 1.1rem;">
+                    <i class="fab fa-github"></i> View All Repositories
+                </a>
+            </div>
+        </div>
+    </section>
 
-// Initialize when the document is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  integrateGitHubRepoShowcase();
-});
-    </script>
+    <!-- Contact Section -->
+    <section id="contact" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Get In Touch</h2>
+                <p class="section-subtitle">Have a project in mind or want to collaborate? Feel free to reach out</p>
+            </div>
+            
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3 class="contact-title">Email</h3>
+                    <p class="contact-info">galih@example.com</p>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fab fa-github"></i>
+                    </div>
+                    <h3 class="contact-title">GitHub</h3>
+                    <p class="contact-info">github.com/galihru</p>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3 class="contact-title">LeetCode</h3>
+                    <p class="contact-info">leetcode.com/GALIH_RIDHO_UTOMO</p>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h3 class="contact-title">Location</h3>
+                    <p class="contact-info">Indonesia</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>GALIH RIDHO UTOMO</h3>
+                    <p>Full Stack Developer & Problem Solver with expertise in multiple platforms and technologies.</p>
+                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                        <a href="#" class="btn btn-outline" style="padding: 0.5rem 1rem;">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline" style="padding: 0.5rem 1rem;">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline" style="padding: 0.5rem 1rem;">
+                            <i class="fab fa-dev"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Navigation</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> About</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Projects</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Platforms</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Platforms</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fab fa-github"></i> GitHub</a></li>
+                        <li><a href="#"><i class="fas fa-code"></i> LeetCode</a></li>
+                        <li><a href="#"><i class="fab fa-python"></i> PyPI</a></li>
+                        <li><a href="#"><i class="fab fa-npm"></i> NPM</a></li>
+                        <li><a href="#"><i class="fas fa-cube"></i> NuGet</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 GALIH RIDHO UTOMO. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(registration => {
-                        console.log('Service Worker registered with scope: ', registration.scope);
-                    })
-                    .catch(error => {
-                        console.error('Service Worker registration failed:', error);
-                    });
+        // Animasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animasi untuk elemen hero
+            const heroTitle = document.querySelector('.hero-title');
+            const heroSubtitle = document.querySelector('.hero-subtitle');
+            const heroStats = document.querySelector('.hero-stats');
+            const ctaButtons = document.querySelector('.cta-buttons');
+            
+            setTimeout(() => {
+                heroTitle.style.opacity = '1';
+                heroTitle.style.transform = 'translateY(0)';
+            }, 200);
+            
+            setTimeout(() => {
+                heroSubtitle.style.opacity = '1';
+                heroSubtitle.style.transform = 'translateY(0)';
+            }, 400);
+            
+            setTimeout(() => {
+                heroStats.style.opacity = '1';
+                heroStats.style.transform = 'translateY(0)';
+            }, 600);
+            
+            setTimeout(() => {
+                ctaButtons.style.opacity = '1';
+                ctaButtons.style.transform = 'translateY(0)';
+            }, 800);
+            
+            // Animasi untuk card saat muncul di viewport
+            const cards = document.querySelectorAll('.card, .platform-card, .repo-card');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1
             });
-        }
+            
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
+                observer.observe(card);
+            });
+            
+            // Efek hover untuk card
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-8px)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // Smooth scrolling untuk anchor link
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        window.scrollTo({
+                            top: target.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Dark mode toggle
+            const themeToggle = document.createElement('button');
+            themeToggle.className = 'theme-toggle';
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            document.querySelector('.nav-container').appendChild(themeToggle);
+            
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('light-mode');
+                
+                if (document.body.classList.contains('light-mode')) {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                }
+            });
+        });
+
+        // Menambahkan style untuk light mode
+        const style = document.createElement('style');
+        style.textContent = `
+            .light-mode {
+                --primary-bg: #f8fafc;
+                --secondary-bg: #e2e8f0;
+                --card-bg: #ffffff;
+                --text-primary: #0f172a;
+                --text-secondary: #334155;
+                --text-muted: #64748b;
+                --border-color: #cbd5e1;
+                --hover-bg: #f1f5f9;
+            }
+            
+            .light-mode .hero {
+                background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            }
+            
+            .light-mode .hero-title {
+                background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            
+            .light-mode .hero-bg {
+                background: radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+                            radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+            }
+            
+            .light-mode .navbar {
+                background: rgba(248, 250, 252, 0.8);
+                border-bottom: 1px solid #cbd5e1;
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
-
 </html>
